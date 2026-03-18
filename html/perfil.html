@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil | The Garage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/nav.css">
+  <link rel="stylesheet" href="../css/perfil.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+ <div id="navbar-container"></div>
+
+  <main class="perfil-main">
+    <div class="container">
+
+      <!-- Header do perfil -->
+      <div class="perfil-header">
+        <div class="perfil-avatar">
+          <div class="perfil-avatar__img">👤</div>
+          <div class="perfil-avatar__rank" data-tooltip="Garage Rank">⭐</div>
+        </div>
+        <div class="perfil-header__info">
+          <h1 id="perfilNome">Carlos Tuner</h1>
+          <p id="perfilEmail" class="texto-muted">carlos@tuner.com</p>
+          <div class="perfil-rank">
+            <span class="badge badge-laranja">🏆 RANK: MECHANIC</span>
+            <!-- Futuro: sistema de ranking por compras -->
+            <div class="perfil-xp">
+              <div class="perfil-xp__label">
+                <span>Próximo: Expert</span>
+                <span>650/1000 pts</span>
+              </div>
+              <div class="perfil-xp__barra">
+                <div class="perfil-xp__fill" style="width: 65%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="perfil-header__acoes">
+          <button class="btn btn-danger btn-sm" id="btnLogout">Sair</button>
+        </div>
+      </div>
+
+      <!-- Navegação lateral + conteúdo -->
+      <div class="perfil-layout">
+
+        <!-- Sidebar -->
+        <nav class="perfil-sidebar">
+          <button class="perfil-sidebar__item ativo" data-tab="dados">
+            👤 Dados Pessoais
+          </button>
+          <button class="perfil-sidebar__item" data-tab="enderecos">
+            📍 Endereços
+          </button>
+          <button class="perfil-sidebar__item" data-tab="cartoes">
+            💳 Cartões
+          </button>
+          <button class="perfil-sidebar__item" data-tab="pedidos">
+            📦 Meus Pedidos
+          </button>
+          <button class="perfil-sidebar__item" data-tab="senha">
+            🔑 Alterar Senha
+          </button>
+        </nav>
+
+        <!-- Conteúdo principal -->
+        <div class="perfil-conteudo">
+
+          <!-- TAB: DADOS PESSOAIS -->
+          <section class="perfil-tab ativo" id="tab-dados">
+            <div class="perfil-tab__header">
+              <h2>Dados Pessoais</h2>
+              <button class="btn btn-outline btn-sm" id="btnEditarDados">✏️ Editar</button>
+            </div>
+
+            <div class="dados-grid" id="dadosView">
+              <div class="dado-item"><span class="dado-label">Nome</span><span class="dado-valor" id="dNome">Carlos Tuner</span></div>
+              <div class="dado-item"><span class="dado-label">Email</span><span class="dado-valor" id="dEmail">carlos@tuner.com</span></div>
+              <div class="dado-item"><span class="dado-label">CPF</span><span class="dado-valor">***.456.789-**</span></div>
+              <div class="dado-item"><span class="dado-label">Data de Nasc.</span><span class="dado-valor">15/03/1990</span></div>
+              <div class="dado-item"><span class="dado-label">Gênero</span><span class="dado-valor">Masculino</span></div>
+              <div class="dado-item"><span class="dado-label">Telefone</span><span class="dado-valor">(11) 98765-4321</span></div>
+            </div>
+
+            <!-- Formulário de edição (oculto por padrão) -->
+            <div class="dados-form" id="dadosForm" style="display:none">
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Nome Completo</label>
+                  <input type="text" class="input-field" value="Carlos Tuner" id="editNome">
+                </div>
+                <div class="input-grupo">
+                  <label>Telefone</label>
+                  <input type="text" class="input-field" value="(11) 98765-4321" id="editTel">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Gênero</label>
+                  <select class="input-field" id="editGenero">
+                    <option value="M" selected>Masculino</option>
+                    <option value="F">Feminino</option>
+                    <option value="NB">Não-binário</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+                <button class="btn btn-primario" id="btnSalvarDados">Salvar</button>
+                <button class="btn btn-outline" id="btnCancelarDados">Cancelar</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB: ENDEREÇOS -->
+          <section class="perfil-tab" id="tab-enderecos">
+            <div class="perfil-tab__header">
+              <h2>Endereços</h2>
+              <button class="btn btn-outline btn-sm" id="btnNovoEndereco">+ Adicionar</button>
+            </div>
+
+            <div class="enderecos-lista" id="enderecosList">
+              <div class="endereco-item">
+                <div class="endereco-item__info">
+                  <div class="flex" style="gap:0.5rem; align-items:center; margin-bottom:0.25rem;">
+                    <span class="badge badge-verde">Principal</span>
+                    <span class="texto-pequeno texto-muted">Casa</span>
+                  </div>
+                  <strong>Rua das Garagens, 420</strong>
+                  <span class="texto-pequeno texto-muted">Bairro Motor - São Paulo/SP - 04567-890</span>
+                </div>
+                <div class="endereco-item__ações">
+                  <button class="btn btn-outline btn-sm">✏️</button>
+                  <button class="btn btn-danger btn-sm">🗑️</button>
+                </div>
+              </div>
+
+              <div class="endereco-item">
+                <div class="endereco-item__info">
+                  <div class="flex" style="gap:0.5rem; align-items:center; margin-bottom:0.25rem;">
+                    <span class="texto-pequeno texto-muted">Comercial</span>
+                  </div>
+                  <strong>Av. Automotiva, 1200</strong>
+                  <span class="texto-pequeno texto-muted">Zona Industrial - São Paulo/SP - 04000-000</span>
+                </div>
+                <div class="endereco-item__ações">
+                  <button class="btn btn-outline btn-sm">✏️</button>
+                  <button class="btn btn-danger btn-sm">🗑️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulário novo endereço (modal ou inline) -->
+            <div class="endereco-form card" id="enderecoForm" style="display:none; padding:1.5rem; margin-top:1rem;">
+              <h3 style="margin-bottom:1rem; font-size:0.9rem;">Novo Endereço</h3>
+              <!-- Campos reutilizados do cadastro -->
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>CEP</label>
+                  <input type="text" class="input-field" placeholder="00000-000" id="novoEnderecoCEP">
+                </div>
+                <div style="align-self:end;">
+                  <button class="btn btn-outline btn-sm">Buscar</button>
+                </div>
+              </div>
+              <div class="input-grupo">
+                <label>Logradouro</label>
+                <input type="text" class="input-field" placeholder="Rua, Av.">
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Número</label>
+                  <input type="text" class="input-field">
+                </div>
+                <div class="input-grupo">
+                  <label>Complemento</label>
+                  <input type="text" class="input-field">
+                </div>
+              </div>
+              <div class="input-grupo">
+                <label>Bairro</label>
+                <input type="text" class="input-field">
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Cidade</label>
+                  <input type="text" class="input-field">
+                </div>
+                <div class="input-grupo">
+                  <label>UF</label>
+                  <input type="text" class="input-field" maxlength="2">
+                </div>
+              </div>
+              <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+                <button class="btn btn-primario btn-sm" id="btnSalvarEndereco">Salvar</button>
+                <button class="btn btn-outline btn-sm" id="btnCancelarEndereco">Cancelar</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB: CARTÕES -->
+          <section class="perfil-tab" id="tab-cartoes">
+            <div class="perfil-tab__header">
+              <h2>Cartões Cadastrados</h2>
+              <button class="btn btn-outline btn-sm" id="btnNovoCartao">+ Adicionar</button>
+            </div>
+
+            <div class="cartoes-lista" id="cartoesList">
+              <div class="cartao-item">
+                <span class="cartao-item__flag">💳</span>
+                <div class="cartao-item__num">•••• •••• •••• 4242</div>
+                <div>
+                  <div class="texto-pequeno">VISA - Carlos Tuner</div>
+                  <div class="texto-pequeno texto-muted">Vence: 12/26</div>
+                </div>
+                <div class="cartao-item__ações">
+                  <label class="radio-label">
+                    <input type="radio" name="cartaoPrincipal" value="4242" checked>
+                    Principal
+                  </label>
+                  <button class="btn btn-danger btn-sm">🗑️</button>
+                </div>
+              </div>
+
+              <div class="cartao-item">
+                <span class="cartao-item__flag">💳</span>
+                <div class="cartao-item__num">•••• •••• •••• 5555</div>
+                <div>
+                  <div class="texto-pequeno">MASTERCARD - Carlos T.</div>
+                  <div class="texto-pequeno texto-muted">Vence: 03/25</div>
+                </div>
+                <div class="cartao-item__ações">
+                  <label class="radio-label">
+                    <input type="radio" name="cartaoPrincipal" value="5555">
+                    Principal
+                  </label>
+                  <button class="btn btn-danger btn-sm">🗑️</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulário novo cartão -->
+            <div class="cartao-form card" id="cartaoForm" style="display:none; padding:1.5rem; margin-top:1rem;">
+              <h3 style="margin-bottom:1rem; font-size:0.9rem;">Novo Cartão</h3>
+              <div class="input-grupo">
+                <label>Número do Cartão</label>
+                <input type="text" id="novoCartaoNum" class="input-field" placeholder="0000 0000 0000 0000" maxlength="19">
+              </div>
+              <div class="input-grupo">
+                <label>Nome no Cartão</label>
+                <input type="text" class="input-field" placeholder="Como está no cartão">
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Validade</label>
+                  <input type="text" class="input-field" placeholder="MM/AA" maxlength="5">
+                </div>
+                <div class="input-grupo">
+                  <label>CVV</label>
+                  <input type="text" class="input-field" placeholder="•••" maxlength="4">
+                </div>
+              </div>
+              <div class="auth-lembrar mb-2">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="novoCartaoPrincipal">
+                  <span class="checkbox-custom"></span>
+                  Definir como cartão principal
+                </label>
+              </div>
+              <div style="display:flex; gap:0.75rem;">
+                <button class="btn btn-primario btn-sm" id="btnSalvarCartao">Salvar</button>
+                <button class="btn btn-outline btn-sm" id="btnCancelarCartao">Cancelar</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB: PEDIDOS -->
+          <section class="perfil-tab" id="tab-pedidos">
+            <div class="perfil-tab__header">
+              <h2>Meus Pedidos</h2>
+            </div>
+
+            <!-- Filtro por status -->
+            <div class="pedidos-filtro">
+              <button class="pedido-filtro-btn ativo" data-status="todos">Todos</button>
+              <button class="pedido-filtro-btn" data-status="em-processamento">Processando</button>
+              <button class="pedido-filtro-btn" data-status="aprovada">Aprovados</button>
+              <button class="pedido-filtro-btn" data-status="em-transporte">Em Transporte</button>
+              <button class="pedido-filtro-btn" data-status="entregue">Entregues</button>
+            </div>
+
+            <!-- Lista de pedidos mockados -->
+            <div class="pedidos-lista" id="pedidosList">
+
+              <div class="pedido-card" data-status="em-transporte">
+                <div class="pedido-card__header">
+                  <div>
+                    <span class="pedido-card__num">#GT-2024-0042</span>
+                    <span class="badge status-em-transporte">Em Transporte</span>
+                  </div>
+                  <span class="texto-muted texto-pequeno">12/12/2024</span>
+                </div>
+                <div class="pedido-card__itens">
+                  <div class="pedido-item-linha">
+                    <span>⚙️ Suspensão Coilover Ajustável</span>
+                    <span class="texto-muted">x1</span>
+                    <span>R$ 3.890</span>
+                  </div>
+                </div>
+                <div class="pedido-card__footer">
+                  <div>
+                    <span class="texto-muted texto-pequeno">Total: </span>
+                    <strong>R$ 3.890,00</strong>
+                  </div>
+                  <div style="display:flex; gap:0.5rem;">
+                    <button class="btn btn-outline btn-sm">Ver Detalhes</button>
+                    <button class="btn btn-outline btn-sm">Rastrear</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pedido-card" data-status="entregue">
+                <div class="pedido-card__header">
+                  <div>
+                    <span class="pedido-card__num">#GT-2024-0038</span>
+                    <span class="badge status-entregue">Entregue</span>
+                  </div>
+                  <span class="texto-muted texto-pequeno">28/11/2024</span>
+                </div>
+                <div class="pedido-card__itens">
+                  <div class="pedido-item-linha">
+                    <span>🔩 Spoiler Traseiro Carbon</span>
+                    <span class="texto-muted">x1</span>
+                    <span>R$ 1.290</span>
+                  </div>
+                  <div class="pedido-item-linha">
+                    <span>🌬️ Cold Air Intake</span>
+                    <span class="texto-muted">x1</span>
+                    <span>R$ 780</span>
+                  </div>
+                </div>
+                <div class="pedido-card__footer">
+                  <div>
+                    <span class="texto-muted texto-pequeno">Total: </span>
+                    <strong>R$ 2.070,00</strong>
+                  </div>
+                  <div style="display:flex; gap:0.5rem;">
+                    <button class="btn btn-outline btn-sm">Ver Detalhes</button>
+                    <button class="btn btn-outline btn-sm" style="border-color:var(--cor-destaque); color:var(--cor-destaque);">Solicitar Troca</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pedido-card" data-status="em-troca">
+                <div class="pedido-card__header">
+                  <div>
+                    <span class="pedido-card__num">#GT-2024-0031</span>
+                    <span class="badge status-em-troca">Em Troca</span>
+                  </div>
+                  <span class="texto-muted texto-pequeno">15/11/2024</span>
+                </div>
+                <div class="pedido-card__itens">
+                  <div class="pedido-item-linha">
+                    <span>💨 Kit Turbo T3/T4</span>
+                    <span class="texto-muted">x1</span>
+                    <span>R$ 5.490</span>
+                  </div>
+                </div>
+                <div class="pedido-card__footer">
+                  <div>
+                    <span class="texto-muted texto-pequeno">Total: </span>
+                    <strong>R$ 5.490,00</strong>
+                  </div>
+                  <div style="display:flex; gap:0.5rem;">
+                    <button class="btn btn-outline btn-sm">Ver Detalhes</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- TAB: ALTERAR SENHA -->
+          <section class="perfil-tab" id="tab-senha">
+            <div class="perfil-tab__header">
+              <h2>Alterar Senha</h2>
+            </div>
+
+            <!-- id="formAlterarSenha" - referência para POST /api/auth/alterar-senha -->
+            <form class="auth-form" id="formAlterarSenha" style="max-width:420px;" novalidate>
+
+              <div class="input-grupo">
+                <label>Senha Atual <span class="required">*</span></label>
+                <div class="input-senha-wrapper">
+                  <input type="password" id="senhaAtual" class="input-field" placeholder="Sua senha atual">
+                  <button type="button" class="input-senha-toggle" id="toggleAtual">👁️</button>
+                </div>
+              </div>
+
+              <div class="input-grupo">
+                <label>Nova Senha <span class="required">*</span></label>
+                <div class="input-senha-wrapper">
+                  <input type="password" id="novaSenha" class="input-field" placeholder="Mínimo 8 caracteres">
+                  <button type="button" class="input-senha-toggle" id="toggleNova">👁️</button>
+                </div>
+                <div class="senha-forca" id="novaSenhaForca" style="display:none">
+                  <div class="senha-forca__barra">
+                    <div class="senha-forca__fill" id="novaSenhaFill"></div>
+                  </div>
+                  <div class="senha-forca__info">
+                    <span class="senha-forca__nivel" id="novaSenhaNivel"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="input-grupo">
+                <label>Confirmar Nova Senha <span class="required">*</span></label>
+                <div class="input-senha-wrapper">
+                  <input type="password" id="confirmarNovaSenha" class="input-field" placeholder="Repita a nova senha">
+                  <button type="button" class="input-senha-toggle" id="toggleConf">👁️</button>
+                </div>
+                <span class="input-erro-msg" id="errNovaSenhaConf" style="display:none">⚠ Senhas não coincidem</span>
+              </div>
+
+              <button type="submit" class="btn btn-primario">Salvar Nova Senha</button>
+
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RODAPÉ SIMPLIFICADO -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2026 TheGarage. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/global.js"></script>
+  <script src="../js/perfil.js"></script>
+</body>
+</html>

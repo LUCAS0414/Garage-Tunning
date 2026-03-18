@@ -1,0 +1,157 @@
+/* =============================================
+   GARAGE TUNING - ADMIN PANEL
+   Layout sidebar + main
+   ============================================= */
+
+.admin-body {
+  display: flex;
+  min-height: 100vh;
+  background: var(--cor-fundo);
+}
+
+/* ---- SIDEBAR ---- */
+.admin-sidebar {
+  width: 240px; min-height: 100vh; flex-shrink: 0;
+  background: #0a0a0a; border-right: 1px solid var(--cor-borda);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; height: 100%;
+  z-index: 50;
+}
+
+.admin-sidebar__logo {
+  padding: 1.5rem;
+  display: flex; align-items: center; gap: 0.5rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.admin-sidebar__titulo {
+  display: block; font-family: var(--fonte-titulo); font-size: 1rem; font-weight: 900;
+  color: var(--cor-texto); line-height: 1;
+}
+.admin-sidebar__titulo span { color: var(--cor-primaria); }
+.admin-sidebar__sub {
+  display: block; font-family: var(--fonte-mono); font-size: 0.55rem;
+  color: var(--cor-destaque); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 2px;
+}
+
+.admin-nav { flex: 1; padding: 1rem 0; }
+
+.admin-nav__item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--fonte-destaque); font-size: 0.85rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--cor-texto-muted); transition: all var(--transicao);
+  border-left: 2px solid transparent;
+}
+.admin-nav__item:hover { color: var(--cor-texto); background: rgba(255,255,255,0.04); }
+.admin-nav__item.ativo { color: var(--cor-primaria); border-left-color: var(--cor-primaria); background: rgba(0,255,136,0.05); }
+.admin-nav__item--voltar { color: var(--cor-texto-muted) !important; margin-top: 0.5rem; border-top: 1px solid var(--cor-borda); }
+
+.admin-sidebar__user {
+  padding: 1rem 1.5rem; border-top: 1px solid var(--cor-borda);
+  display: flex; align-items: center; gap: 0.75rem;
+  font-size: 1.5rem;
+}
+.admin-sidebar__user-nome { display: block; font-family: var(--fonte-destaque); font-size: 0.85rem; font-weight: 600; color: var(--cor-texto); }
+
+/* ---- MAIN ---- */
+.admin-main {
+  margin-left: 240px; flex: 1; padding: 2rem;
+  min-height: 100vh; overflow-x: auto;
+}
+
+/* ---- HEADER ---- */
+.admin-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+}
+.admin-header h1 { font-size: 1.5rem; font-weight: 900; }
+
+/* ---- STATS ---- */
+.admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+
+.admin-stat-card {
+  background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+  border-radius: var(--radius-card); padding: 1.25rem; text-align: center;
+  transition: border-color var(--transicao);
+}
+.admin-stat-card:hover { border-color: rgba(0,255,136,0.2); }
+.admin-stat-card__num { font-family: var(--fonte-titulo); font-size: 2.2rem; font-weight: 700; line-height: 1; }
+.admin-stat-card__label { font-family: var(--fonte-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cor-texto-muted); margin-top: 0.35rem; }
+
+/* ---- TOOLBAR ---- */
+.admin-toolbar {
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+}
+
+/* ---- TABELA ---- */
+.admin-tabela-wrapper {
+  background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+  border-radius: var(--radius-card); overflow: auto;
+}
+
+.admin-tabela { width: 100%; border-collapse: collapse; min-width: 800px; }
+
+.admin-tabela thead tr {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.admin-tabela th {
+  padding: 0.8rem 1rem; text-align: left;
+  font-family: var(--fonte-mono); font-size: 0.65rem;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--cor-texto-muted); white-space: nowrap;
+}
+
+.admin-tabela td {
+  padding: 0.9rem 1rem; border-bottom: 1px solid var(--cor-borda);
+  font-size: 0.85rem; vertical-align: middle;
+}
+
+.admin-tabela tbody tr:last-child td { border-bottom: none; }
+.admin-tabela tbody tr { transition: background var(--transicao); }
+.admin-tabela tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+.admin-tabela tbody tr.inativo { opacity: 0.5; }
+
+.tabela-acoes { display: flex; gap: 0.4rem; }
+
+/* Estoque visual */
+.estoque-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-family: var(--fonte-mono); font-size: 0.75rem; padding: 2px 8px; border-radius: 3px;
+}
+.estoque-ok { background: rgba(0,255,136,0.1); color: var(--cor-primaria); border: 1px solid rgba(0,255,136,0.2); }
+.estoque-baixo { background: rgba(255,187,0,0.1); color: var(--cor-aviso); border: 1px solid rgba(255,187,0,0.2); }
+.estoque-zerado { background: rgba(255,51,68,0.1); color: var(--cor-erro); border: 1px solid rgba(255,51,68,0.2); }
+
+/* Cálculo de preço visual */
+.preco-calc-visual {
+  background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.1);
+  border-radius: var(--radius-padrao); padding: 1rem; margin-bottom: 1rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.preco-calc__linha { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--cor-texto-muted); }
+.preco-calc__linha--total { border-top: 1px solid rgba(0,255,136,0.15); padding-top: 0.5rem; font-weight: 700; color: var(--cor-texto); }
+
+/* Entrada estoque */
+.entrada-estoque {
+  background: rgba(0,204,255,0.04); border: 1px solid rgba(0,204,255,0.1);
+  border-radius: var(--radius-padrao); padding: 1rem;
+}
+
+/* Admin Vendas - específico */
+.pedido-status-badge { cursor: default; }
+.acao-vendas { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 992px) {
+  .admin-sidebar { position: static; width: 100%; min-height: auto; border-right: none; border-bottom: 1px solid var(--cor-borda); }
+  .admin-nav { display: flex; overflow-x: auto; padding: 0; }
+  .admin-nav__item { padding: 0.75rem 1rem; white-space: nowrap; border-left: none; border-bottom: 2px solid transparent; }
+  .admin-nav__item.ativo { border-left-color: transparent; border-bottom-color: var(--cor-primaria); }
+  .admin-main { margin-left: 0; }
+  .admin-stats { grid-template-columns: repeat(2, 1fr); }
+}
