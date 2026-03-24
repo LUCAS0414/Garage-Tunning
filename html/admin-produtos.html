@@ -7,26 +7,27 @@
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/admin.css">
   <link rel="stylesheet" href="../css/shared.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-body">
 
   <!-- SIDEBAR ADMIN -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar__logo">
-      <span>🏁</span>
+      <span></span>
       <div>
         <span class="admin-sidebar__titulo">THE<span>GARAGE</span></span>
         <span class="admin-sidebar__sub">Admin Panel</span>
       </div>
     </div>
     <nav class="admin-nav">
-      <a href="admin-produtos.html" class="admin-nav__item ativo">📦 Produtos</a>
-      <a href="admin-vendas.html" class="admin-nav__item">📋 Vendas</a>
-      <a href="analise.html" class="admin-nav__item">📊 Análises</a>
+      <a href="admin-produtos.html" class="admin-nav__item ativo"><i class="fas fa-box"></i> Produtos</a>
+      <a href="admin-vendas.html" class="admin-nav__item"><i class="fas fa-clipboard"></i> Vendas</a>
+      <a href="analise.html" class="admin-nav__item"><i class="fas fa-chart-column"></i> Análises</a>
       <a href="index.html" class="admin-nav__item admin-nav__item--voltar">← Loja</a>
     </nav>
     <div class="admin-sidebar__user">
-      <span>👤</span>
+      <span><i class="fas fa-user"></i></span>
       <div>
         <span class="admin-sidebar__user-nome">Admin</span>
         <span class="texto-muted texto-pequeno">Administrador</span>
@@ -46,7 +47,7 @@
       <button class="btn btn-primario" id="btnNovoProduto">+ Novo Produto</button>
     </div>
 
-    <!-- Status rápidos -->
+    <!-- Status rápidos integrar com back depois-->
     <div class="admin-stats">
       <div class="admin-stat-card">
         <div class="admin-stat-card__num" id="statTotal">12</div>
@@ -66,11 +67,11 @@
       </div>
     </div>
 
-    <!-- Filtros / busca -->
+    <!-- Filtro Arrumar parte de busca e filtro-->
     <div class="admin-toolbar">
-      <div class="navbar__busca" style="border-radius:4px; flex:1; max-width:320px;">
+      <div class="navbar__busca" style="border-radius:4px; flex:1; max-width:320px;"">
         <input type="text" id="prodBusca" placeholder="Buscar produtos...">
-        <button>🔍</button>
+        <button></button><i class="fas fa-search"></i>
       </div>
       <select class="input-field" id="prodFiltroCategoria" style="width:160px;">
         <option value="">Todas as Categorias</option>
@@ -286,7 +287,7 @@
     </div>
   </div>
 
-  <script src="../js/global.js"></script>
-  <script src="../js/admin-produtos.js"></script>
+  <script src="../js/public/global.js"></script>
+  <script src="../js/public/admin-produtos.js"></script>
 </body>
 </html>

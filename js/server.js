@@ -9,9 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ================================================================
 //  PRODUTOS
-// ================================================================
 app.post('/api/produtos', async (req, res) => {
   try {
     const novo = await ProdutoService.criar(req.body);
@@ -21,9 +19,7 @@ app.post('/api/produtos', async (req, res) => {
   }
 });
 
-// ================================================================
 //  CADASTRO (cria cliente + endereço numa transação)
-// ================================================================
 app.post('/api/cadastro', async (req, res) => {
   const { nome, email, cpf, dataNascimento, genero, senha,
           logradouro, numero, cep, bairro, cidade, estado,

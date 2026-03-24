@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       numero_cartao:  document.getElementById('novoCartaoNum').value.replace(/\D/g, ''),
       nome_impresso:  document.getElementById('novoCartaoNome').value,
       bandeira:       document.getElementById('novoCartaoBandeira')?.value || 'VISA',
-      is_preferencial: document.getElementById('novoCartaoPref')?.checked  || false
+      is_preferencial: document.getElementById('novoCartaoPrincipal')?.checked  || false
     };
 
     try {
@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const input = document.getElementById(inputIds[i]);
       const tipo  = input.type === 'password' ? 'text' : 'password';
       input.type  = tipo;
-      this.textContent = tipo === 'password' ? '👁️' : '🙈';
+      this.innerHTML = tipo === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
     });
   });
 

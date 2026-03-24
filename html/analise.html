@@ -8,26 +8,27 @@
   <link rel="stylesheet" href="../css/admin.css">
   <link rel="stylesheet" href="../css/shared.css">
   <link rel="stylesheet" href="../css/analise.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-body">
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar__logo">
-      <span>🏁</span>
+      <span></span>
       <div>
         <span class="admin-sidebar__titulo">THE<span>GARAGE</span></span>
         <span class="admin-sidebar__sub">Admin Panel</span>
       </div>
     </div>
     <nav class="admin-nav">
-      <a href="admin-produtos.html" class="admin-nav__item">📦 Produtos</a>
-      <a href="admin-vendas.html" class="admin-nav__item">📋 Vendas</a>
-      <a href="analise.html" class="admin-nav__item ativo">📊 Análises</a>
+      <a href="admin-produtos.html" class="admin-nav__item"><i class="fas fa-box"></i> Produtos</a>
+      <a href="admin-vendas.html" class="admin-nav__item"><i class="fas fa-clipboard"></i> Vendas</a>
+      <a href="analise.html" class="admin-nav__item ativo"><i class="fas fa-chart-column"></i> Análises</a>
       <a href="index.html" class="admin-nav__item admin-nav__item--voltar">← Loja</a>
     </nav>
     <div class="admin-sidebar__user">
-      <span>👤</span>
+      <span><i class="fas fa-user"></i></span>
       <div><span class="admin-sidebar__user-nome">Admin</span><span class="texto-muted texto-pequeno">Administrador</span></div>
     </div>
   </aside>
@@ -56,7 +57,7 @@
     <!-- KPIs principais -->
     <div class="analise-kpis">
       <div class="kpi-card">
-        <div class="kpi-card__icon">💰</div>
+        <div class="kpi-card__icon"><i class="fas fa-sack-dollar"></i></div>
         <div class="kpi-card__dados">
           <span class="kpi-card__valor texto-neon" id="kpiReceita">R$ 0</span>
           <span class="kpi-card__label">Receita Total</span>
@@ -64,7 +65,7 @@
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card__icon">📦</div>
+        <div class="kpi-card__icon"><i class="fas fa-box"></i></div>
         <div class="kpi-card__dados">
           <span class="kpi-card__valor" id="kpiPedidos">0</span>
           <span class="kpi-card__label">Pedidos Realizados</span>
@@ -72,7 +73,7 @@
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card__icon">🛒</div>
+        <div class="kpi-card__icon"><i class="fas fa-box-open"></i></div>
         <div class="kpi-card__dados">
           <span class="kpi-card__valor texto-azul" id="kpiTicket">R$ 0</span>
           <span class="kpi-card__label">Ticket Médio</span>
@@ -80,7 +81,7 @@
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card__icon">🔄</div>
+        <div class="kpi-card__icon"><i class="fas fa-arrows-rotate"></i></div>
         <div class="kpi-card__dados">
           <span class="kpi-card__valor texto-laranja" id="kpiTrocas">0</span>
           <span class="kpi-card__label">Trocas Realizadas</span>
@@ -155,7 +156,7 @@
 
   </main>
 
-  <script src="../js/global.js"></script>
-  <script src="../js/analise.js"></script>
+  <script src="../js/public/global.js"></script>
+  <script src="../js/public/analise.js"></script>
 </body>
 </html>

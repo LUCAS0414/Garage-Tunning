@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('toggleSenhaLogin')?.addEventListener('click', function() {
     const tipo = senhaInput.type === 'password' ? 'text' : 'password';
     senhaInput.type = tipo;
-    this.textContent = tipo === 'password' ? '👁️' : '🙈';
+    this.innerHTML = tipo === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
   });
 
   // Recuperar senha

@@ -7,26 +7,27 @@
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/admin.css">
   <link rel="stylesheet" href="../css/shared.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-body">
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar__logo">
-      <span>🏁</span>
+      <span></span>
       <div>
         <span class="admin-sidebar__titulo">THE<span>GARAGE</span></span>
         <span class="admin-sidebar__sub">Admin Panel</span>
       </div>
     </div>
     <nav class="admin-nav">
-      <a href="admin-produtos.html" class="admin-nav__item">📦 Produtos</a>
-      <a href="admin-vendas.html" class="admin-nav__item ativo">📋 Vendas</a>
-      <a href="analise.html" class="admin-nav__item">📊 Análises</a>
+      <a href="admin-produtos.html" class="admin-nav__item"><i class="fas fa-box"></i> Produtos</a>
+      <a href="admin-vendas.html" class="admin-nav__item ativo"><i class="fas fa-clipboard"></i> Vendas</a>
+      <a href="analise.html" class="admin-nav__item"><i class="fas fa-chart-column"></i> Análises</a>
       <a href="index.html" class="admin-nav__item admin-nav__item--voltar">← Loja</a>
     </nav>
     <div class="admin-sidebar__user">
-      <span>👤</span>
+      <span><i class="fas fa-user"></i></span>
       <div>
         <span class="admin-sidebar__user-nome">Admin</span>
         <span class="texto-muted texto-pequeno">Administrador</span>
@@ -40,7 +41,7 @@
         <h1>Gestão de Vendas</h1>
         <p class="texto-muted">Gerencie pedidos, trocas e gere cupons</p>
       </div>
-      <button class="btn btn-outline" id="btnGerarCupom">🎟️ Gerar Cupom</button>
+      <button class="btn btn-outline" id="btnGerarCupom"><i class="fas fa-ticket"></i> Gerar Cupom</button>
     </div>
 
     <!-- Stats -->
@@ -67,7 +68,7 @@
     <div class="admin-toolbar">
       <div class="navbar__busca" style="border-radius:4px; flex:1; max-width:320px;">
         <input type="text" id="vendaBusca" placeholder="Buscar pedido, cliente...">
-        <button>🔍</button>
+        <button></button> <i class="fas fa-search"></i>
       </div>
       <select class="input-field" id="vendaFiltroStatus" style="width:200px;">
         <option value="">Todos os status</option>
@@ -146,7 +147,7 @@
   <div class="modal-overlay" id="modalCupom">
     <div class="modal">
       <button class="modal__fechar" onclick="fecharModal('modalCupom')">✕</button>
-      <h3 style="margin-bottom:1.5rem;">🎟️ Gerar Cupom</h3>
+      <h3 style="margin-bottom:1.5rem;"><i class="fas fa-ticket"></i> Gerar Cupom</h3>
 
       <div class="input-grupo">
         <label>Código do Cupom</label>
@@ -198,7 +199,7 @@
     </div>
   </div>
 
-  <script src="../js/global.js"></script>
-  <script src="../js/admin-vendas.js"></script>
+  <script src="../js/public/global.js"></script>
+  <script src="../js/public/admin-vendas.js"></script>
 </body>
 </html>

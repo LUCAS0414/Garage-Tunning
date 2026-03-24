@@ -7,17 +7,18 @@
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/nav.css">
   <link rel="stylesheet" href="../css/checkout.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <nav class="navbar" id="navbar">
     <div class="navbar__inner">
       <a href="index.html" class="navbar__logo">
-        <span class="navbar__logo-icon">🏁</span>
+        <span class="navbar__logo-icon"></span>
         <div><span class="navbar__logo-texto">THE<span>GARAGE</span></span><span class="navbar__logo-sub">Tuning & Performance</span></div>
       </a>
       <div class="navbar__acoes">
-        <a href="carrinho.html" class="navbar__icon-btn">🛒<span class="navbar__badge" id="carrinhoCount" style="display:none">0</span></a>
-        <a href="perfil.html" class="navbar__icon-btn">👤</a>
+        <a href="carrinho.html" class="navbar__icon-btn"><i class="fas fa-box-open"></i><span class="navbar__badge" id="carrinhoCount" style="display:none">0</span></a>
+        <a href="perfil.html" class="navbar__icon-btn"><i class="fas fa-user"></i></a>
       </div>
       <button class="navbar__toggle" id="navToggle"><span></span><span></span><span></span></button>
     </div>
@@ -28,11 +29,11 @@
   <div class="checkout-progresso">
     <div class="container">
       <div class="checkout-steps">
-        <div class="checkout-step concluido">🛒 Carrinho</div>
-        <div class="checkout-step__sep">›</div>
-        <div class="checkout-step ativo">💳 Checkout</div>
-        <div class="checkout-step__sep">›</div>
-        <div class="checkout-step">✅ Confirmação</div>
+        <div class="checkout-step concluido"><i class="fas fa-box-open"></i> Carrinho</div>
+        <div class="checkout-step__sep"><i class="fas fa-chevron-right"></i></div>
+        <div class="checkout-step ativo"><i class="fas fa-credit-card"></i> Checkout</div>
+        <div class="checkout-step__sep"><i class="fas fa-chevron-right"></i></div>
+        <div class="checkout-step"> <i class="fas fa-check"></i> Confirmação</div>
       </div>
     </div>
   </div>
@@ -84,7 +85,7 @@
               <label class="frete-opcao">
                 <input type="radio" name="frete" value="pac" checked>
                 <div class="frete-info">
-                  <span>📦 PAC</span>
+                  <span><i class="fas fa-box"></i> PAC</span>
                   <span class="texto-muted">5-10 dias úteis</span>
                 </div>
                 <span class="frete-preco">Grátis</span>
@@ -92,7 +93,7 @@
               <label class="frete-opcao">
                 <input type="radio" name="frete" value="sedex">
                 <div class="frete-info">
-                  <span>⚡ SEDEX</span>
+                  <span><i class="fas fa-bolt"></i> SEDEX</span>
                   <span class="texto-muted">1-3 dias úteis</span>
                 </div>
                 <span class="frete-preco">R$ 29,90</span>
@@ -113,7 +114,7 @@
 
               <label class="cartao-radio-item">
                 <input type="radio" name="cartao" value="4242" checked>
-                <span class="cartao-radio-flag">💳</span>
+                <span class="cartao-radio-flag"><i class="fas fa- fa-credit-card"></i></span>
                 <div class="cartao-radio-info">
                   <span>•••• •••• •••• 4242</span>
                   <span class="texto-muted texto-pequeno">VISA - Vence 12/26</span>
@@ -123,7 +124,7 @@
 
               <label class="cartao-radio-item">
                 <input type="radio" name="cartao" value="5555">
-                <span class="cartao-radio-flag">💳</span>
+                <span class="cartao-radio-flag"><i class="fas fa- fa-credit-card"></i></span>
                 <div class="cartao-radio-info">
                   <span>•••• •••• •••• 5555</span>
                   <span class="texto-muted texto-pequeno">MASTERCARD - Vence 03/25</span>
@@ -134,7 +135,7 @@
               <!-- Novo cartão -->
               <label class="cartao-radio-item">
                 <input type="radio" name="cartao" value="novo">
-                <span class="cartao-radio-flag">➕</span>
+                <span class="cartao-radio-flag"><i class="fas fa-plus"></i></span>
                 <div class="cartao-radio-info">
                   <span>Adicionar novo cartão</span>
                 </div>
@@ -168,7 +169,7 @@
             <div class="pix-opcao" style="margin-top:1rem;">
               <label class="cartao-radio-item">
                 <input type="radio" name="cartao" value="pix">
-                <span class="cartao-radio-flag">🔑</span>
+                <span class="cartao-radio-flag"><i class="fas fa-dollar"></i></span>
                 <div class="cartao-radio-info">
                   <span>PIX</span>
                   <span class="texto-muted texto-pequeno">5% de desconto + aprovação imediata</span>
@@ -179,7 +180,7 @@
 
             <!-- Múltiplos cartões (área futura) -->
             <div class="multiplos-cartoes-hint" style="margin-top:1rem; padding:0.75rem; border:1px dashed rgba(0,255,136,0.15); border-radius:var(--radius-padrao);">
-              <span class="texto-muted texto-pequeno">💡 Em breve: dividir pagamento em múltiplos cartões</span>
+              <span class="texto-muted texto-pequeno"> <i class="fas fa-lightbulb"></i> Em breve: dividir pagamento em múltiplos cartões</span>
             </div>
           </div>
 
@@ -216,12 +217,12 @@
 
           <!-- Botão finalizar -->
           <button class="btn btn-primario btn-lg w-100" id="btnConfirmarPedido">
-            <span id="btnConfTexto">🏁 Confirmar Pedido</span>
+            <span id="btnConfTexto">Confirmar Pedido</span>
             <span id="btnConfLoad" style="display:none"><span class="spinner"></span></span>
           </button>
 
           <p class="checkout-seguro">
-            🔒 Pagamento 100% seguro e criptografado
+            <i class="fas fa-lock"></i> Pagamento 100% seguro e criptografado
           </p>
         </div>
 

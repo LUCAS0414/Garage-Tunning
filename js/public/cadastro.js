@@ -1,5 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
-
+document.addEventListener('DOMContentLoaded', function () {
   let stepAtual = 1;
 
   // ---- HELPERS E MÁSCARAS ---- //
@@ -36,13 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (errEl) errEl.style.display = 'none';
   }
 
-  if (document.getElementById('cpf')) mascaraCPF(document.getElementById('cpf'));
-  if (document.getElementById('cep')) mascaraCEP(document.getElementById('cep'));
-  if (document.getElementById('numTel')) mascaraTelefone(document.getElementById('numTel'));
+  if (document.getElementById('cpf'))
+    mascaraCPF(document.getElementById('cpf'));
+  if (document.getElementById('cep'))
+    mascaraCEP(document.getElementById('cep'));
+  if (document.getElementById('numTel'))
+    mascaraTelefone(document.getElementById('numTel'));
 
   // ---- NAVEGAÇÃO DE STEPS ---- //
   function irParaStep(num) {
-    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    document
+      .querySelectorAll('.form-step')
+      .forEach((s) => (s.style.display = 'none'));
     document.getElementById(`step${num}`).style.display = 'block';
 
     document.querySelectorAll('.cadastro-step').forEach((s, i) => {
@@ -81,14 +85,19 @@ document.addEventListener('DOMContentLoaded', function() {
       ok = false;
     } else if (calcularIdade(dataNasc) < 18) {
       // RN0029: Validação de Maioridade
-      marcarErro('dataNasc', 'É necessário ter 18 anos ou mais para se cadastrar.');
+      marcarErro(
+        'dataNasc',
+        'É necessário ter 18 anos ou mais para se cadastrar.',
+      );
       ok = false;
     } else {
       limparErro('dataNasc');
     }
 
     const tipoTel = document.getElementById('tipoTelefone').value;
-    const numTelStr = document.getElementById('numTel').value.replace(/\D/g, '');
+    const numTelStr = document
+      .getElementById('numTel')
+      .value.replace(/\D/g, '');
     if (numTelStr.length < 10) {
       marcarErro('numTel', 'Telefone inválido');
       ok = false;
@@ -111,13 +120,13 @@ document.addEventListener('DOMContentLoaded', function() {
   function validarStep2() {
     let ok = true;
 
-    const cep = document.getElementById('cep').value.replace(/\D/g,'');
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
     if (cep.length !== 8) {
       marcarErro('cep', 'CEP inválido');
       ok = false;
     } else limparErro('cep');
 
-    ['logradouro','numEndereco','bairro','cidade'].forEach(id => {
+    ['logradouro', 'numEndereco', 'bairro', 'cidade'].forEach((id) => {
       const el = document.getElementById(id);
       if (el && !el.value.trim()) {
         marcarErro(id, 'Campo obrigatório');
@@ -128,34 +137,46 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Eventos de Navegação
-  document.getElementById('btnProximo1')?.addEventListener('click', () => { if (validarStep1()) irParaStep(2); });
-  document.getElementById('btnProximo2')?.addEventListener('click', () => { if (validarStep2()) irParaStep(3); });
-  document.getElementById('btnVoltar2')?.addEventListener('click', () => irParaStep(1));
-  document.getElementById('btnVoltar3')?.addEventListener('click', () => irParaStep(2));
+  document.getElementById('btnProximo1')?.addEventListener('click', () => {
+    if (validarStep1()) irParaStep(2);
+  });
+  document.getElementById('btnProximo2')?.addEventListener('click', () => {
+    if (validarStep2()) irParaStep(3);
+  });
+  document
+    .getElementById('btnVoltar2')
+    ?.addEventListener('click', () => irParaStep(1));
+  document
+    .getElementById('btnVoltar3')
+    ?.addEventListener('click', () => irParaStep(2));
 
   // ---- ENDEREÇO E CEP ---- //
-  document.getElementById('cobIgual')?.addEventListener('change', function() {
-    document.getElementById('endCobrancaArea').style.display = this.checked ? 'none' : 'block';
+  document.getElementById('cobIgual')?.addEventListener('change', function () {
+    document.getElementById('endCobrancaArea').style.display = this.checked
+      ? 'none'
+      : 'block';
   });
 
-  document.getElementById('btnBuscarCEP')?.addEventListener('click', async function() {
-    const cep = document.getElementById('cep').value.replace(/\D/g,'');
-    if (cep.length === 8) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const dados = await res.json();
-        if (!dados.erro) {
-          document.getElementById('logradouro').value = dados.logradouro;
-          document.getElementById('bairro').value = dados.bairro;
-          document.getElementById('cidade').value = dados.localidade;
-          document.getElementById('estado').value = dados.uf;
-          limparErro('cep');
+  document
+    .getElementById('btnBuscarCEP')
+    ?.addEventListener('click', async function () {
+      const cep = document.getElementById('cep').value.replace(/\D/g, '');
+      if (cep.length === 8) {
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+          const dados = await res.json();
+          if (!dados.erro) {
+            document.getElementById('logradouro').value = dados.logradouro;
+            document.getElementById('bairro').value = dados.bairro;
+            document.getElementById('cidade').value = dados.localidade;
+            document.getElementById('estado').value = dados.uf;
+            limparErro('cep');
+          }
+        } catch (err) {
+          marcarErro('cep', 'Erro ao buscar CEP');
         }
-      } catch (err) {
-        marcarErro('cep', 'Erro ao buscar CEP');
       }
-    }
-  });
+    });
 
   // ---- FORÇA DA SENHA (RNF0031) ---- //
   const senhaInput = document.getElementById('cadastroSenha');
@@ -164,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const senhaFill = document.getElementById('senhaForcaFill');
   const senhaNivel = document.getElementById('senhaForcaNivel');
 
-  senhaInput?.addEventListener('input', function() {
+  senhaInput?.addEventListener('input', function () {
     const senha = this.value;
     if (!senha.length) {
       senhaForca.style.display = 'none';
@@ -179,7 +200,13 @@ document.addEventListener('DOMContentLoaded', function() {
     senhaNivel.textContent = forca.nivel;
     senhaNivel.style.color = forca.cor;
 
-    const map = { tamanho: 'req-tamanho', maiuscula: 'req-maiuscula', minuscula: 'req-minuscula', numero: 'req-numero', especial: 'req-especial' };
+    const map = {
+      tamanho: 'req-tamanho',
+      maiuscula: 'req-maiuscula',
+      minuscula: 'req-minuscula',
+      numero: 'req-numero',
+      especial: 'req-especial',
+    };
     Object.entries(forca.requisitos).forEach(([key, ok]) => {
       const el = document.getElementById(map[key]);
       if (el) el.classList.toggle('ok', ok);
@@ -187,15 +214,15 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   ['toggleSenha1', 'toggleSenha2'].forEach((id, idx) => {
-    document.getElementById(id)?.addEventListener('click', function() {
+    document.getElementById(id)?.addEventListener('click', function () {
       const input = idx === 0 ? senhaInput : confSenha;
       const tipo = input.type === 'password' ? 'text' : 'password';
       input.type = tipo;
-      this.textContent = tipo === 'password' ? '👁️' : '🙈';
+      this.innerHTML = tipo === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
     });
   });
 
-  confSenha?.addEventListener('input', function() {
+  confSenha?.addEventListener('input', function () {
     const errEl = document.getElementById('errConfSenha');
     if (this.value && this.value !== senhaInput.value) {
       errEl.style.display = 'flex';
@@ -208,84 +235,110 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ---- SUBMIT E INTEGRAÇÃO  ---- //
-  document.getElementById('formCadastro')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    let ok = true;
+  document
+    .getElementById('formCadastro')
+    ?.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      let ok = true;
 
-    // Validações Finais
-    const email = document.getElementById('cadastroEmail').value;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('errCadEmail').style.display = 'flex'; ok = false; } 
-    else { document.getElementById('errCadEmail').style.display = 'none'; }
+      // Validações Finais
+      const email = document.getElementById('cadastroEmail').value;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('errCadEmail').style.display = 'flex';
+        ok = false;
+      } else {
+        document.getElementById('errCadEmail').style.display = 'none';
+      }
 
-    const forca = verificarForcaSenha(senhaInput.value);
-    if (forca.atendidos < 4) { marcarErro('cadastroSenha', 'A senha deve atender a todos os requisitos.'); ok = false; }
-    if (confSenha.value !== senhaInput.value) { document.getElementById('errConfSenha').style.display = 'flex'; ok = false; }
-    if (!document.getElementById('aceitaTermos').checked) { document.getElementById('errTermos').style.display = 'flex'; ok = false; } 
-    else { document.getElementById('errTermos').style.display = 'none'; }
+      const forca = verificarForcaSenha(senhaInput.value);
+      if (forca.atendidos < 4) {
+        marcarErro(
+          'cadastroSenha',
+          'A senha deve atender a todos os requisitos.',
+        );
+        ok = false;
+      }
+      if (confSenha.value !== senhaInput.value) {
+        document.getElementById('errConfSenha').style.display = 'flex';
+        ok = false;
+      }
+      if (!document.getElementById('aceitaTermos').checked) {
+        document.getElementById('errTermos').style.display = 'flex';
+        ok = false;
+      } else {
+        document.getElementById('errTermos').style.display = 'none';
+      }
 
-    if (!ok) return;
+      if (!ok) return;
 
-    // Loading State
-    const btnTexto = document.getElementById('btnCadTexto');
-    const btnLoad = document.getElementById('btnCadLoading');
-    const btn = document.getElementById('btnCadastrar');
-    btnTexto.style.display = 'none';
-    btnLoad.style.display = 'flex';
-    btn.disabled = true;
+      // Loading State
+      const btnTexto = document.getElementById('btnCadTexto');
+      const btnLoad = document.getElementById('btnCadLoading');
+      const btn = document.getElementById('btnCadastrar');
+      btnTexto.style.display = 'none';
+      btnLoad.style.display = 'flex';
+      btn.disabled = true;
 
-    // Montar Payload seguindo a RN0023 e RN0026
-    const telLimpo = document.getElementById('numTel').value.replace(/\D/g, '');
-    const isCobIgual = document.getElementById('cobIgual')?.checked;
+      // Montar Payload seguindo a RN0023 e RN0026
+      const telLimpo = document
+        .getElementById('numTel')
+        .value.replace(/\D/g, '');
+      const isCobIgual = document.getElementById('cobIgual')?.checked;
 
-    // Dentro do evento de submit do cadastro.js
-    async function enviarParaBanco() {
+      // Dentro do evento de submit do cadastro.js
+      async function enviarParaBanco() {
         const dados = {
-            nome: document.getElementById('nomeCompleto').value,
-            email: document.getElementById('cadastroEmail').value,
-            cpf: document.getElementById('cpf').value,
-            dataNascimento: document.getElementById('dataNasc').value,
-            genero: document.getElementById('genero').value,
-            senha: document.getElementById('cadastroSenha').value,
-            logradouro: document.getElementById('logradouro').value,
-            numero: document.getElementById('numEndereco').value,
-            cep: document.getElementById('cep').value,
-            bairro: document.getElementById('bairro').value,
-            cidade: document.getElementById('cidade').value,
-            estado: document.getElementById('estado').value,
-            telefone_tipo: document.getElementById('tipoTelefone').value,
-            telefone_ddd: telLimpo.substring(0, 2),
-            telefone_numero: telLimpo.substring(2)
+          nome: document.getElementById('nomeCompleto').value,
+          email: document.getElementById('cadastroEmail').value,
+          cpf: document.getElementById('cpf').value,
+          dataNascimento: document.getElementById('dataNasc').value,
+          genero: document.getElementById('genero').value,
+          senha: document.getElementById('cadastroSenha').value,
+          logradouro: document.getElementById('logradouro').value,
+          numero: document.getElementById('numEndereco').value,
+          cep: document.getElementById('cep').value,
+          bairro: document.getElementById('bairro').value,
+          cidade: document.getElementById('cidade').value,
+          estado: document.getElementById('estado').value,
+          telefone_tipo: document.getElementById('tipoTelefone').value,
+          telefone_ddd: telLimpo.substring(0, 2),
+          telefone_numero: telLimpo.substring(2),
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/cadastro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dados)
-            });
+          const response = await fetch('http://localhost:3000/api/cadastro', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados),
+          });
 
-            if (response.ok) {
-                alert('Cadastrado com sucesso no MySQL!');
-                window.location.href = 'perfil.html';
-            } else {
-                alert('Erro ao cadastrar. Verifique o console.');
-                // Restaurar botão em caso de erro
-                btnTexto.style.display = 'inline';
-                btnLoad.style.display = 'none';
-                btn.disabled = false;
+          if (response.ok) {
+            const data = await response.json();
+
+            if(data.id){
+              localStorage.setItem('garage_user_id', data.id);
             }
-        } catch (err) {
-            console.error('Erro de conexão:', err);
-            alert('O servidor backend não está rodando!');
+            alert('Cadastrado com sucesso! Bem vindo a sua Garagem');
+            window.location.href = 'perfil.html';
+          } else {
+            alert('Erro ao cadastrar. Verifique o console.');
             // Restaurar botão em caso de erro
             btnTexto.style.display = 'inline';
             btnLoad.style.display = 'none';
             btn.disabled = false;
+          }
+        } catch (err) {
+          console.error('Erro de conexão:', err);
+          alert('O servidor backend não está rodando!');
+          // Restaurar botão em caso de erro
+          btnTexto.style.display = 'inline';
+          btnLoad.style.display = 'none';
+          btn.disabled = false;
         }
-    }
+      }
 
-    await enviarParaBanco();
-  });
+      await enviarParaBanco();
+    });
 
   // Iniciar
   irParaStep(1);

@@ -20,19 +20,19 @@
       <!-- Header do perfil -->
       <div class="perfil-header">
         <div class="perfil-avatar">
-          <div class="perfil-avatar__img">👤</div>
-          <div class="perfil-avatar__rank" data-tooltip="Garage Rank">⭐</div>
+          <div class="perfil-avatar__img"><i class="fas fa-user"></i></div>
+          <div class="perfil-avatar__rank" data-tooltip="Garage Rank"><i class="fas fa-star"></i></div>
         </div>
         <div class="perfil-header__info">
           <h1 id="perfilNome">Carlos Tuner</h1>
           <p id="perfilEmail" class="texto-muted">carlos@tuner.com</p>
           <div class="perfil-rank">
-            <span class="badge badge-laranja">🏆 RANK: MECHANIC</span>
+            <span class="badge badge-laranja"><i class="fas fa-trophy"></i> RANK: MECHANIC</span>
             <!-- Futuro: sistema de ranking por compras -->
             <div class="perfil-xp">
               <div class="perfil-xp__label">
                 <span>Próximo: Expert</span>
-                <span>650/1000 pts</span>
+                <span>600/1000 pts</span>
               </div>
               <div class="perfil-xp__barra">
                 <div class="perfil-xp__fill" style="width: 65%"></div>
@@ -51,19 +51,19 @@
         <!-- Sidebar -->
         <nav class="perfil-sidebar">
           <button class="perfil-sidebar__item ativo" data-tab="dados">
-            👤 Dados Pessoais
+            <i class="fas fa-user"></i> Dados Pessoais
           </button>
           <button class="perfil-sidebar__item" data-tab="enderecos">
-            📍 Endereços
+            <i class="fas fa-location-dot"></i> Endereços
           </button>
           <button class="perfil-sidebar__item" data-tab="cartoes">
-            💳 Cartões
+            <i class="fas fa-credit-card"></i> Cartões
           </button>
           <button class="perfil-sidebar__item" data-tab="pedidos">
-            📦 Meus Pedidos
+            <i class="fas fa-box"></i> Meus Pedidos
           </button>
           <button class="perfil-sidebar__item" data-tab="senha">
-            🔑 Alterar Senha
+            <i class="fas fa-key"></i> Alterar Senha
           </button>
         </nav>
 
@@ -74,7 +74,7 @@
           <section class="perfil-tab ativo" id="tab-dados">
             <div class="perfil-tab__header">
               <h2>Dados Pessoais</h2>
-              <button class="btn btn-outline btn-sm" id="btnEditarDados">✏️ Editar</button>
+              <button class="btn btn-outline btn-sm" id="btnEditarDados"><i class="fas fa-pen"></i> Editar</button>
             </div>
 
             <div class="dados-grid" id="dadosView">
@@ -86,7 +86,7 @@
               <div class="dado-item"><span class="dado-label">Telefone</span><span class="dado-valor">(11) 98765-4321</span></div>
             </div>
 
-            <!-- Formulário de edição (oculto por padrão) -->
+            <!-- Formulário de edição-->
             <div class="dados-form" id="dadosForm" style="display:none">
               <div class="form-grid-2">
                 <div class="input-grupo">
@@ -95,7 +95,7 @@
                 </div>
                 <div class="input-grupo">
                   <label>Telefone</label>
-                  <input type="text" class="input-field" value="(11) 98765-4321" id="editTel">
+                  <input type="text" class="input-field" value="(11) 98765-4321" id="editTelefone">
                 </div>
               </div>
               <div class="form-grid-2">
@@ -115,7 +115,7 @@
             </div>
           </section>
 
-          <!-- TAB: ENDEREÇOS -->
+          <!--endereço -->
           <section class="perfil-tab" id="tab-enderecos">
             <div class="perfil-tab__header">
               <h2>Endereços</h2>
@@ -133,8 +133,8 @@
                   <span class="texto-pequeno texto-muted">Bairro Motor - São Paulo/SP - 04567-890</span>
                 </div>
                 <div class="endereco-item__ações">
-                  <button class="btn btn-outline btn-sm">✏️</button>
-                  <button class="btn btn-danger btn-sm">🗑️</button>
+                  <button class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></button>
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                 </div>
               </div>
 
@@ -147,8 +147,8 @@
                   <span class="texto-pequeno texto-muted">Zona Industrial - São Paulo/SP - 04000-000</span>
                 </div>
                 <div class="endereco-item__ações">
-                  <button class="btn btn-outline btn-sm">✏️</button>
-                  <button class="btn btn-danger btn-sm">🗑️</button>
+                  <button class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></button>
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                 </div>
               </div>
             </div>
@@ -168,30 +168,30 @@
               </div>
               <div class="input-grupo">
                 <label>Logradouro</label>
-                <input type="text" class="input-field" placeholder="Rua, Av.">
+                <input type="text" class="input-field" placeholder="Rua, Av." id="endLogradouro">
               </div>
               <div class="form-grid-2">
                 <div class="input-grupo">
                   <label>Número</label>
-                  <input type="text" class="input-field">
+                  <input type="text" class="input-field" id="endNumero">
                 </div>
                 <div class="input-grupo">
                   <label>Complemento</label>
-                  <input type="text" class="input-field">
+                  <input type="text" class="input-field" id="endComplemento">
                 </div>
               </div>
               <div class="input-grupo">
                 <label>Bairro</label>
-                <input type="text" class="input-field">
+                <input type="text" class="input-field" id="endBairro">
               </div>
               <div class="form-grid-2">
                 <div class="input-grupo">
                   <label>Cidade</label>
-                  <input type="text" class="input-field">
+                  <input type="text" class="input-field" id="endCidade">
                 </div>
                 <div class="input-grupo">
                   <label>UF</label>
-                  <input type="text" class="input-field" maxlength="2">
+                  <input type="text" class="input-field" id="endEstado" maxlength="2">
                 </div>
               </div>
               <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
@@ -210,7 +210,7 @@
 
             <div class="cartoes-lista" id="cartoesList">
               <div class="cartao-item">
-                <span class="cartao-item__flag">💳</span>
+                <span class="cartao-item__flag"><i class="fas fa-credit-card"></i></span>
                 <div class="cartao-item__num">•••• •••• •••• 4242</div>
                 <div>
                   <div class="texto-pequeno">VISA - Carlos Tuner</div>
@@ -221,12 +221,12 @@
                     <input type="radio" name="cartaoPrincipal" value="4242" checked>
                     Principal
                   </label>
-                  <button class="btn btn-danger btn-sm">🗑️</button>
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                 </div>
               </div>
 
               <div class="cartao-item">
-                <span class="cartao-item__flag">💳</span>
+                <span class="cartao-item__flag"><i class="fas fa-credit-card"></i></span>
                 <div class="cartao-item__num">•••• •••• •••• 5555</div>
                 <div>
                   <div class="texto-pequeno">MASTERCARD - Carlos T.</div>
@@ -237,7 +237,7 @@
                     <input type="radio" name="cartaoPrincipal" value="5555">
                     Principal
                   </label>
-                  <button class="btn btn-danger btn-sm">🗑️</button>
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                 </div>
               </div>
             </div>
@@ -396,7 +396,7 @@
                 <label>Senha Atual <span class="required">*</span></label>
                 <div class="input-senha-wrapper">
                   <input type="password" id="senhaAtual" class="input-field" placeholder="Sua senha atual">
-                  <button type="button" class="input-senha-toggle" id="toggleAtual">👁️</button>
+                  <button type="button" class="input-senha-toggle" id="toggleAtual"><i class="fas fa-eye"></i></button>
                 </div>
               </div>
 
@@ -404,7 +404,7 @@
                 <label>Nova Senha <span class="required">*</span></label>
                 <div class="input-senha-wrapper">
                   <input type="password" id="novaSenha" class="input-field" placeholder="Mínimo 8 caracteres">
-                  <button type="button" class="input-senha-toggle" id="toggleNova">👁️</button>
+                  <button type="button" class="input-senha-toggle" id="toggleNova"><i class="fas fa-eye"></i></button>
                 </div>
                 <div class="senha-forca" id="novaSenhaForca" style="display:none">
                   <div class="senha-forca__barra">
@@ -420,9 +420,9 @@
                 <label>Confirmar Nova Senha <span class="required">*</span></label>
                 <div class="input-senha-wrapper">
                   <input type="password" id="confirmarNovaSenha" class="input-field" placeholder="Repita a nova senha">
-                  <button type="button" class="input-senha-toggle" id="toggleConf">👁️</button>
+                  <button type="button" class="input-senha-toggle" id="toggleConf"><i class="fas fa-eye"></i></button>
                 </div>
-                <span class="input-erro-msg" id="errNovaSenhaConf" style="display:none">⚠ Senhas não coincidem</span>
+                <span class="input-erro-msg" id="errNovaSenhaConf" style="display:none"><i class="fas fa-triangle-exclamation"></i> Senhas não coincidem</span>
               </div>
 
               <button type="submit" class="btn btn-primario">Salvar Nova Senha</button>
@@ -444,7 +444,7 @@
     </div>
   </footer>
 
-  <script src="../js/global.js"></script>
-  <script src="../js/perfil.js"></script>
+  <script src="../js/public/global.js"></script>
+  <script src="../js/public/perfil.js"></script>
 </body>
 </html>
