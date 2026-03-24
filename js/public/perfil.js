@@ -26,9 +26,35 @@ document.addEventListener('DOMContentLoaded', async function() {
       // Aba dados
       if (document.getElementById('dNome'))       document.getElementById('dNome').textContent       = user.nome;
       if (document.getElementById('dEmail'))      document.getElementById('dEmail').textContent      = user.email;
-      if (document.getElementById('editNome'))    document.getElementById('editNome').value          = user.nome;
-      if (document.getElementById('editTelefone'))
-        document.getElementById('editTelefone').value = user.telefone_ddd ? `(${user.telefone_ddd}) ${user.telefone_numero}` : '';
+      if (document.getElementById('dCpf'))        document.getElementById('dCpf').textContent        = user.cpf || 'Não informado';
+      
+      const phoneFormat = user.telefone_ddd ? `(${user.telefone_ddd}) ${user.telefone_numero}` : 'Não informado';
+      if (document.getElementById('dTelefone'))   document.getElementById('dTelefone').textContent   = phoneFormat;
+      
+      if (document.getElementById('dDataNasc')) {
+        if (user.data_nascimento) {
+          const date = new Date(user.data_nascimento);
+          document.getElementById('dDataNasc').textContent = date.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+        } else {
+          document.getElementById('dDataNasc').textContent = 'Não informada';
+        }
+      }
+      
+      if (document.getElementById('dGenero'))     document.getElementById('dGenero').textContent     = user.genero || 'Não informado';
+
+      if (document.getElementById('editEmail'))   document.getElementById('editEmail').value         = user.email || '';
+      if (document.getElementById('editNome'))    document.getElementById('editNome').value          = user.nome || '';
+      if (document.getElementById('editTelefone')) document.getElementById('editTelefone').value     = user.telefone_ddd ? `(${user.telefone_ddd}) ${user.telefone_numero}` : '';
+      
+      if (document.getElementById('editDataNasc')) {
+        if (user.data_nascimento) {
+          const date = new Date(user.data_nascimento);
+          document.getElementById('editDataNasc').value = date.toISOString().split('T')[0];
+        } else {
+           document.getElementById('editDataNasc').value = '';
+        }
+      }
+      if (document.getElementById('editGenero'))  document.getElementById('editGenero').value        = user.genero || '';
 
       // Listar endereços
       if (user.enderecos && user.enderecos.length > 0) {
@@ -119,6 +145,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   document.getElementById('btnSalvarDados')?.addEventListener('click', async () => {
     const novoNome     = document.getElementById('editNome').value;
+    const novoEmail    = document.getElementById('editEmail')?.value;
     const novoTelefone = document.getElementById('editTelefone').value.replace(/\D/g, '');
 
     if (novoTelefone.length > 0 && (novoTelefone.length < 10 || novoTelefone.length > 11)) {
@@ -126,10 +153,16 @@ document.addEventListener('DOMContentLoaded', async function() {
       return;
     }
 
+    const novaDataNasc = document.getElementById('editDataNasc')?.value;
+    const novoGenero   = document.getElementById('editGenero')?.value;
+
     const payload = {
       nome:             novoNome,
+      email:            novoEmail || null,
       telefone_ddd:     novoTelefone ? novoTelefone.substring(0, 2) : '',
-      telefone_numero:  novoTelefone ? novoTelefone.substring(2) : ''
+      telefone_numero:  novoTelefone ? novoTelefone.substring(2) : '',
+      data_nascimento:  novaDataNasc || null,
+      genero:           novoGenero || null
     };
 
     try {
@@ -140,8 +173,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
 
       if (res.ok) {
-        document.getElementById('dNome').textContent     = novoNome;
-        document.getElementById('perfilNome').textContent = novoNome;
+        await carregarPerfil();
         document.getElementById('dadosView').style.display = 'grid';
         document.getElementById('dadosForm').style.display = 'none';
 

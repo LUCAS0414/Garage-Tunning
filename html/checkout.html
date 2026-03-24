@@ -9,29 +9,15 @@
   <link rel="stylesheet" href="../css/checkout.css">
 </head>
 <body>
-  <nav class="navbar" id="navbar">
-    <div class="navbar__inner">
-      <a href="index.html" class="navbar__logo">
-        <span class="navbar__logo-icon">🏁</span>
-        <div><span class="navbar__logo-texto">THE<span>GARAGE</span></span><span class="navbar__logo-sub">Tuning & Performance</span></div>
-      </a>
-      <div class="navbar__acoes">
-        <a href="carrinho.html" class="navbar__icon-btn">🛒<span class="navbar__badge" id="carrinhoCount" style="display:none">0</span></a>
-        <a href="perfil.html" class="navbar__icon-btn">👤</a>
-      </div>
-      <button class="navbar__toggle" id="navToggle"><span></span><span></span><span></span></button>
-    </div>
-  </nav>
+  
+  <div id="navbar-container"></div>
   <div class="navbar-spacer"></div>
 
-  <!-- Verificadpr de progresso -->
   <div class="checkout-progresso">
     <div class="container">
       <div class="checkout-steps">
-        <div class="checkout-step concluido">🛒 Carrinho</div>
-        <div class="checkout-step__sep">›</div>
-        <div class="checkout-step ativo">💳 Checkout</div>
-        <div class="checkout-step__sep">›</div>
+        <div class="checkout-step concluido">🛒 Carrinho</div><div class="checkout-step__sep">›</div>
+        <div class="checkout-step ativo">💳 Checkout</div><div class="checkout-step__sep">›</div>
         <div class="checkout-step">✅ Confirmação</div>
       </div>
     </div>
@@ -41,210 +27,59 @@
     <div class="container">
       <div class="checkout-layout">
 
-        <!-- Painel esquerdo: formulário -->
         <div class="checkout-form-area">
-
-          <!-- ENDEREÇO -->
           <div class="checkout-bloco">
-            <div class="checkout-bloco__titulo">
-              <span class="checkout-bloco__num">01</span>
-              <h2>Endereço de Entrega</h2>
-            </div>
-
+            <div class="checkout-bloco__titulo"><span class="checkout-bloco__num">01</span><h2>Endereço de Entrega</h2></div>
             <div class="enderecos-radio" id="enderecosRadio">
-              <label class="endereco-radio-item">
-                <input type="radio" name="endereco" value="end1" checked>
-                <div class="endereco-radio-info">
-                  <div class="flex" style="gap:0.5rem; align-items:center;">
-                    <span class="badge badge-verde">Principal</span>
-                    <span class="texto-pequeno texto-muted">Casa</span>
-                  </div>
-                  <strong>Rua das Garagens, 420</strong>
-                  <span class="texto-pequeno texto-muted">Bairro Motor - São Paulo/SP - 04567-890</span>
-                </div>
-                <div class="endereco-radio-check"></div>
-              </label>
-
-              <label class="endereco-radio-item">
-                <input type="radio" name="endereco" value="end2">
-                <div class="endereco-radio-info">
-                  <span class="texto-pequeno texto-muted">Comercial</span>
-                  <strong>Av. Automotiva, 1200</strong>
-                  <span class="texto-pequeno texto-muted">Zona Industrial - São Paulo/SP</span>
-                </div>
-                <div class="endereco-radio-check"></div>
-              </label>
+              <p class="texto-muted">Carregando seus endereços...</p>
             </div>
-
             <button class="btn btn-outline btn-sm mt-2" id="btnNovoEnderecoCheckout">+ Novo Endereço</button>
-
-            <!-- Opções de frete -->
-            <div class="frete-opcoes" style="margin-top:1.5rem;">
-              <p class="checkout-sublabel">Forma de Entrega</p>
-              <label class="frete-opcao">
-                <input type="radio" name="frete" value="pac" checked>
-                <div class="frete-info">
-                  <span>📦 PAC</span>
-                  <span class="texto-muted">5-10 dias úteis</span>
-                </div>
-                <span class="frete-preco">Grátis</span>
-              </label>
-              <label class="frete-opcao">
-                <input type="radio" name="frete" value="sedex">
-                <div class="frete-info">
-                  <span>⚡ SEDEX</span>
-                  <span class="texto-muted">1-3 dias úteis</span>
-                </div>
-                <span class="frete-preco">R$ 29,90</span>
-              </label>
-            </div>
           </div>
 
-          <!-- PAGAMENTO -->
           <div class="checkout-bloco">
-            <div class="checkout-bloco__titulo">
-              <span class="checkout-bloco__num">02</span>
-              <h2>Pagamento</h2>
-            </div>
-
-            <!-- Cartões salvos -->
+            <div class="checkout-bloco__titulo"><span class="checkout-bloco__num">02</span><h2>Pagamento</h2></div>
             <div class="cartoes-radio" id="cartoesRadio">
-              <p class="checkout-sublabel">Cartões Salvos</p>
-
-              <label class="cartao-radio-item">
-                <input type="radio" name="cartao" value="4242" checked>
-                <span class="cartao-radio-flag">💳</span>
-                <div class="cartao-radio-info">
-                  <span>•••• •••• •••• 4242</span>
-                  <span class="texto-muted texto-pequeno">VISA - Vence 12/26</span>
-                </div>
-                <div class="cartao-radio-check"></div>
-              </label>
-
-              <label class="cartao-radio-item">
-                <input type="radio" name="cartao" value="5555">
-                <span class="cartao-radio-flag">💳</span>
-                <div class="cartao-radio-info">
-                  <span>•••• •••• •••• 5555</span>
-                  <span class="texto-muted texto-pequeno">MASTERCARD - Vence 03/25</span>
-                </div>
-                <div class="cartao-radio-check"></div>
-              </label>
-
-              <!-- Novo cartão -->
               <label class="cartao-radio-item">
                 <input type="radio" name="cartao" value="novo">
                 <span class="cartao-radio-flag">➕</span>
-                <div class="cartao-radio-info">
-                  <span>Adicionar novo cartão</span>
-                </div>
-                <div class="cartao-radio-check"></div>
+                <div class="cartao-radio-info"><span>Adicionar novo cartão</span></div>
               </label>
             </div>
 
-            <!-- Form novo cartão (aparece ao selecionar) -->
-            <div class="novo-cartao-form" id="novoCartaoForm" style="display:none; margin-top:1rem; padding:1.25rem; background:rgba(255,255,255,0.02); border:1px solid var(--cor-borda); border-radius:var(--radius-card);">
+            <div class="novo-cartao-form" id="novoCartaoForm" style="display:none; margin-top:1rem; padding:1.25rem;">
               <div class="input-grupo">
                 <label>Número do Cartão</label>
-                <input type="text" class="input-field" id="checkoutCartaoNum" placeholder="0000 0000 0000 0000" maxlength="19">
+                <input type="text" class="input-field" id="checkoutCartaoNum" maxlength="19">
               </div>
-              <div class="input-grupo">
-                <label>Nome no Cartão</label>
-                <input type="text" class="input-field" placeholder="Como está no cartão">
-              </div>
-              <div class="form-grid-2">
-                <div class="input-grupo">
-                  <label>Validade</label>
-                  <input type="text" class="input-field" placeholder="MM/AA" maxlength="5">
-                </div>
-                <div class="input-grupo">
-                  <label>CVV</label>
-                  <input type="text" class="input-field" placeholder="•••" maxlength="4">
-                </div>
-              </div>
-            </div>
-
-            <!-- PIX -->
-            <div class="pix-opcao" style="margin-top:1rem;">
-              <label class="cartao-radio-item">
-                <input type="radio" name="cartao" value="pix">
-                <span class="cartao-radio-flag">🔑</span>
-                <div class="cartao-radio-info">
-                  <span>PIX</span>
-                  <span class="texto-muted texto-pequeno">5% de desconto + aprovação imediata</span>
-                </div>
-                <div class="cartao-radio-check"></div>
-              </label>
-            </div>
-
-            <!-- Múltiplos cartões (área futura) -->
-            <div class="multiplos-cartoes-hint" style="margin-top:1rem; padding:0.75rem; border:1px dashed rgba(0,255,136,0.15); border-radius:var(--radius-padrao);">
-              <span class="texto-muted texto-pequeno">💡 Em breve: dividir pagamento em múltiplos cartões</span>
             </div>
           </div>
 
-          <!-- CUPOM -->
           <div class="checkout-bloco">
-            <div class="checkout-bloco__titulo">
-              <span class="checkout-bloco__num">03</span>
-              <h2>Cupom de Desconto</h2>
-            </div>
+            <div class="checkout-bloco__titulo"><span class="checkout-bloco__num">03</span><h2>Cupom</h2></div>
             <div class="cupom-input">
-              <input type="text" class="input-field" id="checkoutCupom" placeholder="Código do cupom..." maxlength="20" style="text-transform:uppercase">
+              <input type="text" class="input-field" id="checkoutCupom" style="text-transform:uppercase">
               <button class="btn btn-outline" id="btnAplicarCupomCheckout">Aplicar</button>
             </div>
             <div id="checkoutCupomFeedback" style="margin-top:0.5rem; display:none;"></div>
           </div>
-
         </div>
 
-        <!-- Painel direito: resumo -->
         <div class="checkout-resumo">
           <h2>Resumo do Pedido</h2>
-
-          <div class="checkout-itens" id="checkoutItens">
-            <!-- Renderizado via JS -->
-          </div>
-
+          <div class="checkout-itens" id="checkoutItens"></div>
           <div class="divider"></div>
-
-          <div class="checkout-resumo-calc" id="checkoutCalc">
-            <!-- Renderizado via JS -->
-          </div>
-
+          <div class="checkout-resumo-calc" id="checkoutCalc"></div>
           <div class="divider"></div>
-
-          <!-- Botão finalizar -->
           <button class="btn btn-primario btn-lg w-100" id="btnConfirmarPedido">
             <span id="btnConfTexto">🏁 Confirmar Pedido</span>
-            <span id="btnConfLoad" style="display:none"><span class="spinner"></span></span>
           </button>
-
-          <p class="checkout-seguro">
-            🔒 Pagamento 100% seguro e criptografado
-          </p>
         </div>
 
       </div>
     </div>
   </main>
 
-  <!-- Modal de confirmação de pedido -->
-  <div class="modal-overlay" id="modalConfirmacao">
-    <div class="modal" style="max-width:480px; text-align:center;">
-      <div style="font-size:4rem; margin-bottom:1rem;">🏁</div>
-      <h2 style="font-size:1.5rem; margin-bottom:0.5rem; color:var(--cor-primaria);">Pedido Realizado!</h2>
-      <p style="color:var(--cor-texto-muted); margin-bottom:1rem;">Seu pedido foi registrado com sucesso. Você receberá um email de confirmação.</p>
-      <div class="alerta alerta-sucesso" style="text-align:left; margin-bottom:1.5rem;">
-        Número do pedido: <strong id="numPedidoGerado">#GT-2024-0043</strong>
-      </div>
-      <a href="perfil.html#pedidos" class="btn btn-primario w-100" onclick="fecharModal('modalConfirmacao')">
-        Ver Meus Pedidos
-      </a>
-    </div>
-  </div>
-
-  <script src="../js/global.js"></script>
-  <script src="../js/checkout.js"></script>
+  <script src="../js/public/global.js"></script>
+  <script src="../js/public/checkout.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@ async function carregarComponentes() {
     const navContainer = document.querySelector('#navbar-container');
     if (navContainer) {
         try {
-            const response = await fetch('/garage/html/nav.html');
+            const response = await fetch('nav.html');
             const html = await response.text();
             navContainer.innerHTML = html;
     
@@ -351,6 +351,7 @@ function mascaraCEP(input) {
 function mascaraTelefone(input) {
   input.addEventListener('input', function() {
     let v = this.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.slice(0, 11);
     v = v.replace(/^(\d{2})(\d)/, '($1) $2');
     v = v.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
     this.value = v;

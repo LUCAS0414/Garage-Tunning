@@ -30,7 +30,9 @@ const ClienteService = {
     const valores = [];
 
     if (dados.nome)            { campos.push('nome = ?');            valores.push(dados.nome); }
+    if (dados.email)           { campos.push('email = ?');           valores.push(dados.email); }
     if (dados.genero)          { campos.push('genero = ?');          valores.push(dados.genero); }
+    if (dados.data_nascimento) { campos.push('data_nascimento = ?'); valores.push(dados.data_nascimento); }
     if (dados.telefone_tipo)   { campos.push('telefone_tipo = ?');   valores.push(dados.telefone_tipo); }
     if (dados.telefone_ddd)    { campos.push('telefone_ddd = ?');    valores.push(dados.telefone_ddd); }
     if (dados.telefone_numero) { campos.push('telefone_numero = ?'); valores.push(dados.telefone_numero); }
