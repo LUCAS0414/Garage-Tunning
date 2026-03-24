@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (document.getElementById('editGenero'))  document.getElementById('editGenero').value        = user.genero || '';
 
       // Listar endereços
-      if (user.enderecos && user.enderecos.length > 0) {
-        const lista = document.getElementById('enderecosList');
-        if (lista) {
-          lista.innerHTML = user.enderecos.map(end => `
+      const listaEnd = document.getElementById('enderecosList');
+      if (listaEnd) {
+        if (user.enderecos && user.enderecos.length > 0) {
+          listaEnd.innerHTML = user.enderecos.map(end => `
             <div class="endereco-card card" style="padding:1rem; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <strong>${end.identificacao}</strong> <span style="font-size:0.75rem; color:var(--cor-texto-muted);">${end.tipo_endereco}</span><br>
@@ -69,14 +69,16 @@ document.addEventListener('DOMContentLoaded', async function() {
               <button class="btn btn-danger btn-sm" onclick="removerEndereco(${end.id})">🗑</button>
             </div>
           `).join('');
+        } else {
+          listaEnd.innerHTML = '<p class="texto-muted">Nenhum endereço cadastrado.</p>';
         }
       }
 
       // Listar cartões
-      if (user.cartoes && user.cartoes.length > 0) {
-        const lista = document.getElementById('cartoesList');
-        if (lista) {
-          lista.innerHTML = user.cartoes.map(c => `
+      const listaCartoes = document.getElementById('cartoesList');
+      if (listaCartoes) {
+        if (user.cartoes && user.cartoes.length > 0) {
+          listaCartoes.innerHTML = user.cartoes.map(c => `
             <div class="cartao-item card" style="padding:1rem; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
@@ -86,6 +88,8 @@ document.addEventListener('DOMContentLoaded', async function() {
               <button class="btn btn-danger btn-sm" onclick="removerCartao(${c.id})">🗑</button>
             </div>
           `).join('');
+        } else {
+          listaCartoes.innerHTML = '<p class="texto-muted">Nenhum cartão cadastrado.</p>';
         }
       }
 
@@ -271,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       numero_cartao:  document.getElementById('novoCartaoNum').value.replace(/\D/g, ''),
       nome_impresso:  document.getElementById('novoCartaoNome').value,
       bandeira:       document.getElementById('novoCartaoBandeira')?.value || 'VISA',
-      is_preferencial: document.getElementById('novoCartaoPrincipal')?.checked  || false
+      is_preferencial: document.getElementById('novoCartaoPref')?.checked  || false
     };
 
     try {
@@ -318,7 +322,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const input = document.getElementById(inputIds[i]);
       const tipo  = input.type === 'password' ? 'text' : 'password';
       input.type  = tipo;
-      this.innerHTML = tipo === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+      this.textContent = tipo === 'password' ? '👁️' : '🙈';
     });
   });
 

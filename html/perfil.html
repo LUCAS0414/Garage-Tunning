@@ -22,18 +22,14 @@
           <div class="perfil-avatar__rank" data-tooltip="Garage Rank"><i class="fas fa-star"></i></div>
         </div>
         <div class="perfil-header__info">
-          <h1 id="perfilNome">Carlos Tuner</h1>
-          <p id="perfilEmail" class="texto-muted">carlos@tuner.com</p>
+          <h1 id="perfilNome"></h1>
+          <p id="perfilEmail" class="texto-muted"></p>
           <div class="perfil-rank">
-            <span class="badge badge-laranja"><i class="fas fa-trophy"></i> RANK: MECHANIC</span>
             <!-- Futuro: sistema de ranking por compras -->
             <div class="perfil-xp">
               <div class="perfil-xp__label">
-                <span>Próximo: Expert</span>
-                <span>600/1000 pts</span>
-              </div>
-              <div class="perfil-xp__barra">
-                <div class="perfil-xp__fill" style="width: 65%"></div>
+                <span></span>
+                <span></span>
               </div>
             </div>
           </div>
@@ -104,8 +100,6 @@
                   <select class="input-field" id="editGenero">
                     <option value="Masculino">Masculino</option>
                     <option value="Feminino">Feminino</option>
-                    <option value="Nao-binario">Não-binário</option>
-                    <option value="Nao Informado">Prefiro não informar</option>
                   </select>
                 </div>
               </div>
@@ -131,8 +125,8 @@
                     <span class="badge badge-verde">Principal</span>
                     <span class="texto-pequeno texto-muted">Casa</span>
                   </div>
-                  <strong>Rua das Garagens, 420</strong>
-                  <span class="texto-pequeno texto-muted">Bairro Motor - São Paulo/SP - 04567-890</span>
+                  <strong></strong>
+                  <span class="texto-pequeno texto-muted"></span>
                 </div>
                 <div class="endereco-item__ações">
                   <button class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></button>
@@ -145,8 +139,8 @@
                   <div class="flex" style="gap:0.5rem; align-items:center; margin-bottom:0.25rem;">
                     <span class="texto-pequeno texto-muted">Comercial</span>
                   </div>
-                  <strong>Av. Automotiva, 1200</strong>
-                  <span class="texto-pequeno texto-muted">Zona Industrial - São Paulo/SP - 04000-000</span>
+                  <strong></strong>
+                  <span class="texto-pequeno texto-muted"></span>
                 </div>
                 <div class="endereco-item__ações">
                   <button class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></button>
@@ -178,11 +172,6 @@
                   <label>CEP</label>
                   <input type="text" class="input-field" id="endCep" placeholder="00000-000">
                 </div>
-                <div class="input-grupo">
-                  <label>Logradouro</label>
-                  <input type="text" class="input-field" id="endLogradouro">
-                </div>
-              </div>
               <div class="input-grupo">
                 <label>Logradouro</label>
                 <input type="text" class="input-field" placeholder="Rua, Av." id="endLogradouro">
@@ -231,39 +220,8 @@
             </div>
 
             <div class="cartoes-lista" id="cartoesList">
-              <div class="cartao-item">
-                <span class="cartao-item__flag"><i class="fas fa-credit-card"></i></span>
-                <div class="cartao-item__num">•••• •••• •••• 4242</div>
-                <div>
-                  <div class="texto-pequeno">VISA - Carlos Tuner</div>
-                  <div class="texto-pequeno texto-muted">Vence: 12/26</div>
-                </div>
-                <div class="cartao-item__ações">
-                  <label class="radio-label">
-                    <input type="radio" name="cartaoPrincipal" value="4242" checked>
-                    Principal
-                  </label>
-                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                </div>
-              </div>
-
-              <div class="cartao-item">
-                <span class="cartao-item__flag"><i class="fas fa-credit-card"></i></span>
-                <div class="cartao-item__num">•••• •••• •••• 5555</div>
-                <div>
-                  <div class="texto-pequeno">MASTERCARD - Carlos T.</div>
-                  <div class="texto-pequeno texto-muted">Vence: 03/25</div>
-                </div>
-                <div class="cartao-item__ações">
-                  <label class="radio-label">
-                    <input type="radio" name="cartaoPrincipal" value="5555">
-                    Principal
-                  </label>
-                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                </div>
-              </div>
+              <p class="texto-muted">Nenhum cartão cadastrado.</p>
             </div>
-
             <div class="cartao-form card" id="cartaoForm" style="display:none; padding:1.5rem; margin-top:1rem;">
               <h3 style="margin-bottom:1rem; font-size:0.9rem;">Novo Cartão</h3>
               <div class="form-grid-2">
