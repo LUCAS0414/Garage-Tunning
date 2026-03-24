@@ -1,7 +1,44 @@
-
 document.addEventListener('DOMContentLoaded', function() {
 
   let stepAtual = 1;
+
+  // ---- HELPERS E MÁSCARAS ---- //
+  function calcularIdade(dataString) {
+    const hoje = new Date();
+    const dataNasc = new Date(dataString);
+    let idade = hoje.getFullYear() - dataNasc.getFullYear();
+    const m = hoje.getMonth() - dataNasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) {
+      idade--;
+    }
+    return idade;
+  }
+
+  function marcarErro(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('erro');
+    let errEl = el.parentElement.querySelector('.input-erro-msg');
+    if (!errEl) {
+      errEl = document.createElement('span');
+      errEl.className = 'input-erro-msg';
+      el.parentElement.appendChild(errEl);
+    }
+    errEl.textContent = `⚠ ${msg}`;
+    errEl.style.display = 'flex';
+  }
+
+  function limparErro(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('erro');
+    const errEl = el.parentElement.querySelector('.input-erro-msg');
+    if (errEl) errEl.style.display = 'none';
+  }
+
+  if (document.getElementById('cpf')) mascaraCPF(document.getElementById('cpf'));
+  if (document.getElementById('cep')) mascaraCEP(document.getElementById('cep'));
+  if (document.getElementById('numTel')) mascaraTelefone(document.getElementById('numTel'));
 
   // ---- NAVEGAÇÃO DE STEPS ---- //
   function irParaStep(num) {
@@ -18,19 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Botões de próximo/voltar
-  document.getElementById('btnProximo1')?.addEventListener('click', () => {
-    if (validarStep1()) irParaStep(2);
-  });
-
-  document.getElementById('btnProximo2')?.addEventListener('click', () => {
-    if (validarStep2()) irParaStep(3);
-  });
-
-  document.getElementById('btnVoltar2')?.addEventListener('click', () => irParaStep(1));
-  document.getElementById('btnVoltar3')?.addEventListener('click', () => irParaStep(2));
-
-  // ---- VALIDAÇÕES ---- //
+  // ---- VALIDAÇÕES DE ETAPA ---- //
   function validarStep1() {
     let ok = true;
 
@@ -54,7 +79,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!dataNasc) {
       marcarErro('dataNasc', 'Data obrigatória');
       ok = false;
-    } else limparErro('dataNasc');
+    } else if (calcularIdade(dataNasc) < 18) {
+      // RN0029: Validação de Maioridade
+      marcarErro('dataNasc', 'É necessário ter 18 anos ou mais para se cadastrar.');
+      ok = false;
+    } else {
+      limparErro('dataNasc');
+    }
+
+    const tipoTel = document.getElementById('tipoTelefone').value;
+    const numTelStr = document.getElementById('numTel').value.replace(/\D/g, '');
+    if (numTelStr.length < 10) {
+      marcarErro('numTel', 'Telefone inválido');
+      ok = false;
+    } else {
+      const numeroTel = numTelStr.substring(2);
+      if (tipoTel === 'Celular' && numeroTel.length !== 9) {
+        marcarErro('numTel', 'Celular deve ter 9 dígitos após o DDD');
+        ok = false;
+      } else if (tipoTel !== 'Celular' && numeroTel.length !== 8) {
+        marcarErro('numTel', 'Fixo deve ter 8 dígitos após o DDD');
+        ok = false;
+      } else {
+        limparErro('numTel');
+      }
+    }
 
     return ok;
   }
@@ -70,70 +119,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
     ['logradouro','numEndereco','bairro','cidade'].forEach(id => {
       const el = document.getElementById(id);
-      if (!el.value.trim()) {
+      if (el && !el.value.trim()) {
         marcarErro(id, 'Campo obrigatório');
         ok = false;
       } else limparErro(id);
     });
-
     return ok;
   }
 
-  function marcarErro(id, msg) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('erro');
-    // Adicionar ou atualizar mensagem de erro após o campo
-    let errEl = el.parentElement.querySelector('.input-erro-msg');
-    if (!errEl) {
-      errEl = document.createElement('span');
-      errEl.className = 'input-erro-msg';
-      el.parentElement.appendChild(errEl);
-    }
-    errEl.textContent = `⚠ ${msg}`;
-    errEl.style.display = 'flex';
-  }
+  // Eventos de Navegação
+  document.getElementById('btnProximo1')?.addEventListener('click', () => { if (validarStep1()) irParaStep(2); });
+  document.getElementById('btnProximo2')?.addEventListener('click', () => { if (validarStep2()) irParaStep(3); });
+  document.getElementById('btnVoltar2')?.addEventListener('click', () => irParaStep(1));
+  document.getElementById('btnVoltar3')?.addEventListener('click', () => irParaStep(2));
 
-  function limparErro(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('erro');
-    const errEl = el.parentElement.querySelector('.input-erro-msg');
-    if (errEl) errEl.style.display = 'none';
-  }
-
-  // ---- MÁSCARAS ---- //
-  mascaraCPF(document.getElementById('cpf'));
-  mascaraCEP(document.getElementById('cep'));
-  mascaraTelefone(document.getElementById('numTel'));
-
-  // ---- ENDEREÇO DE COBRANÇA ---- //
+  // ---- ENDEREÇO E CEP ---- //
   document.getElementById('cobIgual')?.addEventListener('change', function() {
     document.getElementById('endCobrancaArea').style.display = this.checked ? 'none' : 'block';
   });
 
-  // ---- BUSCA CEP (mock) ---- //
-  document.getElementById('btnBuscarCEP')?.addEventListener('click', function() {
+  document.getElementById('btnBuscarCEP')?.addEventListener('click', async function() {
     const cep = document.getElementById('cep').value.replace(/\D/g,'');
     if (cep.length === 8) {
-      // Mock: preencher campos simulando API ViaCEP
-      // Futuro: fetch(`https://viacep.com.br/ws/${cep}/json/`)
-      document.getElementById('logradouro').value = 'Rua das Garagens';
-      document.getElementById('bairro').value = 'Bairro Motor';
-      document.getElementById('cidade').value = 'São Paulo';
-      document.getElementById('estado').value = 'SP';
-
-      const toast = document.createElement('div');
-      toast.className = 'toast-feedback';
-      toast.innerHTML = '✓ CEP encontrado!';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.classList.add('ativo'), 10);
-      setTimeout(() => { toast.classList.remove('ativo'); setTimeout(() => toast.remove(), 300); }, 2000);
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const dados = await res.json();
+        if (!dados.erro) {
+          document.getElementById('logradouro').value = dados.logradouro;
+          document.getElementById('bairro').value = dados.bairro;
+          document.getElementById('cidade').value = dados.localidade;
+          document.getElementById('estado').value = dados.uf;
+          limparErro('cep');
+        }
+      } catch (err) {
+        marcarErro('cep', 'Erro ao buscar CEP');
+      }
     }
   });
 
-  // ---- FORÇA DA SENHA ---- //
+  // ---- FORÇA DA SENHA (RNF0031) ---- //
   const senhaInput = document.getElementById('cadastroSenha');
+  const confSenha = document.getElementById('confirmarSenha');
   const senhaForca = document.getElementById('senhaForca');
   const senhaFill = document.getElementById('senhaForcaFill');
   const senhaNivel = document.getElementById('senhaForcaNivel');
@@ -148,42 +174,27 @@ document.addEventListener('DOMContentLoaded', function() {
     senhaForca.style.display = 'block';
     const forca = verificarForcaSenha(senha);
 
-    // Atualizar barra
     senhaFill.style.width = forca.porcentagem + '%';
     senhaFill.style.background = forca.cor;
     senhaNivel.textContent = forca.nivel;
     senhaNivel.style.color = forca.cor;
 
-    // Atualizar requisitos
-    const map = {
-      tamanho: 'req-tamanho',
-      maiuscula: 'req-maiuscula',
-      minuscula: 'req-minuscula',
-      numero: 'req-numero',
-      especial: 'req-especial'
-    };
-
+    const map = { tamanho: 'req-tamanho', maiuscula: 'req-maiuscula', minuscula: 'req-minuscula', numero: 'req-numero', especial: 'req-especial' };
     Object.entries(forca.requisitos).forEach(([key, ok]) => {
       const el = document.getElementById(map[key]);
       if (el) el.classList.toggle('ok', ok);
     });
   });
 
-  // ---- TOGGLE SENHA ---- //
-  document.getElementById('toggleSenha1')?.addEventListener('click', function() {
-    const tipo = senhaInput.type === 'password' ? 'text' : 'password';
-    senhaInput.type = tipo;
-    this.textContent = tipo === 'password' ? '👁️' : '🙈';
+  ['toggleSenha1', 'toggleSenha2'].forEach((id, idx) => {
+    document.getElementById(id)?.addEventListener('click', function() {
+      const input = idx === 0 ? senhaInput : confSenha;
+      const tipo = input.type === 'password' ? 'text' : 'password';
+      input.type = tipo;
+      this.textContent = tipo === 'password' ? '👁️' : '🙈';
+    });
   });
 
-  const confSenha = document.getElementById('confirmarSenha');
-  document.getElementById('toggleSenha2')?.addEventListener('click', function() {
-    const tipo = confSenha.type === 'password' ? 'text' : 'password';
-    confSenha.type = tipo;
-    this.textContent = tipo === 'password' ? '👁️' : '🙈';
-  });
-
-  // Validar confirmação de senha
   confSenha?.addEventListener('input', function() {
     const errEl = document.getElementById('errConfSenha');
     if (this.value && this.value !== senhaInput.value) {
@@ -196,40 +207,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // ---- SUBMIT ---- //
-  document.getElementById('formCadastro')?.addEventListener('submit', function(e) {
+  // ---- SUBMIT E INTEGRAÇÃO  ---- //
+  document.getElementById('formCadastro')?.addEventListener('submit', async function(e) {
     e.preventDefault();
-
-    // Validar step 3
     let ok = true;
 
+    // Validações Finais
     const email = document.getElementById('cadastroEmail').value;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      document.getElementById('errCadEmail').style.display = 'flex';
-      ok = false;
-    } else document.getElementById('errCadEmail').style.display = 'none';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('errCadEmail').style.display = 'flex'; ok = false; } 
+    else { document.getElementById('errCadEmail').style.display = 'none'; }
 
     const forca = verificarForcaSenha(senhaInput.value);
-    if (forca.atendidos < 3) {
-      marcarErro('cadastroSenha', 'Senha fraca - atenda ao menos 3 requisitos');
-      ok = false;
-    }
-
-    if (confSenha.value !== senhaInput.value) {
-      document.getElementById('errConfSenha').style.display = 'flex';
-      ok = false;
-    }
-
-    if (!document.getElementById('aceitaTermos').checked) {
-      document.getElementById('errTermos').style.display = 'flex';
-      ok = false;
-    } else {
-      document.getElementById('errTermos').style.display = 'none';
-    }
+    if (forca.atendidos < 4) { marcarErro('cadastroSenha', 'A senha deve atender a todos os requisitos.'); ok = false; }
+    if (confSenha.value !== senhaInput.value) { document.getElementById('errConfSenha').style.display = 'flex'; ok = false; }
+    if (!document.getElementById('aceitaTermos').checked) { document.getElementById('errTermos').style.display = 'flex'; ok = false; } 
+    else { document.getElementById('errTermos').style.display = 'none'; }
 
     if (!ok) return;
 
-    // Simular envio
+    // Loading State
     const btnTexto = document.getElementById('btnCadTexto');
     const btnLoad = document.getElementById('btnCadLoading');
     const btn = document.getElementById('btnCadastrar');
@@ -237,21 +233,60 @@ document.addEventListener('DOMContentLoaded', function() {
     btnLoad.style.display = 'flex';
     btn.disabled = true;
 
-    // Futuro: fetch POST /api/auth/cadastro com os dados do formulário
-    setTimeout(() => {
-      // Salvar usuário mock
-      localStorage.setItem('garage_user', JSON.stringify({
-        id: 'u_' + Date.now(),
-        nome: document.getElementById('nomeCompleto').value,
-        email: email,
-        logado: true,
-        novo: true
-      }));
-      window.location.href = 'perfil.html';
-    }, 1500);
+    // Montar Payload seguindo a RN0023 e RN0026
+    const telLimpo = document.getElementById('numTel').value.replace(/\D/g, '');
+    const isCobIgual = document.getElementById('cobIgual')?.checked;
+
+    // Dentro do evento de submit do cadastro.js
+    async function enviarParaBanco() {
+        const dados = {
+            nome: document.getElementById('nomeCompleto').value,
+            email: document.getElementById('cadastroEmail').value,
+            cpf: document.getElementById('cpf').value,
+            dataNascimento: document.getElementById('dataNasc').value,
+            genero: document.getElementById('genero').value,
+            senha: document.getElementById('cadastroSenha').value,
+            logradouro: document.getElementById('logradouro').value,
+            numero: document.getElementById('numEndereco').value,
+            cep: document.getElementById('cep').value,
+            bairro: document.getElementById('bairro').value,
+            cidade: document.getElementById('cidade').value,
+            estado: document.getElementById('estado').value,
+            telefone_tipo: document.getElementById('tipoTelefone').value,
+            telefone_ddd: telLimpo.substring(0, 2),
+            telefone_numero: telLimpo.substring(2)
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/cadastro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            if (response.ok) {
+                alert('Cadastrado com sucesso no MySQL!');
+                window.location.href = 'perfil.html';
+            } else {
+                alert('Erro ao cadastrar. Verifique o console.');
+                // Restaurar botão em caso de erro
+                btnTexto.style.display = 'inline';
+                btnLoad.style.display = 'none';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error('Erro de conexão:', err);
+            alert('O servidor backend não está rodando!');
+            // Restaurar botão em caso de erro
+            btnTexto.style.display = 'inline';
+            btnLoad.style.display = 'none';
+            btn.disabled = false;
+        }
+    }
+
+    await enviarParaBanco();
   });
 
-  // Iniciar no step 1
+  // Iniciar
   irParaStep(1);
-
 });
