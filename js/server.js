@@ -1,15 +1,77 @@
-const express   = require('express');
-const cors      = require('cors');
-const bcrypt    = require('bcrypt');
-const pool      = require('../js/db/config.js');
-const ClienteService  = require('./services/clienteServices');
-const ProdutoService  = require('./services/produtosService');
+/**
+ * server.js — Garage-Tunning API
+ * Porta: 3000
+ *
+ * Rotas existentes (CRUD cliente/endereço/cartão) mantidas.
+ * Novas rotas de e-commerce adicionadas:
+ *   - Produtos (listagem real)
+ *   - Carrinho (persistido no BD)
+ *   - Cupons (validação, criação admin)
+ *   - Pedidos (checkout, status, admin)
+ *   - Trocas (solicitação, autorização, recebimento)
+ *   - Frete (cálculo)
+ *   - Análise admin (histórico real)
+ */
+
+const express  = require('express');
+const cors     = require('cors');
+const bcrypt   = require('bcrypt');
+const path     = require('path');
+
+const pool           = require('./db/config.js');
+const ClienteService = require('./services/clienteServices');
+const ProdutoService = require('./services/produtosService');
+const CarrinhoService= require('./services/carrinhoService');
+const CupomService   = require('./services/cupomService');
+const PedidoService  = require('./services/pedidoService');
+const TrocaService   = require('./services/trocaService');
+const AdminService   = require('./services/adminService');
+const { iniciarJobReservas, iniciarJobAbandonoCarrinho } = require('./services/jobs');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ================================================================
+//  SERVIR ARQUIVOS ESTÁTICOS (front-end)
+// ================================================================
+const ROOT = path.join(__dirname, '..');
+app.use('/html', express.static(path.join(ROOT, 'html')));
+app.use('/css',  express.static(path.join(ROOT, 'css')));
+app.use('/js/public', express.static(path.join(__dirname, 'public')));
+
+// ================================================================
 //  PRODUTOS
+// ================================================================
+
+// Listar produtos com filtros (categoria, busca, paginação)
+app.get('/api/produtos', async (req, res) => {
+  try {
+    const { categoria, busca, pagina, limite } = req.query;
+    const dados = await ProdutoService.listar({
+      categoria,
+      busca,
+      pagina:  pagina  ? parseInt(pagina)  : 1,
+      limite:  limite  ? parseInt(limite)  : 20,
+      apenasAtivos: true,
+    });
+    res.json(dados);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao listar produtos', detalhe: err.message });
+  }
+});
+
+// Detalhe do produto
+app.get('/api/produtos/:id', async (req, res) => {
+  try {
+    const produto = await ProdutoService.buscarPorId(req.params.id);
+    res.json(produto);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// Criar produto (admin)
 app.post('/api/produtos', async (req, res) => {
   try {
     const novo = await ProdutoService.criar(req.body);
@@ -19,20 +81,366 @@ app.post('/api/produtos', async (req, res) => {
   }
 });
 
-//  CADASTRO (cria cliente + endereço numa transação)
+// Atualizar produto (admin)
+app.put('/api/produtos/:id', async (req, res) => {
+  try {
+    const resultado = await ProdutoService.atualizar(req.params.id, req.body);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Remover produto - soft delete (admin)
+app.delete('/api/produtos/:id', async (req, res) => {
+  try {
+    const resultado = await ProdutoService.remover(req.params.id);
+    res.json(resultado);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// ================================================================
+//  CARRINHO  (RF0031, RF0032, RN0031, RN0032, RN0044)
+// ================================================================
+
+// Ver carrinho
+app.get('/api/carrinho/:clienteId', async (req, res) => {
+  try {
+    const itens = await CarrinhoService.obter(req.params.clienteId);
+    res.json(itens);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar carrinho', detalhe: err.message });
+  }
+});
+
+// Adicionar item ao carrinho
+app.post('/api/carrinho/:clienteId', async (req, res) => {
+  try {
+    const { produtoId, quantidade } = req.body;
+    if (!produtoId) return res.status(400).json({ error: 'produtoId é obrigatório.' });
+    const resultado = await CarrinhoService.adicionar(
+      req.params.clienteId, produtoId, quantidade || 1
+    );
+    res.status(201).json(resultado);
+  } catch (err) {
+    // RN0031: estoque insuficiente retorna 409
+    const status = err.message.includes('Estoque') ? 409 : 400;
+    res.status(status).json({ error: err.message });
+  }
+});
+
+// Atualizar quantidade de item no carrinho (RF0032)
+app.put('/api/carrinho/:clienteId/:produtoId', async (req, res) => {
+  try {
+    const { quantidade } = req.body;
+    if (!quantidade) return res.status(400).json({ error: 'quantidade é obrigatória.' });
+    const resultado = await CarrinhoService.atualizarQuantidade(
+      req.params.clienteId, req.params.produtoId, parseInt(quantidade)
+    );
+    res.json(resultado);
+  } catch (err) {
+    const status = err.message.includes('Estoque') ? 409 : 400;
+    res.status(status).json({ error: err.message });
+  }
+});
+
+// Remover item do carrinho
+app.delete('/api/carrinho/:clienteId/:produtoId', async (req, res) => {
+  try {
+    const resultado = await CarrinhoService.remover(req.params.clienteId, req.params.produtoId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// Limpar carrinho inteiro
+app.delete('/api/carrinho/:clienteId', async (req, res) => {
+  try {
+    const resultado = await CarrinhoService.limpar(req.params.clienteId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Validar disponibilidade dos itens do carrinho (antes do checkout — RN0032)
+app.get('/api/carrinho/:clienteId/validar', async (req, res) => {
+  try {
+    const resultado = await CarrinhoService.verificarValidade(req.params.clienteId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================================================================
+//  FRETE (RF0034)
+// ================================================================
+
+// Calcular frete com base nos itens do carrinho e no CEP
+app.post('/api/frete/calcular', async (req, res) => {
+  try {
+    const { clienteId, enderecoId } = req.body;
+
+    // Buscar configuração de frete
+    const [[cfgGratis]] = await pool.execute(
+      "SELECT valor FROM configuracoes WHERE chave = 'frete_gratis_acima'"
+    );
+    const [[cfgFixo]] = await pool.execute(
+      "SELECT valor FROM configuracoes WHERE chave = 'frete_fixo'"
+    );
+    const limiteGratis = cfgGratis ? parseFloat(cfgGratis.valor) : 500;
+    const freteFixo    = cfgFixo   ? parseFloat(cfgFixo.valor)   : 49.90;
+
+    // Buscar itens do carrinho para calcular subtotal
+    const itens = await CarrinhoService.obter(clienteId);
+    if (itens.length === 0) return res.json({ frete: 0, motivo: 'Carrinho vazio' });
+
+    const subtotal = itens.reduce((s, i) => s + parseFloat(i.preco) * i.quantidade, 0);
+
+    // Lógica de frete: grátis acima do limiar, fixo abaixo
+    // (Em produção: integrar com API dos Correios via CEP e peso total)
+    const pesoTotal = itens.reduce((s, i) => s + parseFloat(i.peso_kg || 0.5) * i.quantidade, 0);
+    let frete = subtotal >= limiteGratis ? 0 : freteFixo;
+
+    // Ajuste por peso (simplificado: R$2 por kg acima de 10kg)
+    if (pesoTotal > 10 && frete > 0) {
+      frete += (pesoTotal - 10) * 2;
+    }
+
+    res.json({
+      frete:        parseFloat(frete.toFixed(2)),
+      subtotal:     parseFloat(subtotal.toFixed(2)),
+      pesoTotal:    parseFloat(pesoTotal.toFixed(2)),
+      freteGratis:  subtotal >= limiteGratis,
+      limiteGratis,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao calcular frete', detalhe: err.message });
+  }
+});
+
+// ================================================================
+//  CUPONS (RF0044, RN0036, RN0037, RN0047)
+// ================================================================
+
+// Validar cupom antes de aplicar
+app.post('/api/cupons/validar', async (req, res) => {
+  try {
+    const { codigo, clienteId, total } = req.body;
+    if (!codigo || !clienteId || total === undefined) {
+      return res.status(400).json({ error: 'codigo, clienteId e total são obrigatórios.' });
+    }
+    const resultado = await CupomService.validar(codigo, clienteId, total);
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao validar cupom', detalhe: err.message });
+  }
+});
+
+// Admin: criar cupom manual
+app.post('/api/admin/cupons', async (req, res) => {
+  try {
+    const resultado = await CupomService.gerar(req.body);
+    res.status(201).json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Admin: listar todos os cupons
+app.get('/api/admin/cupons', async (req, res) => {
+  try {
+    const cupons = await CupomService.listar();
+    res.json(cupons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================================================================
+//  PEDIDOS (RF0033, RF0037, RF0038, RF0039, RN0034, RN0035)
+// ================================================================
+
+// Finalizar compra (checkout completo)
+app.post('/api/pedidos', async (req, res) => {
+  try {
+    const resultado = await PedidoService.criar(req.body);
+    res.status(201).json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Pedidos do cliente (meus pedidos)
+app.get('/api/pedidos/cliente/:clienteId', async (req, res) => {
+  try {
+    const pedidos = await PedidoService.listarPorCliente(req.params.clienteId);
+    res.json(pedidos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Detalhe de um pedido específico
+app.get('/api/pedidos/:pedidoId', async (req, res) => {
+  try {
+    const pedido = await PedidoService.detalhe(req.params.pedidoId);
+    res.json(pedido);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// Admin: listar todos os pedidos com filtros
+app.get('/api/admin/pedidos', async (req, res) => {
+  try {
+    const { status, busca, pagina, limite } = req.query;
+    const dados = await PedidoService.listarAdmin({
+      status,
+      busca,
+      pagina:  pagina  ? parseInt(pagina)  : 1,
+      limite:  limite  ? parseInt(limite)  : 20,
+    });
+    res.json(dados);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: atualizar status do pedido (despachar, confirmar entrega, etc.)
+app.patch('/api/admin/pedidos/:pedidoId/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!status) return res.status(400).json({ error: 'status é obrigatório.' });
+    const resultado = await PedidoService.atualizarStatus(req.params.pedidoId, status);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ================================================================
+//  TROCAS (RF0040, RF0041, RF0042, RF0043, RN0036)
+// ================================================================
+
+// Cliente solicita troca
+app.post('/api/trocas', async (req, res) => {
+  try {
+    const { clienteId, pedidoId, itens, motivo } = req.body;
+    if (!clienteId || !pedidoId || !motivo) {
+      return res.status(400).json({ error: 'clienteId, pedidoId e motivo são obrigatórios.' });
+    }
+    const resultado = await TrocaService.solicitar(clienteId, pedidoId, itens, motivo);
+    res.status(201).json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Admin: listar trocas
+app.get('/api/admin/trocas', async (req, res) => {
+  try {
+    const trocas = await TrocaService.listarAdmin({ status: req.query.status });
+    res.json(trocas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: autorizar troca (RF0042)
+app.patch('/api/admin/trocas/:trocaId/autorizar', async (req, res) => {
+  try {
+    const resultado = await TrocaService.autorizar(req.params.trocaId, req.body.adminId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Admin: negar troca
+app.patch('/api/admin/trocas/:trocaId/negar', async (req, res) => {
+  try {
+    const resultado = await TrocaService.negar(req.params.trocaId, req.body.adminId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Admin: confirmar recebimento dos itens devolvidos (RF0043)
+app.patch('/api/admin/trocas/:trocaId/receber', async (req, res) => {
+  try {
+    const { adminId, retornarEstoque } = req.body;
+    const resultado = await TrocaService.confirmarRecebimento(
+      req.params.trocaId,
+      adminId,
+      retornarEstoque === true || retornarEstoque === 'true'
+    );
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ================================================================
+//  ANÁLISE / ADMIN (RF0055, RNF0043)
+// ================================================================
+
+// Dashboard stats
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    const stats = await AdminService.estatisticasDashboard();
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Histórico de vendas para gráfico de linhas
+app.get('/api/admin/analise', async (req, res) => {
+  try {
+    const { inicio, fim, agrupamento } = req.query;
+    // Padrão: últimos 30 dias
+    const dataFim    = fim    || new Date().toISOString().split('T')[0];
+    const dataInicio = inicio || (() => {
+      const d = new Date(); d.setDate(d.getDate() - 30);
+      return d.toISOString().split('T')[0];
+    })();
+    const dados = await AdminService.historicoVendas(dataInicio, dataFim, agrupamento || 'dia');
+    res.json(dados);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Distribuição por status
+app.get('/api/admin/analise/status', async (req, res) => {
+  try {
+    const dados = await AdminService.distribuicaoStatus();
+    res.json(dados);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================================================================
+//  CADASTRO
+// ================================================================
 app.post('/api/cadastro', async (req, res) => {
   const { nome, email, cpf, dataNascimento, genero, senha,
           logradouro, numero, cep, bairro, cidade, estado,
           telefone_tipo, telefone_ddd, telefone_numero } = req.body;
 
   if (dataNascimento) {
-    const hoje = new Date();
-    const dtNasc = new Date(dataNascimento);
-    let idade = hoje.getFullYear() - dtNasc.getFullYear();
-    const m = hoje.getMonth() - dtNasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < dtNasc.getDate())) {
-      idade--;
-    }
+    const hoje  = new Date();
+    const dtNasc= new Date(dataNascimento);
+    let idade   = hoje.getFullYear() - dtNasc.getFullYear();
+    const m     = hoje.getMonth() - dtNasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < dtNasc.getDate())) idade--;
     if (idade < 18) {
       return res.status(400).json({ error: 'É necessário ter 18 anos ou mais para se cadastrar.' });
     }
@@ -43,13 +451,14 @@ app.post('/api/cadastro', async (req, res) => {
     conexao = await pool.getConnection();
     await conexao.beginTransaction();
 
-    const senhaHash      = await bcrypt.hash(senha, await bcrypt.genSalt(10));
-    const codigoCliente  = 'CLI-' + Date.now().toString(36).toUpperCase();
+    const senhaHash     = await bcrypt.hash(senha, await bcrypt.genSalt(10));
+    const codigoCliente = 'CLI-' + Date.now().toString(36).toUpperCase();
 
     const [resultCli] = await conexao.execute(
       `INSERT INTO clientes (codigo_cliente, nome, email, cpf, data_nascimento, genero, senha_hash, telefone_tipo, telefone_ddd, telefone_numero)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [codigoCliente, nome, email, cpf, dataNascimento, genero, senhaHash, telefone_tipo || 'Celular', telefone_ddd || '', telefone_numero || '']
+      [codigoCliente, nome, email, cpf, dataNascimento, genero, senhaHash,
+       telefone_tipo || 'Celular', telefone_ddd || '', telefone_numero || '']
     );
     const clienteId = resultCli.insertId;
 
@@ -73,7 +482,9 @@ app.post('/api/cadastro', async (req, res) => {
   }
 });
 
-// LOGIN
+// ================================================================
+//  LOGIN
+// ================================================================
 app.post('/api/login', async (req, res) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
@@ -85,8 +496,8 @@ app.post('/api/login', async (req, res) => {
     );
     if (usuarios.length === 0) return res.status(401).json({ error: 'Email ou senha incorretos.' });
 
-    const usuario  = usuarios[0];
-    const senhaOk  = await bcrypt.compare(senha, usuario.senha_hash);
+    const usuario = usuarios[0];
+    const senhaOk = await bcrypt.compare(senha, usuario.senha_hash);
     if (!senhaOk) return res.status(401).json({ error: 'Email ou senha incorretos.' });
 
     res.json({ id: usuario.id, nome: usuario.nome, email: usuario.email, ranking: usuario.ranking });
@@ -99,8 +510,6 @@ app.post('/api/login', async (req, res) => {
 // ================================================================
 //  CLIENTES — CRUD
 // ================================================================
-
-// Buscar perfil completo (dados + endereços + cartões)
 app.get('/api/clientes/:id', async (req, res) => {
   try {
     const dados = await ClienteService.buscarPorId(req.params.id);
@@ -110,7 +519,6 @@ app.get('/api/clientes/:id', async (req, res) => {
   }
 });
 
-// Atualizar dados básicos (nome, gênero, telefone)
 app.put('/api/clientes/:id', async (req, res) => {
   try {
     const resultado = await ClienteService.atualizar(req.params.id, req.body);
@@ -120,7 +528,6 @@ app.put('/api/clientes/:id', async (req, res) => {
   }
 });
 
-// Alterar senha
 app.put('/api/clientes/:id/senha', async (req, res) => {
   try {
     const { novaSenha } = req.body;
@@ -132,7 +539,6 @@ app.put('/api/clientes/:id/senha', async (req, res) => {
   }
 });
 
-// Inativar conta (soft delete)
 app.delete('/api/clientes/:id', async (req, res) => {
   try {
     const resultado = await ClienteService.inativar(req.params.id);
@@ -145,8 +551,6 @@ app.delete('/api/clientes/:id', async (req, res) => {
 // ================================================================
 //  ENDEREÇOS — CRUD
 // ================================================================
-
-// Listar endereços do cliente
 app.get('/api/clientes/:id/enderecos', async (req, res) => {
   try {
     const enderecos = await ClienteService.listarEnderecos(req.params.id);
@@ -156,7 +560,6 @@ app.get('/api/clientes/:id/enderecos', async (req, res) => {
   }
 });
 
-// Adicionar endereço
 app.post('/api/clientes/:id/enderecos', async (req, res) => {
   try {
     const resultado = await ClienteService.adicionarEndereco(req.params.id, req.body);
@@ -166,7 +569,6 @@ app.post('/api/clientes/:id/enderecos', async (req, res) => {
   }
 });
 
-// Atualizar endereço
 app.put('/api/clientes/:id/enderecos/:endId', async (req, res) => {
   try {
     const resultado = await ClienteService.atualizarEndereco(req.params.endId, req.params.id, req.body);
@@ -176,7 +578,6 @@ app.put('/api/clientes/:id/enderecos/:endId', async (req, res) => {
   }
 });
 
-// Remover endereço
 app.delete('/api/clientes/:id/enderecos/:endId', async (req, res) => {
   try {
     const resultado = await ClienteService.removerEndereco(req.params.endId, req.params.id);
@@ -189,8 +590,6 @@ app.delete('/api/clientes/:id/enderecos/:endId', async (req, res) => {
 // ================================================================
 //  CARTÕES — CRUD
 // ================================================================
-
-// Listar cartões
 app.get('/api/clientes/:id/cartoes', async (req, res) => {
   try {
     const [cartoes] = await pool.execute(
@@ -203,11 +602,10 @@ app.get('/api/clientes/:id/cartoes', async (req, res) => {
   }
 });
 
-// Adicionar cartão
 app.post('/api/clientes/:id/cartoes', async (req, res) => {
   const { numero_cartao, nome_impresso, bandeira, is_preferencial } = req.body;
   const clienteId = req.params.id;
-  const conexao = await pool.getConnection();
+  const conexao   = await pool.getConnection();
   try {
     await conexao.beginTransaction();
     if (is_preferencial) {
@@ -229,7 +627,6 @@ app.post('/api/clientes/:id/cartoes', async (req, res) => {
   }
 });
 
-// Remover cartão
 app.delete('/api/clientes/:id/cartoes/:cartaoId', async (req, res) => {
   try {
     const [result] = await pool.execute(
@@ -244,4 +641,14 @@ app.delete('/api/clientes/:id/cartoes/:cartaoId', async (req, res) => {
 });
 
 // ================================================================
-app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
+//  INICIAR SERVIDOR + JOBS
+// ================================================================
+const PORTA = process.env.PORT || 3000;
+app.listen(PORTA, () => {
+  console.log(`\n🚗 Garage-Tunning API rodando na porta ${PORTA}`);
+  console.log(`   http://localhost:${PORTA}/api/produtos\n`);
+
+  // Iniciar jobs automáticos
+  iniciarJobReservas();
+  iniciarJobAbandonoCarrinho();
+});

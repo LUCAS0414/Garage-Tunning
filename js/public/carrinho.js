@@ -1,7 +1,8 @@
 
+
 document.addEventListener('DOMContentLoaded', function() {
 
-  // Cupons válidos (futuro: buscar do backend GET /api/cupons/validar/:codigo)
+  //CUPONS MOCKADOS, ARRUMAR PARA API FUTURAMENTE
   const CUPONS = {
     'GARAGE10': { desconto: 0.10, tipo: 'percentual', desc: '10% de desconto' },
     'PRIMEIRACOMPRA': { desconto: 0.15, tipo: 'percentual', desc: '15% na primeira compra' },
@@ -10,32 +11,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let cupomAtivo = null;
 
-  // ---- ADICIONAR ITEM DEMO (se carrinho vazio) ---- //
-  if (Carrinho.itens.length === 0) {
-    // Adicionar itens demo para visualização
-    Carrinho.adicionar(DadosMock.produtos[0], 1);
-    Carrinho.adicionar(DadosMock.produtos[1], 2);
-  }
-
-  // ---- RENDERIZAR CARRINHO ---- //
+  //RENDERIZAR O CARRINHO
   function renderizar() {
     const itens = Carrinho.itens;
     const carrinhoItens = document.getElementById('carrinhoItens');
     const carrinhoVazio = document.getElementById('carrinhoVazio');
     const carrinhoLayout = document.getElementById('carrinhoLayout');
 
+    // Se o carrinho estiver vazio, mostra o aviso de "Carrinho Vazio"
     if (itens.length === 0) {
       carrinhoLayout.style.display = 'none';
       carrinhoVazio.style.display = 'block';
       return;
     }
 
+    // Layout visivel
     carrinhoLayout.style.display = 'grid';
     carrinhoVazio.style.display = 'none';
 
-    // Renderizar itens
+    //RENDERIZAR ITENS HTML
     carrinhoItens.innerHTML = itens.map(item => {
+      // Define a bandeira de acordo com a categoria
       const emoji = item.categoria === 'JDM' ? '🇯🇵' : item.categoria === 'Americanos' ? '🇺🇸' : item.categoria === 'Italianos' ? '🇮🇹' : '🇩🇪';
+      
       return `
         <div class="carrinho-item" data-id="${item.id}">
           <div class="carrinho-item__imagem">${emoji}</div>
@@ -50,29 +48,38 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <div class="carrinho-item__acoes">
             <span class="carrinho-item__preco">R$ ${(item.preco * item.quantidade).toLocaleString('pt-BR')}</span>
+            
+            <!-- Botões de controle de Quantidade -->
             <div class="item-qty">
               <button class="qty-btn" data-acao="diminuir" data-id="${item.id}">−</button>
               <input type="number" value="${item.quantidade}" min="1" max="${item.estoque}" data-id="${item.id}" data-acao="qty">
               <button class="qty-btn" data-acao="aumentar" data-id="${item.id}">+</button>
             </div>
+            
+            <!-- Botão de exclusão -->
             <button class="item-remover" data-acao="remover" data-id="${item.id}">🗑 Remover</button>
           </div>
         </div>
       `;
     }).join('');
 
-    // Renderizar resumo
-    const subtotal = Carrinho.totalValor;
-    const frete = subtotal >= 500 ? 0 : 49.90;
+    //CALCULOS TOTAIS
+    const subtotal = Carrinho.totalValor; 
+    const frete = subtotal >= 500 ? 0 : 49.90; // Regra de frete grátis
     let desconto = 0;
 
+    // Verificação de cupon e aplicação
     if (cupomAtivo) {
-      if (cupomAtivo.tipo === 'percentual') desconto = subtotal * cupomAtivo.desconto;
-      else desconto = cupomAtivo.desconto;
+      if (cupomAtivo.tipo === 'percentual') {
+        desconto = subtotal * cupomAtivo.desconto; // ex: subtotal x 0.10
+      } else {
+        desconto = cupomAtivo.desconto; // ex: 50 fixo
+      }
     }
 
     const total = subtotal + frete - desconto;
 
+    // ATUALIZAÇÃO DO VALOR
     document.getElementById('resumoLinhas').innerHTML = `
       <div class="resumo-linha"><span>Subtotal (${Carrinho.totalItens} itens)</span><span>R$ ${subtotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span></div>
       <div class="resumo-linha"><span>Frete</span><span>${frete === 0 ? '<span style="color:var(--cor-primaria)">Grátis</span>' : 'R$ ' + frete.toFixed(2)}</span></div>
@@ -84,14 +91,15 @@ document.addEventListener('DOMContentLoaded', function() {
       <strong>R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong>
     `;
 
-    // Mostrar timer de bloqueio
+    // Mostra o cronômetro visual
     document.getElementById('avisoBloqueio').style.display = 'flex';
   }
 
-  // ---- EVENTOS DOS ITENS (delegação) ---- //
+  //EVENTOS DOS ITENS DO CARRINHO
   document.getElementById('carrinhoItens')?.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-acao]');
     if (!btn) return;
+
     const acao = btn.dataset.acao;
     const id = btn.dataset.id;
 
@@ -116,17 +124,19 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('carrinhoItens')?.addEventListener('change', (e) => {
     const input = e.target.closest('[data-acao="qty"]');
     if (!input) return;
+    
     const id = input.dataset.id;
     const item = Carrinho.itens.find(i => i.id === id);
     let qty = parseInt(input.value);
+    
     if (item) {
-      qty = Math.max(1, Math.min(qty, item.estoque));
+      qty = Math.max(1, Math.min(qty, item.estoque)); // limitação da quantidade
       Carrinho.atualizarQuantidade(id, qty);
       renderizar();
     }
   });
 
-  // ---- CUPOM ---- //
+  //CUPOM DE DESCONTO
   document.getElementById('btnAplicarCupom')?.addEventListener('click', () => {
     const codigo = document.getElementById('cupomInput').value.trim().toUpperCase();
     const feedbackEl = document.getElementById('cupomFeedback');
@@ -144,33 +154,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // ---- TIMER DE BLOQUEIO (simulado - 15 minutos) ---- //
-  // Futuro: integrar com sistema de reserva de estoque no backend
+  //TIMER DE BLOQUEIO / RESERVA (Simulado - 15 Minutos)
+  // Conta regressivamente 15 minutos até 0 para reservar os itens no front.
+  // Quando chega a zero, muda a caixa de notificação avisando comleta inatividade.
+  // (Observação: O backend agora possui um tempo de reserva real. O cronômetro pode
+  //  refletir o tempo que vem da API no futuro).
   let tempoRestante = 15 * 60; // 15 minutos em segundos
 
   const timer = setInterval(() => {
     tempoRestante--;
     const min = Math.floor(tempoRestante / 60);
     const seg = tempoRestante % 60;
+    
     const timerEl = document.getElementById('timerBloqueio');
     if (timerEl) {
       timerEl.textContent = `${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}`;
 
-      if (tempoRestante <= 120) timerEl.style.color = 'var(--cor-erro)'; // Vermelho nos últimos 2min
+      // Quando faltar apenas 2 minutos, fica vermelho para causar urgência
+      if (tempoRestante <= 120) timerEl.style.color = 'var(--cor-erro)';
       else if (tempoRestante <= 300) timerEl.style.color = 'var(--cor-destaque)';
     }
 
     if (tempoRestante <= 0) {
       clearInterval(timer);
-      // Futuro: liberar reserva e notificar usuário
       const notif = document.getElementById('notificacaoExpiracao');
       if (notif) {
         notif.style.display = 'block';
         notif.innerHTML = `<div class="alerta alerta-erro">⚠ Sua reserva expirou. Por favor, verifique a disponibilidade dos itens.</div>`;
       }
     }
-  }, 1000);
+  }, 1000); // 1000ms = 1 segundo de verificação
 
-  // Renderizar inicial
+  // Aciona a primeira renderização do template ao carregar o script final
   renderizar();
 });

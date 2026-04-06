@@ -79,6 +79,7 @@
         <option value="Americanos">Americanos</option>
         <option value="Italianos">Italianos</option>
         <option value="Alemães">Alemães</option>
+        <option value="Peças">Peças</option>
       </select>
       <select class="input-field" id="prodFiltroStatus" style="width:140px;">
         <option value="">Todos</option>
@@ -140,6 +141,7 @@
               <option value="Americanos">Americanos</option>
               <option value="Italianos">Italianos</option>
               <option value="Alemães">Alemães</option>
+              <option value="Peças">Peças</option>
             </select>
           </div>
         </div>
@@ -208,6 +210,13 @@
           </div>
         </div>
 
+        <!-- Peso (usado pelo cálculo de frete) -->
+        <div class="input-grupo">
+          <label>Peso do Produto (kg)</label>
+          <input type="number" class="input-field" id="prodPesoKg" placeholder="Ex: 12.5" step="0.001" min="0">
+          <small class="texto-muted">Utilizado no cálculo de frete. Deixe em branco para usar 0,5 kg padrão.</small>
+        </div>
+
         <!-- Entrada de estoque (modo edição) -->
         <div class="entrada-estoque" id="entradaEstoqueArea" style="display:none">
           <div class="form-secao"><h3>Entrada de Estoque</h3></div>
@@ -229,6 +238,20 @@
             <label>Notas</label>
             <input type="text" class="input-field" id="entradaNota" placeholder="Observações da entrada">
           </div>
+        </div>
+
+        <!-- Imagem e Destaques -->
+        <div class="form-secao"><h3>Imagem e Destaques</h3></div>
+
+        <div class="input-grupo">
+          <label>URL da Imagem Principal</label>
+          <input type="url" class="input-field" id="prodImagemUrl" placeholder="https://...">
+          <small class="texto-muted">Link direto para a imagem do produto (JPEG, PNG, WebP).</small>
+        </div>
+
+        <div class="input-grupo" style="display:flex;align-items:center;gap:0.75rem;">
+          <input type="checkbox" id="prodIsNovo" style="width:18px;height:18px;accent-color:var(--cor-primaria);">
+          <label for="prodIsNovo" style="margin:0;">Marcar como <strong>Novidade</strong> (exibe tag "Novo" na loja)</label>
         </div>
 
         <!-- Status -->
