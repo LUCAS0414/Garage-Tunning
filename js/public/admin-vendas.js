@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
 
   // Status disponíveis e transições
   const STATUS = {
@@ -13,15 +13,28 @@ document.addEventListener('DOMContentLoaded', function() {
     'trocado': { label: 'Trocado', badge: 'status-trocado', proximos: [] },
   };
 
-  // Pedidos mockados (futuro: GET /api/admin/pedidos)
-  let pedidos = [
-    { id: 'GT-2024-0043', cliente: 'Ana Silva', email: 'ana@email.com', data: '2024-12-18', itens: [{ nome: 'Kit Turbo T3/T4', qty: 1, preco: 5490 }], total: 5490, status: 'em-processamento', pagamento: 'VISA ****4242' },
-    { id: 'GT-2024-0042', cliente: 'Carlos Tuner', email: 'carlos@tuner.com', data: '2024-12-12', itens: [{ nome: 'Suspensão Coilover', qty: 1, preco: 3890 }], total: 3890, status: 'em-transporte', pagamento: 'PIX' },
-    { id: 'GT-2024-0041', cliente: 'Marcos R.', email: 'marcos@email.com', data: '2024-12-10', itens: [{ nome: 'Rodas Rays 57DR', qty: 4, preco: 8900 }], total: 35600, status: 'aprovada', pagamento: 'MASTER ****5555' },
-    { id: 'GT-2024-0038', cliente: 'Carlos Tuner', email: 'carlos@tuner.com', data: '2024-11-28', itens: [{ nome: 'Spoiler Carbon', qty: 1, preco: 1290 }, { nome: 'Cold Air Intake', qty: 1, preco: 780 }], total: 2070, status: 'entregue', pagamento: 'VISA ****4242' },
-    { id: 'GT-2024-0031', cliente: 'Carlos Tuner', email: 'carlos@tuner.com', data: '2024-11-15', itens: [{ nome: 'Kit Turbo T3/T4', qty: 1, preco: 5490 }], total: 5490, status: 'em-troca', pagamento: 'VISA ****4242', motivoTroca: 'Produto com defeito' },
-    { id: 'GT-2024-0025', cliente: 'Julia M.', email: 'julia@email.com', data: '2024-11-02', itens: [{ nome: 'Molas Esportivas', qty: 4, preco: 890 }], total: 3560, status: 'reprovada', pagamento: 'VISA ****1111' },
-  ];
+  // Buscar pedidos reais da API
+  let pedidos = [];
+  try {
+    const resp = await fetch('/api/admin/pedidos?limite=100');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const dados = await resp.json();
+    pedidos = (dados.pedidos || []).map(p => ({
+      id:         p.codigo_pedido || `GT-${p.id}`,
+      pedidoId:   p.id,
+      cliente:    p.cliente_nome || 'Cliente',
+      email:      p.cliente_email || '',
+      data:       p.criado_em || p.data,
+      itens:      (p.itens || []).map(i => ({ nome: i.nome, qty: i.quantidade, preco: parseFloat(i.preco_unitario || i.preco) })),
+      total:      parseFloat(p.total),
+      status:     p.status,
+      pagamento:  p.pagamento || 'N/A',
+      motivoTroca: p.motivo_troca || null,
+    }));
+  } catch (err) {
+    console.error('Erro ao buscar pedidos da API:', err);
+    pedidos = [];
+  }
 
   let pedidoSelecionadoId = null;
 

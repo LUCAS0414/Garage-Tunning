@@ -1,9 +1,3 @@
-/**
- * pedidoService.js
- * Fluxo completo de checkout: criação de pedido, baixa de estoque,
- * registros de pagamento, aplicação de cupom.
- * RF0033, RF0037, RN0034, RN0035, RN0037, RN0038, RN0049
- */
 const pool = require('../db/config');
 const EstoqueService = require('./estoqueService');
 const CupomService   = require('./cupomService');
@@ -187,9 +181,7 @@ const PedidoService = {
     }
   },
 
-  /**
-   * Lista todos os pedidos de um cliente com itens.
-   */
+  // Lista todos os pedidos de um cliente com itens.
   async listarPorCliente(clienteId) {
     const [pedidos] = await pool.execute(
       `SELECT p.id, p.codigo, p.status, p.subtotal, p.desconto, p.frete, p.total,
@@ -218,9 +210,7 @@ const PedidoService = {
     return pedidos;
   },
 
-  /**
-   * Retorna detalhes completos de um pedido (admin ou cliente).
-   */
+  // Retorna detalhes completos de um pedido (admin ou cliente).
   async detalhe(pedidoId) {
     const [[pedido]] = await pool.execute(
       `SELECT p.*, c.nome AS cliente_nome, c.email AS cliente_email,
@@ -250,9 +240,7 @@ const PedidoService = {
     return { ...pedido, itens, pagamentos, trocas };
   },
 
-  /**
-   * Lista todos os pedidos para o admin com filtros.
-   */
+  // Lista todos os pedidos para o admin com filtros.
   async listarAdmin(filtros = {}) {
     const { status, busca, pagina = 1, limite = 20 } = filtros;
     const offset = (pagina - 1) * limite;
@@ -294,9 +282,9 @@ const PedidoService = {
     return { pedidos, total, pagina, limite };
   },
 
-  /**
-   * Atualiza o status do pedido (admin). RF0038, RF0039
-   * Transições válidas definidas conforme regras de negócio.
+  /*
+    Atualiza o status do pedido (admin). RF0038, RF0039
+    Transições válidas definidas conforme regras de negócio.
    */
   async atualizarStatus(pedidoId, novoStatus) {
     const TRANSICOES_VALIDAS = {

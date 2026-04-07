@@ -1,0 +1,10 @@
+cartoes_cliente
+categorias
+clientes
+cupons
+enderecos_cliente
+pedido_itens
+pedidos
+produtos
+solicitacoes_troca
+usuarios

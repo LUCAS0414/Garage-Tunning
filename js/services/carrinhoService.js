@@ -1,16 +1,10 @@
-/**
- * carrinhoService.js
- * Gerencia o carrinho persistido no banco de dados.
- * RF0031, RF0032, RN0031, RN0032, RN0044
- */
+
 const pool = require('../db/config');
 const EstoqueService = require('./estoqueService');
 
 const CarrinhoService = {
 
-  /**
-   * Retorna os itens do carrinho de um cliente com dados reais dos produtos.
-   */
+  // Retorna os itens do carrinho de um cliente com dados reais dos produtos.
   async obter(clienteId) {
     const [itens] = await pool.execute(
       `SELECT
@@ -49,11 +43,6 @@ const CarrinhoService = {
     return itens;
   },
 
-  /**
-   * Adiciona produto ao carrinho e cria reserva de estoque.
-   * RN0031: impede adição se sem estoque.
-   * RN0044: cria bloqueio temporário.
-   */
   async adicionar(clienteId, produtoId, quantidade) {
     // Buscar tempo de reserva configurado
     const [[cfg]] = await pool.execute(
@@ -77,10 +66,6 @@ const CarrinhoService = {
     return { adicionado: true, reserva };
   },
 
-  /**
-   * Atualiza a quantidade de um item no carrinho e revalida a reserva.
-   * RF0032
-   */
   async atualizarQuantidade(clienteId, produtoId, novaQuantidade) {
     if (novaQuantidade < 1) throw new Error('Quantidade mínima é 1.');
 

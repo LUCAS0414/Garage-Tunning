@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
 
   //URL categoria
   const pagina = window.location.pathname.split('/').pop();
@@ -19,8 +19,36 @@ document.addEventListener('DOMContentLoaded', function() {
     ordem: 'relevancia',
   };
 
-  //Preencher dados
-  const todosProdutos = DadosMock.produtos.filter(p => p.categoria === categoriaId);
+  // Mapeia campos da API para o formato esperado pelo template
+  function mapearProduto(p) {
+    return {
+      id:            p.id,
+      codigo:        p.codigo,
+      nome:          p.nome,
+      categoria:     p.categoria,
+      preco:         parseFloat(p.preco_venda),
+      precoOriginal: p.preco_original ? parseFloat(p.preco_original) : null,
+      estoque:       p.estoque_atual,
+      novo:          p.is_novo === 1 || p.is_novo === true,
+      imagem_url:    p.imagem_url || null,
+    };
+  }
+
+  // Buscar produtos da API real
+  let todosProdutos = [];
+  try {
+    const resp = await fetch(`/api/produtos?categoria=${encodeURIComponent(categoriaId)}&limite=100`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const dados = await resp.json();
+    todosProdutos = (dados.produtos || []).map(mapearProduto);
+  } catch (err) {
+    console.error('Erro ao buscar produtos da API:', err);
+    // Fallback: usa DadosMock se a API falhar
+    if (typeof DadosMock !== 'undefined') {
+      todosProdutos = DadosMock.produtos.filter(p => p.categoria === categoriaId);
+    }
+  }
+
   document.getElementById('catTotalProd').textContent = todosProdutos.length;
 
   //Carrossel
@@ -55,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function aplicarFiltros() {
-    let resultados = DadosMock.produtos.filter(p => p.categoria === categoriaId);
+    let resultados = [...todosProdutos];
 
     //Texto
     if (filtros.texto) {

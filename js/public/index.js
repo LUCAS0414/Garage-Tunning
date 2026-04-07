@@ -94,50 +94,77 @@ document.addEventListener('DOMContentLoaded', function() {
     track.innerHTML = produtos.map(gerarProdutoCardHTML).join('');
   }
 
-  const todosProdutos = DadosMock.produtos;
-  const jdm = todosProdutos.filter(p => p.categoria === 'JDM');
-  const americanos = todosProdutos.filter(p => p.categoria === 'Americanos');
-  const italianos = todosProdutos.filter(p => p.categoria === 'Italianos');
-  const alemaes = todosProdutos.filter(p => p.categoria === 'Alemães');
-  const pecas = todosProdutos.filter(p => p.categoria === 'Peças');
-  const destaques = todosProdutos.filter(p => p.novo || p.precoOriginal).slice(0, 8);
+  // Mapeia campos da API para o formato esperado pelo template
+  function mapearProduto(p) {
+    return {
+      id:            p.id,
+      codigo:        p.codigo,
+      nome:          p.nome,
+      categoria:     p.categoria,
+      preco:         parseFloat(p.preco_venda),
+      precoOriginal: p.preco_original ? parseFloat(p.preco_original) : null,
+      estoque:       p.estoque_atual,
+      novo:          p.is_novo === 1 || p.is_novo === true,
+      imagem_url:    p.imagem_url || null,
+    };
+  }
 
-  preencherCarrossel('trackDestaque', destaques);
-  preencherCarrossel('trackJDM', jdm);
-  preencherCarrossel('trackAmericanos', americanos);
-  preencherCarrossel('trackItalianos', italianos);
-  preencherCarrossel('trackAlemaes', alemaes);
-  preencherCarrossel('trackPecas', pecas);
-
-
-
-  //Iniciação
-  setTimeout(() => {
-    new Carrossel('#carrosselDestaque', { itensPorVista: 4 });
-    new Carrossel('#carrosselJDM', { itensPorVista: 4, intervalo: 3500 });
-    new Carrossel('#carrosselAmericanos', { itensPorVista: 4, intervalo: 3800 });
-    new Carrossel('#carrosselItalianos', { itensPorVista: 4, intervalo: 4200 });
-    new Carrossel('#carrosselAlemaes', { itensPorVista: 4, intervalo: 3600 });
-  }, 100);
-
-
-  //Contadores
-  document.querySelectorAll('[data-cat]').forEach(el => {
-    const cat = el.dataset.cat;
-    const qtd = todosProdutos.filter(p => p.categoria === cat).length;
-    el.textContent = `${qtd} produtos`;
-  });
-
-
-  //Add carrinho evento
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-acao="adicionar"]');
-    if (btn) {
-      const card = btn.closest('.produto-card');
-      const id = card?.dataset.id;
-      const produto = DadosMock.produtos.find(p => p.id === id);
-      if (produto) Carrinho.adicionar(produto);
+  // Busca produtos da API real e preenche os carrosseis
+  async function carregarProdutos() {
+    let todosProdutos = [];
+    try {
+      const resp = await fetch('/api/produtos?limite=100');
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const dados = await resp.json();
+      todosProdutos = (dados.produtos || []).map(mapearProduto);
+    } catch (err) {
+      console.error('Erro ao buscar produtos da API:', err);
+      // fallback: usa DadosMock se a API falhar
+      todosProdutos = (typeof DadosMock !== 'undefined') ? DadosMock.produtos : [];
     }
-  });
+
+    const jdm        = todosProdutos.filter(p => p.categoria === 'JDM');
+    const americanos = todosProdutos.filter(p => p.categoria === 'Americanos');
+    const italianos  = todosProdutos.filter(p => p.categoria === 'Italianos');
+    const alemaes    = todosProdutos.filter(p => p.categoria === 'Alemães');
+    const pecas      = todosProdutos.filter(p => p.categoria === 'Peças');
+    const destaques  = todosProdutos.filter(p => p.novo || p.precoOriginal).slice(0, 8);
+
+    preencherCarrossel('trackDestaque', destaques);
+    preencherCarrossel('trackJDM', jdm);
+    preencherCarrossel('trackAmericanos', americanos);
+    preencherCarrossel('trackItalianos', italianos);
+    preencherCarrossel('trackAlemaes', alemaes);
+    preencherCarrossel('trackPecas', pecas);
+
+    // Contadores por categoria
+    document.querySelectorAll('[data-cat]').forEach(el => {
+      const cat = el.dataset.cat;
+      const qtd = todosProdutos.filter(p => p.categoria === cat).length;
+      el.textContent = `${qtd} produtos`;
+    });
+
+    // Iniciar carrosseis após preencher os dados
+    setTimeout(() => {
+      new Carrossel('#carrosselDestaque', { itensPorVista: 4 });
+      new Carrossel('#carrosselJDM', { itensPorVista: 4, intervalo: 3500 });
+      new Carrossel('#carrosselAmericanos', { itensPorVista: 4, intervalo: 3800 });
+      new Carrossel('#carrosselItalianos', { itensPorVista: 4, intervalo: 4200 });
+      new Carrossel('#carrosselAlemaes', { itensPorVista: 4, intervalo: 3600 });
+    }, 100);
+
+    // Evento de adicionar ao carrinho
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-acao="adicionar"]');
+      if (btn) {
+        const card = btn.closest('.produto-card');
+        const produtoId = parseInt(card?.dataset.id);
+        const produto = todosProdutos.find(p => p.id === produtoId || p.id === card?.dataset.id);
+        if (produto) Carrinho.adicionar(produto);
+      }
+    });
+  }
+
+  carregarProdutos();
 
 });

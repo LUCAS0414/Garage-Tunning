@@ -1,0 +1,11 @@
+id | bigint(20) unsigned
+codigo | varchar(20)
+nome | varchar(100)
+descricao | text
+categoria_id | int(11)
+preco_custo | decimal(10,2)
+preco_venda | decimal(10,2)
+estoque_atual | int(11)
+status | tinyint(1)
+grupo_precificacao | varchar(30)
+data_cadastro | timestamp

@@ -1,10 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  //DEFINIÇÃO DE CUPONS INICIAIS (usar api posteriormente)
-  const CUPONS = {
-    'GARAGE10': { desconto: 0.10, tipo: 'percentual', desc: '10% de desconto' },
-    'PRIMEIRACOMPRA': { desconto: 0.15, tipo: 'percentual', desc: '15% na primeira compra' },
-  };
+  // Cupons validados via API (não mais hardcoded)
   let cupomAtivo = null;
 
   //RENDERIZAR RESUMO LATERAL
@@ -64,19 +60,41 @@ document.addEventListener('DOMContentLoaded', function() {
   //INICIALIZA MÁSCARA AUTOMÁTICA
   if (document.getElementById('checkoutCartaoNum')) mascaraCartao(document.getElementById('checkoutCartaoNum'));
 
-  //EVENTO: APLICAR CUPOM
-  document.getElementById('btnAplicarCupomCheckout')?.addEventListener('click', () => {
+  //EVENTO: APLICAR CUPOM — Validação via API
+  document.getElementById('btnAplicarCupomCheckout')?.addEventListener('click', async () => {
     const codigo = document.getElementById('checkoutCupom').value.trim().toUpperCase();
     const feedbackEl = document.getElementById('checkoutCupomFeedback');
     feedbackEl.style.display = 'block';
-    
-    // Verifica se "código" existe na nossa lista "CUPONS" (MOCK)
-    if (CUPONS[codigo]) {
-      cupomAtivo = CUPONS[codigo];
-      feedbackEl.innerHTML = `<div class="alerta alerta-sucesso">✓ ${cupomAtivo.desc}</div>`;
-      atualizarCalculo();
-    } else {
-      feedbackEl.innerHTML = `<div class="alerta alerta-erro">⚠ Cupom inválido</div>`;
+
+    if (!codigo) return;
+
+    try {
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const clienteId = usuario.id || 0;
+      const subtotal = Carrinho.totalValor;
+
+      const resp = await fetch('/api/cupons/validar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo, clienteId, total: subtotal }),
+      });
+
+      const resultado = await resp.json();
+
+      if (resp.ok && resultado.valido) {
+        cupomAtivo = {
+          desconto: resultado.tipo === 'percentual' ? resultado.valor / 100 : resultado.valor,
+          tipo: resultado.tipo,
+          desc: resultado.descricao || `${resultado.tipo === 'percentual' ? resultado.valor + '%' : 'R$ ' + resultado.valor} de desconto`,
+        };
+        feedbackEl.innerHTML = `<div class="alerta alerta-sucesso">✓ ${cupomAtivo.desc}</div>`;
+        atualizarCalculo();
+      } else {
+        feedbackEl.innerHTML = `<div class="alerta alerta-erro">⚠ ${resultado.error || 'Cupom inválido'}</div>`;
+      }
+    } catch (err) {
+      console.error('Erro ao validar cupom:', err);
+      feedbackEl.innerHTML = `<div class="alerta alerta-erro">⚠ Erro ao validar cupom</div>`;
     }
   });
 

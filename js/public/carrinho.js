@@ -2,12 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  //CUPONS MOCKADOS, ARRUMAR PARA API FUTURAMENTE
-  const CUPONS = {
-    'GARAGE10': { desconto: 0.10, tipo: 'percentual', desc: '10% de desconto' },
-    'PRIMEIRACOMPRA': { desconto: 0.15, tipo: 'percentual', desc: '15% na primeira compra' },
-    'FRETE0': { desconto: 50, tipo: 'fixo', desc: 'R$ 50,00 de desconto' },
-  };
+  // Cupons validados via API (não mais hardcoded)
 
   let cupomAtivo = null;
 
@@ -136,21 +131,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  //CUPOM DE DESCONTO
-  document.getElementById('btnAplicarCupom')?.addEventListener('click', () => {
+  //CUPOM DE DESCONTO — Validação via API
+  document.getElementById('btnAplicarCupom')?.addEventListener('click', async () => {
     const codigo = document.getElementById('cupomInput').value.trim().toUpperCase();
     const feedbackEl = document.getElementById('cupomFeedback');
 
     if (!codigo) return;
 
-    if (CUPONS[codigo]) {
-      cupomAtivo = CUPONS[codigo];
+    try {
+      // Buscar clienteId do localStorage (se logado)
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const clienteId = usuario.id || 0;
+      const subtotal = Carrinho.totalValor;
+
+      const resp = await fetch('/api/cupons/validar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo, clienteId, total: subtotal }),
+      });
+
+      const resultado = await resp.json();
+
+      if (resp.ok && resultado.valido) {
+        cupomAtivo = {
+          desconto: resultado.tipo === 'percentual' ? resultado.valor / 100 : resultado.valor,
+          tipo: resultado.tipo,
+          desc: resultado.descricao || `${resultado.tipo === 'percentual' ? resultado.valor + '%' : 'R$ ' + resultado.valor} de desconto`,
+        };
+        feedbackEl.style.display = 'block';
+        feedbackEl.innerHTML = `<span class="alerta alerta-sucesso">✓ Cupom aplicado: ${cupomAtivo.desc}</span>`;
+        renderizar();
+      } else {
+        feedbackEl.style.display = 'block';
+        feedbackEl.innerHTML = `<span class="alerta alerta-erro">⚠ ${resultado.error || 'Cupom inválido ou expirado'}</span>`;
+      }
+    } catch (err) {
+      console.error('Erro ao validar cupom:', err);
       feedbackEl.style.display = 'block';
-      feedbackEl.innerHTML = `<span class="alerta alerta-sucesso">✓ Cupom aplicado: ${cupomAtivo.desc}</span>`;
-      renderizar();
-    } else {
-      feedbackEl.style.display = 'block';
-      feedbackEl.innerHTML = `<span class="alerta alerta-erro">⚠ Cupom inválido ou expirado</span>`;
+      feedbackEl.innerHTML = `<span class="alerta alerta-erro">⚠ Erro ao validar cupom. Tente novamente.</span>`;
     }
   });
 

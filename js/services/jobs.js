@@ -1,16 +1,8 @@
-/**
- * jobs.js
- * Jobs automáticos do servidor:
- * - Expiração de reservas (RN0044/RNF0045): a cada 1 minuto
- * - Cupom de abandono de carrinho (RN0047): a cada hora, para clientes Iniciante
- */
 const pool         = require('../db/config');
 const EstoqueService = require('./estoqueService');
 const CupomService   = require('./cupomService');
 
-/**
- * Job 1: expira reservas de estoque vencidas e remove itens do carrinho. RN0044
- */
+// Job 1: expira reservas de estoque vencidas e remove itens do carrinho. RN0044
 function iniciarJobReservas() {
   setInterval(async () => {
     try {
@@ -22,11 +14,10 @@ function iniciarJobReservas() {
   console.log('[JOB] Job de reservas de estoque iniciado (intervalo: 1 min).');
 }
 
-/**
- * Job 2: envia cupom de abandono de carrinho de 3%
- * para clientes de ranking "Iniciante" com itens há >48h. RN0047
- *
- * (Sem NodeMailer: registra o cupom no banco e loga o e-mail no console)
+/*
+  Job 2: envia cupom de abandono de carrinho de 3%
+  para clientes de ranking "Iniciante" com itens há >48h. RN0047
+  (Sem NodeMailer: registra o cupom no banco e loga o e-mail no console)
  */
 function iniciarJobAbandonoCarrinho() {
   async function verificar() {

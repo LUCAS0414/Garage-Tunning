@@ -1,15 +1,9 @@
-/**
- * produtosService.js
- * CRUD completo de produtos, incluindo listagem com filtros.
- * RF0053 — apenas baixa de estoque (em estoqueService).
- */
 const db = require('../db/config.js');
 
 const ProdutoService = {
 
-  /**
-   * Cria produto aplicando markup conforme grupo de precificação.
-   */
+  //Cria produto aplicando markup conforme grupo de precificação.
+   
   async criar(dados) {
     const markupMap  = { standard: 0.40, premium: 0.60, competitivo: 0.25 };
     const fator      = markupMap[dados.grupo_precificacao] || 0;
@@ -40,9 +34,7 @@ const ProdutoService = {
     return result;
   },
 
-  /**
-   * Lista produtos com filtros opcionais e paginação.
-   */
+  // Lista produtos com filtros opcionais e paginação.
   async listar({ categoria, busca, pagina = 1, limite = 20, apenasAtivos = true } = {}) {
     const offset    = (pagina - 1) * limite;
     const params    = [];
@@ -74,9 +66,7 @@ const ProdutoService = {
     return { produtos, total, pagina, limite };
   },
 
-  /**
-   * Retorna produto por ID ou código.
-   */
+  // Retorna produto por ID ou código.
   async buscarPorId(id) {
     const [[produto]] = await db.execute(
       `SELECT id, codigo, nome, descricao, categoria, grupo_precificacao,
@@ -89,9 +79,7 @@ const ProdutoService = {
     return produto;
   },
 
-  /**
-   * Atualiza produto (admin).
-   */
+  // Atualiza produto (admin).
   async atualizar(id, dados) {
     const permitidos = [
       'nome','descricao','categoria','grupo_precificacao',
@@ -128,9 +116,7 @@ const ProdutoService = {
     return { mensagem: 'Produto atualizado com sucesso.' };
   },
 
-  /**
-   * Remove produto (soft delete: status = 0).
-   */
+  // Remove produto (soft delete: status = 0).
   async remover(id) {
     const [result] = await db.execute(
       'UPDATE produtos SET status = 0 WHERE id = ?',

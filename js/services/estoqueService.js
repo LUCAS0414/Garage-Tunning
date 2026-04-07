@@ -1,16 +1,16 @@
-/**
- * estoqueService.js
- * Gerencia reservas temporárias e movimentação real de estoque.
- * RN0031, RN0032, RN0044, RNF0045, RF0053, RF0054
+/*
+  estoqueService.js
+  Gerencia reservas temporárias e movimentação real de estoque.
+  RN0031, RN0032, RN0044, RNF0045, RF0053, RF0054
  */
 const pool = require('../db/config');
 
 const EstoqueService = {
 
-  /**
-   * Cria ou atualiza uma reserva temporária de estoque.
-   * O produto fica indisponível para outros clientes pelo tempo parametrizado.
-   * RN0044 / RNF0045
+  /*
+    Cria ou atualiza uma reserva temporária de estoque.
+    O produto fica indisponível para outros clientes pelo tempo parametrizado.
+    RN0044 / RNF0045
    */
   async reservar(produtoId, clienteId, quantidade, minutosReserva = 15) {
     const conexao = await pool.getConnection();
@@ -55,9 +55,7 @@ const EstoqueService = {
     }
   },
 
-  /**
-   * Libera a reserva de um produto para um cliente.
-   */
+  //Libera a reserva de um produto para um cliente.
   async liberarReserva(produtoId, clienteId) {
     await pool.execute(
       'DELETE FROM reservas_estoque WHERE produto_id = ? AND cliente_id = ?',
@@ -65,9 +63,7 @@ const EstoqueService = {
     );
   },
 
-  /**
-   * Libera todas as reservas de um cliente (ao limpar carrinho ou finalizar pedido).
-   */
+  // Libera todas as reservas de um cliente (ao limpar carrinho ou finalizar pedido).
   async liberarTodasReservas(clienteId) {
     await pool.execute(
       'DELETE FROM reservas_estoque WHERE cliente_id = ?',
@@ -75,12 +71,11 @@ const EstoqueService = {
     );
   },
 
-  /**
-   * Dá baixa real no estoque após confirmação de venda.
-   * Deve ser chamado dentro de uma transação externa.
-   * RF0053
-   * @param {object} conexao - conexão com transação aberta
-   */
+  /*
+  Dá baixa real no estoque após confirmação de venda.
+    Deve ser chamado dentro de uma transação externa.
+    RF0053
+  */
   async darBaixa(produtoId, quantidade, pedidoId, conexao) {
     const [[produto]] = await conexao.execute(
       'SELECT estoque_atual FROM produtos WHERE id = ? FOR UPDATE',
@@ -105,12 +100,11 @@ const EstoqueService = {
     );
   },
 
-  /**
-   * Reinserção de produto ao estoque após troca autorizada pelo admin.
-   * Deve ser chamado dentro de uma transação externa.
-   * RF0054
-   * @param {object} conexao - conexão com transação aberta
-   */
+  /*
+   Reinserção de produto ao estoque após troca autorizada pelo admin.
+   Deve ser chamado dentro de uma transação externa.
+   RF0054
+  */
   async reentrada(produtoId, quantidade, trocaId, conexao) {
     const [[produto]] = await conexao.execute(
       'SELECT estoque_atual FROM produtos WHERE id = ? FOR UPDATE',
@@ -132,9 +126,9 @@ const EstoqueService = {
     );
   },
 
-  /**
-   * Job: expira reservas vencidas e remove os itens do carrinho.
-   * Deve ser chamado periodicamente (ex: a cada minuto). RN0044/RNF0045
+  /*
+   Job: expira reservas vencidas e remove os itens do carrinho.
+   Deve ser chamado periodicamente (ex: a cada minuto). RN0044/RNF0045
    */
   async expirarReservasAntigas() {
     const conexao = await pool.getConnection();

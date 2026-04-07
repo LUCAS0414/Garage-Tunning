@@ -1,16 +1,7 @@
-/**
- * cupomService.js
- * Gerencia criação, validação e aplicação de cupons.
- * RF0044, RN0036, RN0037, RN0047
- */
 const pool = require('../db/config');
 
 const CupomService = {
 
-  /**
-   * Valida se um cupom pode ser usado por um cliente para determinado total.
-   * RN0037: valida veracidade do cupom.
-   */
   async validar(codigo, clienteId, totalPedido) {
     const [[cupom]] = await pool.execute(
       `SELECT * FROM cupons WHERE codigo = UPPER(?) AND ativo = 1`,
@@ -64,10 +55,7 @@ const CupomService = {
     };
   },
 
-  /**
-   * Registra o uso de um cupom (dentro de transação externa).
-   * @param {object} conexao - conexão com transação aberta
-   */
+  // Registra o uso de um cupom (dentro de transação externa).  
   async aplicar(cupomId, pedidoId, clienteId, valorDescontado, conexao) {
     await conexao.execute(
       `INSERT INTO cupons_uso (cupom_id, pedido_id, cliente_id, valor_descontado)
@@ -94,14 +82,14 @@ const CupomService = {
     return { id: result.insertId, codigo: codigo.toUpperCase() };
   },
 
-  /**
-   * Gera cupom de troca automaticamente após devolução. RN0036
-   * Chamado dentro de transação externa.
+  /*
+    Gera cupom de troca automaticamente após devolução. RN0036
+    Chamado dentro de transação externa.
    */
   async gerarTroca(clienteId, valor, trocaId, conexao) {
     const codigo = 'TROCA-' + trocaId + '-' + Date.now().toString(36).toUpperCase();
     const validade = new Date();
-    validade.setDate(validade.getDate() + 90); // 90 dias de validade
+    validade.setDate(validade.getDate() + 90);
 
     const [result] = await conexao.execute(
       `INSERT INTO cupons (codigo, tipo, valor, usos_maximos, validade, descricao, origem, cliente_id)
@@ -111,9 +99,9 @@ const CupomService = {
     return { id: result.insertId, codigo };
   },
 
-  /**
-   * Gera cupom de abandono de carrinho (3% para clientes Iniciante). RN0047
-   * Chamado dentro de transação externa.
+  /*
+    Gera cupom de abandono de carrinho (3% para clientes Iniciante). RN0047
+    Chamado dentro de transação externa.
    */
   async gerarAbandonoCarrinho(clienteId, conexao) {
     const codigo = 'VOLTA-' + clienteId + '-' + Date.now().toString(36).toUpperCase();
