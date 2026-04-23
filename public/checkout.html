@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | The Garage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/nav.css">
+  <link rel="stylesheet" href="css/checkout.css">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <div id="navbar-container"></div>
+
+  <main class="checkout-main">
+    <div class="container">
+      <h1 class="checkout-titulo"><i class="fas fa-lock"></i> Finalizar Pedido</h1>
+      <p class="texto-muted" style="margin-bottom:2rem;">Seus dados estão protegidos com criptografia de ponta a ponta.</p>
+
+      <div class="checkout-layout">
+
+        <!-- COLUNA ESQUERDA -->
+        <div class="checkout-left">
+
+          <!-- Endereço -->
+          <div class="checkout-card">
+            <h2 class="checkout-section-titulo"><i class="fas fa-map-marker-alt"></i> Endereço de Entrega</h2>
+            <div id="enderecoOpcoes" class="checkout-opcoes-list">
+              <div class="loading-placeholder">Carregando endereços...</div>
+            </div>
+          </div>
+
+          <!-- Pagamento -->
+          <div class="checkout-card">
+            <h2 class="checkout-section-titulo"><i class="fas fa-credit-card"></i> Forma de Pagamento</h2>
+            <div id="cartaoOpcoes" class="checkout-opcoes-list">
+              <div class="loading-placeholder">Carregando cartões...</div>
+            </div>
+
+            <!-- Form novo cartão (exibido quando "Novo cartão" está selecionado) -->
+            <div id="novoCartaoForm" style="display:none; margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--cor-borda);">
+              <p class="texto-muted texto-pequeno" style="margin-bottom:1rem;">Preencha os dados do novo cartão:</p>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Número do Cartão <span class="required">*</span></label>
+                  <input type="text" class="input-field" id="checkoutCartaoNum" placeholder="0000 0000 0000 0000" maxlength="19">
+                </div>
+                <div class="input-grupo">
+                  <label>Bandeira</label>
+                  <select class="input-field" id="checkoutCartaoBandeira">
+                    <option value="VISA">Visa</option>
+                    <option value="MASTERCARD">Mastercard</option>
+                    <option value="ELO">Elo</option>
+                    <option value="AMEX">AmEx</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-grupo">
+                <label>Nome Impresso no Cartão <span class="required">*</span></label>
+                <input type="text" class="input-field" id="checkoutCartaoNome" placeholder="NOME COMO NO CARTÃO" style="text-transform:uppercase;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Cupom -->
+          <div class="checkout-card">
+            <h2 class="checkout-section-titulo"><i class="fas fa-ticket-alt"></i> Cupom de Desconto</h2>
+            <div style="display:flex; gap:0.75rem;">
+              <input type="text" class="input-field" id="checkoutCupom" placeholder="Código do cupom" style="flex:1; text-transform:uppercase;">
+              <button class="btn btn-outline btn-sm" id="btnAplicarCupomCheckout">Aplicar</button>
+            </div>
+            <div id="checkoutCupomFeedback" style="display:none; margin-top:0.75rem;"></div>
+          </div>
+
+        </div>
+
+        <!-- COLUNA DIREITA: RESUMO -->
+        <div class="checkout-right">
+          <div class="checkout-card checkout-resumo">
+            <h2 class="checkout-section-titulo">Resumo do Pedido</h2>
+
+            <div id="checkoutItens" class="checkout-itens-lista"></div>
+
+            <div id="checkoutCalc" class="checkout-calculo" style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--cor-borda);"></div>
+
+            <button class="btn btn-primario w-100" id="btnConfirmarPedido" style="margin-top:1.5rem; padding:1rem; font-size:1rem;">
+              <span id="btnConfTexto"><i class="fas fa-lock"></i> Confirmar Pedido</span>
+              <span id="btnConfLoad" style="display:none; align-items:center; justify-content:center; gap:0.5rem;">
+                <i class="fas fa-spinner fa-spin"></i> Processando...
+              </span>
+            </button>
+
+            <p class="texto-muted texto-pequeno" style="text-align:center; margin-top:0.75rem;">
+              <i class="fas fa-shield-alt"></i> Compra 100% segura e protegida
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: PEDIDO CONFIRMADO -->
+  <div class="modal-overlay" id="modalConfirmacao">
+    <div class="modal" style="text-align:center; max-width:480px;">
+      <div style="font-size:3rem; margin-bottom:1rem;">✅</div>
+      <h2 style="color:var(--cor-primaria); margin-bottom:0.5rem;">Pedido Confirmado!</h2>
+      <p class="texto-muted">Seu pedido foi recebido e está sendo processado.</p>
+      <div style="margin:1.5rem 0; padding:1rem; background:var(--cor-fundo-card); border-radius:8px; border:1px solid var(--cor-borda);">
+        <div class="texto-muted texto-pequeno">Número do Pedido</div>
+        <div style="font-family:var(--fonte-mono); font-size:1.4rem; color:var(--cor-primaria); font-weight:700;" id="numPedidoGerado">#GT-2026-0001</div>
+      </div>
+      <p class="texto-muted texto-pequeno">Você pode acompanhar seu pedido na aba <strong>Meus Pedidos</strong> do seu perfil.</p>
+      <div style="display:flex; gap:0.75rem; margin-top:1.5rem; justify-content:center;">
+        <a href="/perfil.html" class="btn btn-primario">Ver Meus Pedidos</a>
+        <a href="/index.html" class="btn btn-outline">Continuar Comprando</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="global.js"></script>
+  <script src="checkout.js"></script>
+</body>
+</html>

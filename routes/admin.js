@@ -1,0 +1,293 @@
+const express        = require('express');
+const router         = express.Router();
+const pool           = require('../db/config');
+const PedidoService  = require('../services/pedidoService');
+const TrocaService   = require('../services/trocaService');
+const CupomService   = require('../services/cupomService');
+const AdminService   = require('../services/adminService');
+
+// ====================================================
+// DASHBOARD
+// ====================================================
+
+// GET /api/admin/dashboard
+router.get('/dashboard', async (req, res) => {
+  try {
+    const stats = await AdminService.estatisticasDashboard();
+    res.json(stats);
+  } catch (err) {
+    console.error('[GET /api/admin/dashboard]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/distribuicao-status
+router.get('/distribuicao-status', async (req, res) => {
+  try {
+    const dados = await AdminService.distribuicaoStatus();
+    res.json(dados);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/historico-vendas?dataInicio=YYYY-MM-DD&dataFim=YYYY-MM-DD&agrupamento=dia|semana|mes
+router.get('/historico-vendas', async (req, res) => {
+  try {
+    const hoje    = new Date().toISOString().split('T')[0];
+    const seteDias = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const {
+      dataInicio   = seteDias,
+      dataFim      = hoje,
+      agrupamento  = 'dia',
+    } = req.query;
+    const resultado = await AdminService.historicoVendas(dataInicio, dataFim, agrupamento);
+    res.json(resultado);
+  } catch (err) {
+    console.error('[GET /api/admin/historico-vendas]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ====================================================
+// PEDIDOS
+// ====================================================
+
+// GET /api/admin/pedidos?status=&busca=&pagina=&limite=
+router.get('/pedidos', async (req, res) => {
+  try {
+    const { status, busca, pagina = 1, limite = 20 } = req.query;
+    const resultado = await PedidoService.listarAdmin({
+      status:  status || null,
+      busca:   busca  || null,
+      pagina:  parseInt(pagina),
+      limite:  parseInt(limite),
+    });
+
+    // Carregar itens de cada pedido para o admin-vendas.js
+    for (const pedido of resultado.pedidos) {
+      const [itens] = await pool.execute(
+        `SELECT pi.quantidade, pi.preco_unitario,
+                pr.nome AS nome_produto, pr.codigo AS codigo_produto
+         FROM pedido_itens pi
+         JOIN produtos pr ON pr.id = pi.produto_id
+         WHERE pi.pedido_id = ?`,
+        [pedido.id]
+      );
+      pedido.itens = itens;
+    }
+    res.json(resultado);
+  } catch (err) {
+    console.error('[GET /api/admin/pedidos]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/pedidos/:id — detalhe completo
+router.get('/pedidos/:id', async (req, res) => {
+  try {
+    const pedido = await PedidoService.detalhe(req.params.id);
+    res.json(pedido);
+  } catch (err) {
+    const status = err.message.includes('não encontrado') ? 404 : 500;
+    res.status(status).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/pedidos/:id/status
+// Body: { status }
+router.put('/pedidos/:id/status', async (req, res) => {
+  const { status } = req.body;
+  if (!status) return res.status(400).json({ error: 'Status é obrigatório.' });
+  try {
+    const resultado = await PedidoService.atualizarStatus(req.params.id, status);
+    res.json(resultado);
+  } catch (err) {
+    const code = err.message.includes('inválida') || err.message.includes('não encontrado') ? 400 : 500;
+    res.status(code).json({ error: err.message });
+  }
+});
+
+// ====================================================
+// TROCAS
+// ====================================================
+
+// GET /api/admin/trocas?status=
+router.get('/trocas', async (req, res) => {
+  try {
+    const trocas = await TrocaService.listarAdmin({ status: req.query.status || null });
+    res.json(trocas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/trocas/:trocaId/autorizar
+router.put('/trocas/:trocaId/autorizar', async (req, res) => {
+  try {
+    const resultado = await TrocaService.autorizar(req.params.trocaId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/trocas/:trocaId/negar
+router.put('/trocas/:trocaId/negar', async (req, res) => {
+  try {
+    const resultado = await TrocaService.negar(req.params.trocaId);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/trocas/:trocaId/recebimento
+// Body: { retornarEstoque: true|false }
+router.put('/trocas/:trocaId/recebimento', async (req, res) => {
+  try {
+    const resultado = await TrocaService.confirmarRecebimento(
+      req.params.trocaId,
+      req.body.retornarEstoque === true
+    );
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Atalhos para autorizar/negar troca por pedido_id (usado em admin-vendas.js)
+router.put('/trocas/pedido/:pedidoId/autorizar', async (req, res) => {
+  try {
+    // Buscar troca pelo pedido
+    const [[troca]] = await pool.execute(
+      "SELECT id FROM solicitacoes_troca WHERE pedido_id = ? AND status = 'PENDENTE' LIMIT 1",
+      [req.params.pedidoId]
+    );
+    if (!troca) return res.status(404).json({ error: 'Troca pendente não encontrada.' });
+    const resultado = await TrocaService.autorizar(troca.id);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/trocas/pedido/:pedidoId/negar', async (req, res) => {
+  try {
+    const [[troca]] = await pool.execute(
+      "SELECT id FROM solicitacoes_troca WHERE pedido_id = ? AND status = 'PENDENTE' LIMIT 1",
+      [req.params.pedidoId]
+    );
+    if (!troca) return res.status(404).json({ error: 'Troca não encontrada.' });
+    const resultado = await TrocaService.negar(troca.id);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/trocas/pedido/:pedidoId/recebimento', async (req, res) => {
+  try {
+    const [[troca]] = await pool.execute(
+      "SELECT id FROM solicitacoes_troca WHERE pedido_id = ? AND status = 'AUTORIZADO' LIMIT 1",
+      [req.params.pedidoId]
+    );
+    if (!troca) return res.status(404).json({ error: 'Troca autorizada não encontrada.' });
+    const resultado = await TrocaService.confirmarRecebimento(troca.id, req.body.retornarEstoque === true);
+    res.json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ====================================================
+// CUPONS
+// ====================================================
+
+// GET /api/admin/cupons
+router.get('/cupons', async (req, res) => {
+  try {
+    const cupons = await CupomService.listar();
+    res.json(cupons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/cupons
+// Body: { codigo, tipo, valor, data_validade?, usuario_id? }
+router.post('/cupons', async (req, res) => {
+  try {
+    const resultado = await CupomService.gerar(req.body);
+    res.status(201).json(resultado);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// PUT /api/admin/cupons/:id — ativar/desativar cupom
+router.put('/cupons/:id', async (req, res) => {
+  const { status } = req.body;
+  if (status === undefined) return res.status(400).json({ error: 'Status é obrigatório.' });
+  try {
+    await pool.execute('UPDATE cupons SET status = ? WHERE id = ?', [status ? 1 : 0, req.params.id]);
+    res.json({ mensagem: 'Cupom atualizado.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ====================================================
+// CLIENTES (lista para admin)
+// ====================================================
+
+// GET /api/admin/clientes?busca=&pagina=&limite=
+router.get('/clientes', async (req, res) => {
+  try {
+    const { busca, pagina = 1, limite = 20 } = req.query;
+    const offset = (parseInt(pagina) - 1) * parseInt(limite);
+    const params = [];
+    let where = '1=1';
+
+    if (busca) {
+      where += ' AND (nome LIKE ? OR email LIKE ? OR cpf LIKE ?)';
+      const like = `%${busca}%`;
+      params.push(like, like, like);
+    }
+
+    const [clientes] = await pool.execute(
+      `SELECT id, codigo_cliente, nome, email, cpf, ranking, pontos_garagem, status, data_cadastro
+       FROM clientes WHERE ${where} ORDER BY data_cadastro DESC LIMIT ? OFFSET ?`,
+      [...params, parseInt(limite), offset]
+    );
+    const [[{ total }]] = await pool.execute(
+      `SELECT COUNT(*) AS total FROM clientes WHERE ${where}`, params
+    );
+    res.json({ clientes, total, pagina: parseInt(pagina), limite: parseInt(limite) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ====================================================
+// PRODUTOS (admin — sem restrição de apenasAtivos)
+// ====================================================
+
+// GET /api/admin/produtos — lista todos incluindo inativos
+router.get('/produtos', async (req, res) => {
+  try {
+    const ProdutoService = require('../services/produtosService');
+    const resultado = await ProdutoService.listar({
+      categoria:    req.query.categoria || null,
+      busca:        req.query.busca     || null,
+      pagina:       parseInt(req.query.pagina  || 1),
+      limite:       parseInt(req.query.limite  || 100),
+      apenasAtivos: false,
+    });
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;

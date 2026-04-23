@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil | The Garage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/nav.css">
+  <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body>
+
+  <div id="navbar-container"></div>
+
+  <main class="perfil-main">
+    <div class="container">
+
+      <div class="perfil-header">
+        <div class="perfil-avatar">
+          <div class="perfil-avatar__img"><i class="fas fa-user"></i></div>
+          <div class="perfil-avatar__rank" data-tooltip="Garage Rank"><i class="fas fa-star"></i></div>
+        </div>
+        <div class="perfil-header__info">
+          <h1 id="perfilNome"></h1>
+          <p id="perfilEmail" class="texto-muted"></p>
+          <div class="perfil-rank">
+            <!-- Futuro: sistema de ranking por compras -->
+            <div class="perfil-xp">
+              <div class="perfil-xp__label">
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="perfil-header__acoes">
+          <button class="btn btn-danger btn-sm" id="btnLogout">Sair</button>
+        </div>
+      </div>
+
+      <div class="perfil-layout">
+        <nav class="perfil-sidebar">
+          <button class="perfil-sidebar__item ativo" data-tab="dados">
+            <i class="fas fa-user"></i> Dados Pessoais
+          </button>
+          <button class="perfil-sidebar__item" data-tab="enderecos">
+            <i class="fas fa-location-dot"></i> Endereços
+          </button>
+          <button class="perfil-sidebar__item" data-tab="cartoes">
+            <i class="fas fa-credit-card"></i> Cartões
+          </button>
+          <button class="perfil-sidebar__item" data-tab="pedidos">
+            <i class="fas fa-box"></i> Meus Pedidos
+          </button>
+          <button class="perfil-sidebar__item" data-tab="senha">
+            <i class="fas fa-key"></i> Alterar Senha
+          </button>
+        </nav>
+
+        <div class="perfil-conteudo">
+
+          <section class="perfil-tab ativo" id="tab-dados">
+            <div class="perfil-tab__header">
+              <h2>Dados Pessoais</h2>
+              <button class="btn btn-outline btn-sm" id="btnEditarDados"><i class="fas fa-pen"></i> Editar</button>
+            </div>
+            <div class="dados-grid" id="dadosView">
+              <div class="dado-item"><span class="dado-label">Nome</span><span class="dado-valor" id="dNome">...</span></div>
+              <div class="dado-item"><span class="dado-label">Email</span><span class="dado-valor" id="dEmail">...</span></div>
+              <div class="dado-item"><span class="dado-label">CPF</span><span class="dado-valor" id="dCpf">...</span></div>
+              <div class="dado-item"><span class="dado-label">Telefone</span><span class="dado-valor" id="dTelefone">...</span></div>
+              <div class="dado-item"><span class="dado-label">Data de Nascimento</span><span class="dado-valor" id="dDataNasc">...</span></div>
+              <div class="dado-item"><span class="dado-label">Gênero</span><span class="dado-valor" id="dGenero">...</span></div>
+            </div>
+
+            <!-- Formulário de edição-->
+            <div class="dados-form" id="dadosForm" style="display:none">
+              <div class="input-grupo mb-2">
+                <label>Email</label>
+                <input type="email" class="input-field" id="editEmail" placeholder="seu@email.com">
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Nome Completo</label>
+                  <input type="text" class="input-field" id="editNome">
+                </div>
+                <div class="input-grupo">
+                  <label>Telefone</label>
+                  <input type="text" class="input-field" value="(11) 98765-4321" id="editTelefone">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Data de Nascimento</label>
+                  <input type="date" class="input-field" id="editDataNasc">
+                </div>
+                <div class="input-grupo">
+                  <label>Gênero</label>
+                  <select class="input-field" id="editGenero">
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.75rem; margin-top:0.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primario" id="btnSalvarDados">Salvar Alterações</button>
+                <button class="btn btn-outline" id="btnCancelarDados">Cancelar</button>
+                <button class="btn btn-danger" id="btnInativarConta" style="margin-left:auto;">Inativar Conta</button>
+              </div>
+            </div>
+          </section>
+
+          <!--endereço -->
+          <section class="perfil-tab" id="tab-enderecos">
+            <div class="perfil-tab__header">
+              <h2>Endereços</h2>
+              <button class="btn btn-outline btn-sm" id="btnNovoEndereco">+ Adicionar</button>
+            </div>
+
+            <div class="enderecos-lista" id="enderecosList">
+              <div class="endereco-item">
+                <div class="endereco-item__info">
+                  <div class="flex" style="gap:0.5rem; align-items:center; margin-bottom:0.25rem;">
+                    <span class="badge badge-verde">Principal</span>
+                    <span class="texto-pequeno texto-muted">Casa</span>
+                  </div>
+                  <strong></strong>
+                  <span class="texto-pequeno texto-muted"></span>
+                </div>
+                <div class="endereco-item__ações">
+                  <button class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></button>
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+
+              <div class="endereco-item">
+                <div class="endereco-item__info">
+                  <div class="flex" style="gap:0.5rem; align-items:center; margin-bottom:0.25rem;">
+                    <span class="texto-pequeno texto-muted">Comercial</span>
+                  </div>
+                  <strong></strong>
+                  <span class="texto-pequeno texto-muted"></span>
+                </div>
+                <div class="endereco-item__ações">
+                  <button class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></button>
+                  <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="endereco-form card" id="enderecoForm" style="display:none; padding:1.5rem; margin-top:1rem;">
+              <h3 style="margin-bottom:1rem; font-size:0.9rem;">Novo Endereço</h3>
+
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Identificação (Ex: Casa da Praia)</label>
+                  <input type="text" class="input-field" id="endIdentificacao">
+                </div>
+                <div class="input-grupo">
+                  <label>Finalidade</label>
+                  <select class="input-field" id="endTipoUso">
+                    <option value="ENTREGA">Apenas Entrega</option>
+                    <option value="COBRANCA">Apenas Cobrança</option>
+                    <option value="AMBOS">Entrega e Cobrança</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="input-grupo">
+                <label>CEP</label>
+                <input type="text" class="input-field" id="endCep" placeholder="00000-000">
+              </div>
+
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Logradouro</label>
+                  <input type="text" class="input-field" placeholder="Rua, Av." id="endLogradouro">
+                </div>
+                <div class="input-grupo">
+                  <label>Número</label>
+                  <input type="text" class="input-field" id="endNumero">
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Bairro</label>
+                  <input type="text" class="input-field" id="endBairro">
+                </div>
+                <div class="input-grupo">
+                  <label>Complemento</label>
+                  <input type="text" class="input-field" id="endComplemento">
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Cidade</label>
+                  <input type="text" class="input-field" id="endCidade">
+                </div>
+                <div class="input-grupo">
+                  <label>UF</label>
+                  <input type="text" class="input-field" id="endEstado" maxlength="2">
+                </div>
+              </div>
+
+              <div class="input-grupo">
+                <label>Observações</label>
+                <input type="text" class="input-field" id="endObs" placeholder="Ex: Deixar na portaria">
+              </div>
+
+              <div style="display:flex; gap:0.75rem;">
+                <button class="btn btn-primario btn-sm" id="btnSalvarEndereco">Salvar</button>
+                <button class="btn btn-outline btn-sm" id="btnCancelarEndereco">Cancelar</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="perfil-tab" id="tab-cartoes">
+            <div class="perfil-tab__header">
+              <h2>Cartões Cadastrados</h2>
+              <button class="btn btn-outline btn-sm" id="btnNovoCartao">+ Adicionar</button>
+            </div>
+
+            <div class="cartoes-lista" id="cartoesList">
+              <p class="texto-muted">Nenhum cartão cadastrado.</p>
+            </div>
+            <div class="cartao-form card" id="cartaoForm" style="display:none; padding:1.5rem; margin-top:1rem;">
+              <h3 style="margin-bottom:1rem; font-size:0.9rem;">Novo Cartão</h3>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>Número do Cartão</label>
+                  <input type="text" id="novoCartaoNum" class="input-field" placeholder="0000 0000 0000 0000" maxlength="19">
+                </div>
+                <div class="input-grupo">
+                  <label>Bandeira</label>
+                  <select id="novoCartaoBandeira" class="input-field">
+                    <option value="VISA">Visa</option>
+                    <option value="MASTERCARD">Mastercard</option>
+                    <option value="AMEX">American Express</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-grupo">
+                <label>Nome no Cartão</label>
+                <input type="text" id="novoCartaoNome" class="input-field" placeholder="Como impresso no cartão">
+              </div>
+              <div class="form-grid-2">
+                <div class="input-grupo">
+                  <label>CVV</label>
+                  <input type="text" id="novoCartaoCVV" class="input-field" placeholder="•••" maxlength="4">
+                </div>
+                <div class="auth-lembrar" style="align-self:end; margin-bottom:10px;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="novoCartaoPref">
+                    <span class="checkbox-custom"></span> Cartão Principal
+                  </label>
+                </div>
+              </div>
+              <div style="display:flex; gap:0.75rem;">
+                <button class="btn btn-primario btn-sm" id="btnSalvarCartao">Salvar</button>
+                <button class="btn btn-outline btn-sm" id="btnCancelarCartao">Cancelar</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="perfil-tab" id="tab-pedidos">
+            <div class="perfil-tab__header"><h2>Meus Pedidos</h2></div>
+            <div class="pedidos-filtro">
+              <button class="pedido-filtro-btn ativo" data-status="todos">Todos</button>
+              <button class="pedido-filtro-btn" data-status="em-processamento">Processando</button>
+              <button class="pedido-filtro-btn" data-status="entregue">Entregues</button>
+            </div>
+            <div class="pedidos-lista" id="pedidosList">
+              <p class="texto-muted">Você não tem pedidos recentes.</p>
+            </div>
+          </section>
+
+          <section class="perfil-tab" id="tab-senha">
+            <div class="perfil-tab__header"><h2>Alterar Senha</h2></div>
+            <form class="auth-form" id="formAlterarSenha" style="max-width:420px;" novalidate>
+              <div class="input-grupo">
+                <label>Senha Atual</label>
+                <div class="input-senha-wrapper">
+                  <input type="password" id="senhaAtual" class="input-field" placeholder="Sua senha atual">
+                  <button type="button" class="input-senha-toggle" id="toggleAtual"><i class="fas fa-eye"></i></button>
+                </div>
+              </div>
+              <div class="input-grupo">
+                <label>Nova Senha</label>
+                <div class="input-senha-wrapper">
+                  <input type="password" id="novaSenha" class="input-field" placeholder="Mínimo 8 caracteres">
+                  <button type="button" class="input-senha-toggle" id="toggleNova"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="senha-forca" id="novaSenhaForca" style="display:none">
+                  <div class="senha-forca__barra"><div class="senha-forca__fill" id="novaSenhaFill"></div></div>
+                  <div class="senha-forca__info"><span class="senha-forca__nivel" id="novaSenhaNivel"></span></div>
+                </div>
+              </div>
+              <div class="input-grupo">
+                <label>Confirmar Nova Senha</label>
+                <div class="input-senha-wrapper">
+                  <input type="password" id="confirmarNovaSenha" class="input-field" placeholder="Repita a nova senha">
+                  <button type="button" class="input-senha-toggle" id="toggleConf"><i class="fas fa-eye"></i></button>
+                </div>
+                <span class="input-erro-msg" id="errNovaSenhaConf" style="display:none"><i class="fas fa-triangle-exclamation"></i> Senhas não coincidem</span>
+              </div>
+              <button type="submit" class="btn btn-primario">Salvar Nova Senha</button>
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RODAPÉ SIMPLIFICADO -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2026 TheGarage. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="global.js"></script>
+  <script src="perfil.js"></script>
+</body>
+</html>

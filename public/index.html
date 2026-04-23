@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Garage</title>
+  <!--Fonte icones-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!--css-->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/nav.css">
+  <link rel="stylesheet" href="css/index.css">
+
+</head>
+
+<body>
+
+  <!--nav-->
+  <div id="navbar-container"></div>
+
+  <!--Hero Banner-->
+  <section class="hero">
+    <div class="hero__slides" id="heroSlides">
+
+      <!--Slide 1-->
+      <div class="hero__slide ativo" data-slide="0" style="background-image:url(https://i.pinimg.com/1200x/70/8c/a2/708ca2e87fdb19c6748703f9aa263707.jpg); background-size: cover; background-position: center;">
+        <div class="container hero__content">
+          <div class="hero__texto">
+            <span class="hero__tag">Novo Lançamento</span>
+            <h1 class="hero__titulo">
+              DRIFT<br>
+              <span class="hero__titulo--neon">KING</span>
+            </h1>
+            <p class="hero__descricao">
+              Nissan 350Z totalmente modificado para você.<br>
+              560cv 2JZ-GTE/VR38DETT
+            </p>
+            <div class="hero__preco">
+              <span class="hero__preco-label">A partir de</span>
+              <span class="hero__preco-valor">R$325.000 </span>
+            </div>
+            <div class="hero__acoes">
+              <a href="produto.html" class="btn btn-primario btn-lg">Ver Produto</a>
+              <a href="categoria-jdm.html" class="btn btn-outline">Ver Categoria</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Slide 2-->
+      <div class="hero__slide" data-slide="1" style="background-image:url(https://i.pinimg.com/736x/30/31/f6/3031f6e04e88c866468ad800afe633ea.jpg); background-size: cover; background-position: center;">
+        <div class="container hero__content">
+          <div class="hero__texto">
+            <span class="hero__tag">Muscle</span>
+            <h1 class="hero__titulo">
+              CAMARO SS<br>
+              <span class="hero__titulo--neon">SUPERCHARGED</span>
+            </h1>
+            <p class="hero__descricao">
+              O poder do Camaro SS montado para você acelerar.<br>
+              Acelere com o V8 LT4 e destrua a concorrência!
+            </p>
+            <div class="hero__preco">
+              <span class="hero__preco-label">Promoção especial</span>
+              <span class="hero__preco-valor">R$ 290.000</span>
+            </div>
+            <div class="hero__acoes">
+              <a href="produto.html" class="btn btn-primario btn-lg">Ver Produto</a>
+              <a href="categoria-americanos.html" class="btn btn-outline">Ver categoria</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--Slide 3-->
+      <div class="hero__slide" data-slide="2" style="background-image:url(https://i.pinimg.com/736x/72/4d/93/724d93bbe388986b6032545a319159fd.jpg); background-size: cover; background-position: center;">
+        <div class="container hero__content">
+          <div class="hero__texto">
+            <span class="hero__tag" style="border-color: var(--cor-destaque); color: var(--cor-destaque);"> Oferta Relâmpago</span>
+            <h1 class="hero__titulo">
+              BODY KIT<br>
+              <span class="hero__titulo--laranja">O'Connor</span>
+            </h1>
+            <p class="hero__descricao">
+              Personalize seu carro com os novos Kits Torettos.<br>
+              Traga o estilo O'Connor para seu carro.
+            </p>
+            <div class="hero__preco">
+              <span class="hero__preco-original">R$ 50.000</span>
+              <span class="hero__preco-valor" style="color: var(--cor-destaque);">R$ 35.000</span>
+            </div>
+            <div class="hero__acoes">
+              <a href="produto.html" class="btn btn-destaque btn-lg">Aproveitar Oferta</a>
+              <a href="categoria-pecas.html" class="btn btn-outline" id="btnOutlinePromo">Ver Mais</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!--Controles-->
+    <div class="hero__controles">
+      <button class="hero__btn-slide hero__btn-slide--prev" id="heroPrev" aria-label="Slide anterior"><i class="fas fa-chevron-left"></i></button>
+      <div class="hero__dots" id="heroDots">
+        <button class="hero__dot ativo" data-idx="0"></button>
+        <button class="hero__dot" data-idx="1"></button>
+        <button class="hero__dot" data-idx="2"></button>
+      </div>
+      <button class="hero__btn-slide hero__btn-slide--next" id="heroNext" aria-label="Próximo slide"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <!--Barra de progresso-->
+    <div class="hero__progress">
+      <div class="hero__progress-bar" id="heroProgress"></div>
+    </div>
+  </section>
+
+  <!--Seção categorias-->
+  <section class="secao secao-categorias" id="categorias">
+    <div class="container">
+      <div class="secao-titulo">
+        <h2>EXPLORE AS <span>CATEGORIAS</span></h2>
+        <p>Carros e Peças de todo o mundo para você aproveitar</p>
+      </div>
+
+      <div class="categorias-grid">
+        <!--JDM-->
+        <a href="categoria-jdm.html" class="categoria-card jp__cor" data-categoria="jdm">
+          <div class="categoria-card__bg"></div>
+          <div class="categoria-card__bandeira">JP</div>
+          <div class="categoria-card__info">
+            <span class="categoria-card__tag">Japanese Performance</span>
+            <h3 class="categoria-card__nome">JDM</h3>
+            <p class="categoria-card__desc">Velocidade direta do Japão</p>
+          </div>
+          <div class="categoria-card__glow jp__cor"></div>
+        </a>
+
+        <!--US-->
+        <a href="categoria-americanos.html" class="categoria-card us__cor" data-categoria="americanos">
+          <div class="categoria-card__bg"></div>
+          <div class="categoria-card__bandeira">US</div>
+          <div class="categoria-card__info">
+            <span class="categoria-card__tag">Muscle & Power</span>
+            <h3 class="categoria-card__nome">AMERICANOS</h3>
+            <p class="categoria-card__desc">Potência americana pura</p>
+
+          </div>
+          <div class="categoria-card__glow"></div>
+        </a>
+
+        <!--IT-->
+        <a href="categoria-italianos.html" class="categoria-card it__cor" data-categoria="italianos">
+          <div class="categoria-card__bg"></div>
+          <div class="categoria-card__bandeira">IT</div>
+          <div class="categoria-card__info">
+            <span class="categoria-card__tag">Elegance & Speed</span>
+            <h3 class="categoria-card__nome">ITALIANOS</h3>
+            <p class="categoria-card__desc">Estilo e performance italianos</p>
+          </div>
+          <div class="categoria-card__glow"></div>
+        </a>
+
+        <!--AL-->
+        <a href="categoria-alemaes.html" class="categoria-card al__cor" data-categoria="alemaes">
+          <div class="categoria-card__bg"></div>
+          <div class="categoria-card__bandeira">AL</div>
+          <div class="categoria-card__info">
+            <span class="categoria-card__tag">Precision Engineering</span>
+            <h3 class="categoria-card__nome">ALEMÃES</h3>
+            <p class="categoria-card__desc">Engenharia de precisão</p>
+          </div>
+          <div class="categoria-card__glow"></div>
+        </a>
+
+        <!--PC-->
+        <a href="categoria-pecas.html" class="categoria-card pc__cor" data-categoria="alemaes">
+          <div class="categoria-card__bg"></div>
+          <div class="categoria-card__bandeira">PC</div>
+          <div class="categoria-card__info">
+            <span class="categoria-card__tag">STYLE & PERFORMANCE</span>
+            <h3 class="categoria-card__nome">PEÇAS</h3>
+            <p class="categoria-card__desc">Estilo e velocidade do mundo</p>
+          </div>
+          <div class="categoria-card__glow"></div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!--Produtos em destaque-->
+  <section class="secao" id="destaque">
+    <div class="container">
+      <div class="secao-titulo">
+        <h2>PRODUTOS EM <span>DESTAQUE</span></h2>
+        <p>Os produtos mais pedidos da semana</p>
+      </div>
+
+      <!--carrossel do js-->
+      <div class="carrossel-wrapper" id="carrosselDestaque">
+        <div class="carrossel-track" id="trackDestaque">
+
+        </div>
+        <button class="carrossel-btn carrossel-btn--prev" id="prevDestaque" aria-label="Anterior"> <i class="fas fa-chevron-left"></i></button>
+        <button class="carrossel-btn carrossel-btn--next" id="nextDestaque" aria-label="Próximo"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!--Seção JDM-->
+  <section class="secao secao-categoria-strip" id="secJDM">
+    <div class="container">
+      <div class="secao-strip__header">
+        <div>
+          <span class="secao-strip__bandeira">JP</span>
+          <h2 class="secao-strip__titulo">JDM <span>Performance</span></h2>
+          <p class="secao-strip__sub">Direto das ruas de Tóquio</p>
+        </div>
+        <a href="categoria-jdm.html" class="btn btn-outline"> Ver Todos <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <div class="carrossel-wrapper" id="carrosselJDM">
+        <div class="carrossel-track" id="trackJDM"></div>
+        <button class="carrossel-btn carrossel-btn--prev" id="prevJDM"><i class="fas fa-chevron-left"></i></button></button>
+        <button class="carrossel-btn carrossel-btn--next" id="nextJDM"><i class="fas fa-chevron-right"></i></button></button>
+      </div>
+    </div>
+  </section>
+
+  <!--Seção Americanos-->
+  <section class="secao secao-categoria-strip secao-escura" id="secAmericanos">
+    <div class="container">
+      <div class="secao-strip__header">
+        <div>
+          <span class="secao-strip__bandeira">US</span>
+          <h2 class="secao-strip__titulo">Americanos <span>Power</span></h2>
+          <p class="secao-strip__sub">Muscle cars & American muscle</p>
+        </div>
+        <a href="categoria-americanos.html" class="btn btn-outline">Ver Todos <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <div class="carrossel-wrapper" id="carrosselAmericanos">
+        <div class="carrossel-track" id="trackAmericanos"></div>
+        <button class="carrossel-btn carrossel-btn--prev" id="prevAmericanos"><i class="fas fa-chevron-left"></i></button>
+        <button class="carrossel-btn carrossel-btn--next" id="nextAmericanos"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!--Banner CTA-->
+  <section class="banner-cta">
+    <div class="container">
+      <div class="banner-cta__inner">
+        <div class="banner-cta__texto">
+          <h2>CADASTRE-SE E <span>GANHE 10%</span> OFF</h2>
+          <p>Na sua primeira compra. Cupom gerado automaticamente.</p>
+        </div>
+        <a href="cadastro.html" class="btn btn-primario btn-lg">Criar Conta Grátis</a>
+      </div>
+    </div>
+  </section>
+
+  <!--Seção Italianos-->
+  <section class="secao secao-categoria-strip" id="secItalianos">
+    <div class="container">
+      <div class="secao-strip__header">
+        <div>
+          <span class="secao-strip__bandeira">IT</span>
+          <h2 class="secao-strip__titulo">Italianos <span>Elegance</span></h2>
+          <p class="secao-strip__sub">Estilo & Performance Italiano</p>
+        </div>
+        <a href="categoria-italianos.html" class="btn btn-outline">Ver Todos <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <div class="carrossel-wrapper" id="carrosselItalianos">
+        <div class="carrossel-track" id="trackItalianos"></div>
+        <button class="carrossel-btn carrossel-btn--prev" id="prevItalianos"><i class="fas fa-chevron-left"></i></button>
+        <button class="carrossel-btn carrossel-btn--next" id="nextItalianos"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!--Seção alemães-->
+  <section class="secao secao-categoria-strip secao-escura" id="secAlemaes">
+    <div class="container">
+      <div class="secao-strip__header">
+        <div>
+          <span class="secao-strip__bandeira">AL</span>
+          <h2 class="secao-strip__titulo">Alemães <span>Precision</span></h2>
+          <p class="secao-strip__sub">Engenharia germânica de alto nível</p>
+        </div>
+        <a href="categoria-alemaes.html" class="btn btn-outline">Ver Todos <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <div class="carrossel-wrapper" id="carrosselAlemaes">
+        <div class="carrossel-track" id="trackAlemaes"></div>
+        <button class="carrossel-btn carrossel-btn--prev" id="prevAlemaes"><i class="fas fa-chevron-left"></i></button>
+        <button class="carrossel-btn carrossel-btn--next" id="nextAlemaes"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!--Seção peças-->
+  <section class="secao secao-categoria-strip" id="secPecas">
+    <div class="container">
+      <div class="secao-strip__header">
+        <div>
+          <span class="secao-strip__bandeira">PC</span>
+          <h2 class="secao-strip__titulo">PEÇAS <span>AUTOPERFORMANCE</span></h2>
+          <p class="secao-strip__sub">Estilo & Velocidade</p>
+        </div>
+        <a href="categoria-pecas.html" class="btn btn-outline">Ver Todos <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <div class="carrossel-wrapper" id="carrosselPecas">
+        <div class="carrossel-track" id="trackPecas"></div>
+        <button class="carrossel-btn carrossel-btn--prev" id="prevItalianos"><i class="fas fa-chevron-left"></i></button>
+        <button class="carrossel-btn carrossel-btn--next" id="nextPecas"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!--Rodapé-->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__marca">
+          <div class="footer__logo">THE<span>GARAGE</span></div>
+          <p>O maior e-commerce de carros modificados e peças tuning do Brasil. Qualidade JDM, potência americana e precisão europeia em um só lugar.</p>
+          <div class="footer__social">
+            <a href="#" aria-label="Instagram"> <i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#" aria-label="TikTok"> <i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        <div>
+          <p class="footer__titulo">Categorias</p>
+          <ul class="footer__lista">
+            <li><a href="categoria-jdm.html">JDM</a></li>
+            <li><a href="categoria-americanos.html">Americanos</a></li>
+            <li><a href="categoria-italianos.html">Italianos</a></li>
+            <li><a href="categoria-alemaes.html">Alemães</a></li>
+            <li><a href="categoria-pecas.html">Peças</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__titulo">Minha Conta</p>
+          <ul class="footer__lista">
+            <li><a href="perfil.html">Meu Perfil</a></li>
+            <li><a href="perfil.html#pedidos">Meus Pedidos</a></li>
+            <li><a href="carrinho.html">Carrinho</a></li>
+            <li><a href="login.html">Entrar</a></li>
+            <li><a href="cadastro.html">Cadastrar</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__titulo">Informações</p>
+          <ul class="footer__lista">
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#">Política de Troca</a></li>
+            <li><a href="#">Frete e Entrega</a></li>
+            <li><a href="#">Privacidade</a></li>
+            <li><a href="#">Contato</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2024 TheGarage. Todos os direitos reservados. CNPJ: 00.000.000/0001-00</p>
+        <div class="footer__pagamentos">
+          <span>PIX</span>
+          <span>VISA</span>
+          <span>MASTER</span>
+          <span>ELO</span>
+          <span>BOLETO</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!--Sripts JS-->
+  <script src="global.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
