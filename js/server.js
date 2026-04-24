@@ -328,13 +328,15 @@ app.patch('/api/admin/pedidos/:pedidoId/status', async (req, res) => {
 // ================================================================
 
 // Cliente solicita troca
+
 app.post('/api/trocas', async (req, res) => {
   try {
-    const { clienteId, pedidoId, itens, motivo } = req.body;
-    if (!clienteId || !pedidoId || !motivo) {
-      return res.status(400).json({ error: 'clienteId, pedidoId e motivo são obrigatórios.' });
+    const { clienteId, pedidoId, produtoId, quantidade, motivo } = req.body;
+    if (!clienteId || !pedidoId || !produtoId || !motivo) {
+      return res.status(400).json({ error: 'clienteId, pedidoId, produtoId e motivo são obrigatórios.' });
     }
-    const resultado = await TrocaService.solicitar(clienteId, pedidoId, itens, motivo);
+//ROTAS DO BANCO DE DADOS CORRIGIDAS
+    const resultado = await TrocaService.solicitar(clienteId, pedidoId, produtoId, quantidade || 1, motivo);
     res.status(201).json(resultado);
   } catch (err) {
     res.status(400).json({ error: err.message });

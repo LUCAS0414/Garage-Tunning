@@ -323,6 +323,49 @@
       </div>
     </div>
   </footer>
+  
+ <div class="modal_overlay" id="modalSolicitarTroca">
+  <div class="modal_container">
+    <div class="modal_card">
+      <div class="modal_header">
+        <h3><i class="fas fa-right-left"></i> Solicitar Troca</h3>
+        <button class="btn-close" onclick="fecharModalTroca()">&times;</button>
+      </div>
+      
+      <div class="modal_body">
+        <p class="texto-muted mb-1">
+          Pedido: <span class="badge badge-outline" id="trocaPedidoCodigo">#0000</span>
+        </p>
+
+        <div class="input-grupo">
+          <label>Produto a trocar <span class="cor-erro">*</span></label>
+          <select class="input-field" id="trocaProdutoSelect"></select>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="input-grupo">
+            <label>Quantidade <span class="cor-erro">*</span></label>
+            <input type="number" class="input-field" id="trocaQuantidade" min="1" value="1">
+          </div>
+          <div class="input-grupo">
+            </div>
+        </div>
+
+        <div class="input-grupo">
+          <label>Motivo da troca <span class="cor-erro">*</span></label>
+          <textarea class="input-field" id="trocaMotivo" rows="3" placeholder="Descreva detalhadamente o motivo..."></textarea>
+        </div>
+
+        <div id="trocaFeedback"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="fecharModalTroca()">Cancelar</button>
+        <button class="btn btn-primario" id="btnEnviarTroca">Enviar Solicitação</button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <script src="global.js"></script>
   <script src="perfil.js"></script>

@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       const listaPedidos = document.getElementById('pedidosList');
       if (listaPedidos) {
         try {
-          const resPedidos = await fetch(`${API}/api/pedidos/${userId}`);
+          //correção do endereço banco de dados
+          const resPedidos = await fetch(`${API}/api/pedidos/cliente/${userId}`);
           if (resPedidos.ok) {
             const pedidos = await resPedidos.json();
             if (pedidos && pedidos.length > 0) {
@@ -117,6 +118,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const itensHTML = (p.itens || []).map(i =>
                   `<span class="texto-pequeno texto-muted">${i.nome_produto} x${i.quantidade}</span>`
                 ).join('<br>');
+                const itensParaModal = JSON.stringify(p.itens || []).replace(/"/g, '&quot;');
+                const btnTroca = p.status === 'ENTREGUE'
+                ? `<button class="btn btn-outline btn-sm" style="margin-top:0.75rem;"
+                  onclick="abrirModalTroca(${p.id}, '${p.codigo_pedido}', JSON.parse(this.dataset.itens))"
+                  data-itens="${itensParaModal}">
+                  🔄 Solicitar Troca
+                </button>`
+                : '';
                 return `
                   <div class="pedido-card card" data-status="${p.status}" style="padding:1rem; margin-bottom:0.75rem; border-left:3px solid ${st.cor};">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
@@ -130,6 +139,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                       </div>
                     </div>
                     <div style="margin-top:0.5rem;">${itensHTML || '<span class="texto-muted texto-pequeno">Sem itens</span>'}</div>
+                    ${btnTroca}
                   </div>`;
               }).join('');
             } else {
@@ -433,6 +443,67 @@ document.addEventListener('DOMContentLoaded', async function() {
     localStorage.removeItem('garage_user');
     window.location.href = 'login.html';
   });
+
+// --- TROCA DE PRODUTO ---
+let trocaPedidoIdAtual = null;
+
+window.abrirModalTroca = function(pedidoId, codigoPedido, itens) {
+  trocaPedidoIdAtual = pedidoId;
+  document.getElementById('trocaPedidoCodigo').textContent = '#' + codigoPedido;
+
+  const select = document.getElementById('trocaProdutoSelect');
+  select.innerHTML = itens.map(i =>
+    `<option value="${i.produto_id || i.id}">${i.nome_produto} (x${i.quantidade})</option>`
+  ).join('');
+
+  document.getElementById('trocaQuantidade').value = 1;
+  document.getElementById('trocaMotivo').value = '';
+  document.getElementById('trocaFeedback').innerHTML = '';
+
+  const modal = document.getElementById('modalSolicitarTroca');
+  modal.style.display = 'flex';
+};
+
+window.fecharModalTroca = function() {
+  document.getElementById('modalSolicitarTroca').style.display = 'none';
+};
+
+document.getElementById('btnEnviarTroca')?.addEventListener('click', async () => {
+  const produtoId  = document.getElementById('trocaProdutoSelect').value;
+  const quantidade = parseInt(document.getElementById('trocaQuantidade').value);
+  const motivo     = document.getElementById('trocaMotivo').value.trim();
+  const feedback   = document.getElementById('trocaFeedback');
+  const userId     = JSON.parse(localStorage.getItem('garage_user') || '{}').id;
+
+  if (!motivo) {
+    feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Informe o motivo da troca.</div>';
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${API}/api/trocas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clienteId:  userId,
+        pedidoId:   trocaPedidoIdAtual,
+        produtoId:  parseInt(produtoId),
+        quantidade,
+        motivo,
+      }),
+    });
+    const resultado = await resp.json();
+
+    if (resp.ok) {
+      feedback.innerHTML = '<div class="alerta alerta-sucesso">✓ Solicitação enviada! Aguarde a análise.</div>';
+      setTimeout(() => fecharModalTroca(), 2000);
+    } else {
+      feedback.innerHTML = `<div class="alerta alerta-erro">⚠ ${resultado.error}</div>`;
+    }
+  } catch (err) {
+    feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Erro de conexão.</div>';
+  }
+});
 
   // Inicializa
   carregarPerfil();

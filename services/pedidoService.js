@@ -64,10 +64,21 @@ const PedidoService = {
       const codigo     = await gerarCodigoPedido(conexao);
 
       // 3) Inserir pedido
+     const { pagamento = {} } = dados;
+     const metodoPag = pagamento.metodo || 'CARTAO_CREDITO';
+
+      // Validação do pagamento com 2 cartões (RN0034)
+      if (metodoPag === 'DOIS_CARTOES') {
+        if (pagamento.valor1 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
+        if (pagamento.valor2 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
+        const somaCartoes = pagamento.valor1 + pagamento.valor2;
+        if (Math.abs(somaCartoes - valorTotal) > 0.01) throw new Error('A soma dos cartões não bate com o total do pedido.');
+      }
+
       const [pedRes] = await conexao.execute(
-        `INSERT INTO pedidos (codigo_pedido, usuario_id, endereco_entrega_id, cupom_id, valor_frete, valor_total, status)
-         VALUES (?, ?, ?, ?, ?, ?, 'EM PROCESSAMENTO')`,
-        [codigo, usuarioId, enderecoId, cupomDados?.id || null, frete, valorTotal]
+        `INSERT INTO pedidos (codigo_pedido, usuario_id, endereco_entrega_id, cupom_id, valor_frete, valor_total, status, metodo_pagamento, pagamento_dados)
+        VALUES (?, ?, ?, ?, ?, ?, 'EM PROCESSAMENTO', ?, ?)`,
+        [codigo, usuarioId, enderecoId, cupomDados?.id || null, frete, valorTotal, metodoPag, JSON.stringify(pagamento)]
       );
       const pedidoId = pedRes.insertId;
 

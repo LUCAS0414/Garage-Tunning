@@ -134,3 +134,36 @@
   padding: 0.5rem 0;
   font-style: italic;
 }
+
+/* Estilos para as Abas de Pagamento */
+.metodo-abas-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.metodo-tab {
+  flex: 1;
+  min-width: 140px;
+  justify-content: center;
+  font-size: 0.75rem !important;
+  border-color: var(--cor-borda);
+}
+
+.metodo-tab.ativo {
+  background: var(--cor-primaria) !important;
+  color: var(--cor-fundo) !important;
+  border-color: var(--cor-primaria);
+}
+
+/* Ajuste para o checkbox de segundo cartão */
+#segundoCartaoToggle .checkbox-label {
+  user-select: none;
+}
+
+#segundoCartaoArea {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1rem;
+  border-radius: var(--radius-padrao);
+}

@@ -206,10 +206,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     const dataFim = hoje.toISOString().split('T')[0];
 
     const [dashboard, historico, distribuicao] = await Promise.all([
-      fetch('/api/admin/dashboard').then(r => r.json()).catch(() => ({})),
-      fetch(`/api/admin/historico-vendas?dataInicio=${dataInicio}&dataFim=${dataFim}&agrupamento=${agrupamento}`)
+      //correção do endereço banco de dados
+      fetch('/api/admin/stats').then(r => r.json()).catch(() => ({})),
+      fetch(`/api/admin/analise?dataInicio=${dataInicio}&dataFim=${dataFim}&agrupamento=${agrupamento}`)
         .then(r => r.json()).catch(() => ({ linhas: [], porCategoria: [], topProdutos: [] })),
-      fetch('/api/admin/distribuicao-status').then(r => r.json()).catch(() => []),
+      fetch('/api/admin/analise/status').then(r => r.json()).catch(() => []),
     ]);
 
     return { dashboard, historico, distribuicao };
@@ -348,4 +349,17 @@ document.addEventListener('DOMContentLoaded', async function() {
   window.addEventListener('resize', () => renderizar(periodoAtivo));
 
   renderizar(periodoAtivo);
+
+  // Tempo real: atualiza a cada 30 segundos
+  let intervaloTempReal = setInterval(() => renderizar(periodoAtivo), 30000);
+
+  // Para o polling quando o usuário sair da página
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(intervaloTempReal);
+    } else {
+      renderizar(periodoAtivo); // atualiza ao voltar
+      intervaloTempReal = setInterval(() => renderizar(periodoAtivo), 30000);
+    }
+});
 });
