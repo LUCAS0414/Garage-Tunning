@@ -1,10 +1,3 @@
-// pedidoService.js
-// Schema novo:
-//   pedidos: codigo_pedido, usuario_id, endereco_entrega_id, cupom_id, data_pedido, valor_frete, valor_total, status
-//   pedido_itens: pedido_id, produto_id, quantidade, preco_unitario
-//   Removidos: tabelas carrinho, pagamentos_pedido, reservas_estoque
-//   Status: 'EM PROCESSAMENTO', 'APROVADO', 'REPROVADO', 'EM TRANSPORTE', 'ENTREGUE', 'EM TROCA', 'TROCA AUTORIZADA', 'TROCADO'
-//   Itens chegam no payload (carrinho é localStorage no front)
 const pool        = require('../db/config');
 const EstoqueService = require('./estoqueService');
 const CupomService   = require('./cupomService');
@@ -19,12 +12,6 @@ async function gerarCodigoPedido(conexao) {
 
 const PedidoService = {
 
-  /**
-   * Cria pedido a partir dos itens enviados pelo front (localStorage).
-   * @param {object} dados
-   *   usuarioId, enderecoId, frete, cupomCodigo?,
-   *   itens: [{ produtoId, quantidade, preco }]
-   */
   async criar(dados) {
     const { usuarioId, enderecoId, frete = 0, cupomCodigo, itens = [] } = dados;
 
@@ -118,7 +105,7 @@ const PedidoService = {
     );
     for (const pedido of pedidos) {
       const [itens] = await pool.execute(
-        `SELECT pi.quantidade, pi.preco_unitario,
+        `SELECT pi.produto_id, pi.quantidade, pi.preco_unitario,
                 pr.nome AS nome_produto, pr.codigo AS codigo_produto
          FROM pedido_itens pi
          JOIN produtos pr ON pr.id = pi.produto_id

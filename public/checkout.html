@@ -60,9 +60,37 @@
 
               <div id="segundoCartaoArea" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--cor-borda);">
                 <p class="texto-muted texto-pequeno" style="margin-bottom:0.5rem;">Valor no 1º cartão (mínimo R$ 10,00):</p>
-                <input type="number" class="input-field" id="valorCartao1" min="10" step="0.01" placeholder="R$ 0,00" style="margin-bottom:1rem;">
-                <p class="texto-muted texto-pequeno" style="margin-bottom:0.5rem;">Selecione o 2º cartão:</p>
+                <input type="number" class="input-field" id="valorCartao1" min="10" step="0.01" placeholder="R$ 0,00" style="margin-bottom:0.5rem;">
+                <p class="texto-muted texto-pequeno" style="margin-bottom:1rem;">
+                  Valor no 2º cartão: <strong id="labelValorCartao2">--</strong>
+                </p>
+
+                <p class="texto-muted texto-pequeno" style="margin-bottom:0.5rem; font-weight:600;">Selecione o 1º cartão acima e o 2º cartão abaixo:</p>
                 <div id="cartaoOpcoes2" class="checkout-opcoes-list"></div>
+
+                <!-- Form novo 2º cartão -->
+                <div id="novoCartaoForm2" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--cor-borda);">
+                  <p class="texto-muted texto-pequeno" style="margin-bottom:1rem;">Dados do 2º cartão:</p>
+                  <div class="form-grid-2">
+                    <div class="input-grupo">
+                      <label>Número <span class="required">*</span></label>
+                      <input type="text" class="input-field" id="checkoutCartaoNum2" placeholder="0000 0000 0000 0000" maxlength="19">
+                    </div>
+                    <div class="input-grupo">
+                      <label>Bandeira</label>
+                      <select class="input-field" id="checkoutCartaoBandeira2">
+                        <option value="VISA">Visa</option>
+                        <option value="MASTERCARD">Mastercard</option>
+                        <option value="ELO">Elo</option>
+                        <option value="AMEX">AmEx</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="input-grupo">
+                    <label>Nome Impresso <span class="required">*</span></label>
+                    <input type="text" class="input-field" id="checkoutCartaoNome2" placeholder="NOME COMO NO CARTÃO" style="text-transform:uppercase;">
+                  </div>
+                </div>
               </div>
 
             <!--Novo cartão-->

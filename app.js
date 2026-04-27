@@ -17,7 +17,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api',          require('./routes/auth'));       // POST /api/login, POST /api/cadastro
 app.use('/api/produtos', require('./routes/produtos'));   // GET/POST/PUT /api/produtos
 app.use('/api/cupons',   require('./routes/cupons'));     // POST /api/cupons/validar
-app.use('/api/pedidos',  require('./routes/pedidos'));    // POST /api/pedidos, GET /api/pedidos/:userId
+app.use('/api/pedidos',  require('./routes/pedidos'));    // POST /api/pedidos, GET /api/pedidos/cliente/:id
+app.use('/api/trocas',   require('./routes/trocas'));     // POST /api/trocas (solicitar troca)
 app.use('/api/clientes', require('./routes/clientes'));   // GET/PUT /api/clientes/:id, endereços, cartões
 app.use('/api/admin',    require('./routes/admin'));      // Rotas administrativas
 

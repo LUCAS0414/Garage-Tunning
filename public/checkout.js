@@ -54,11 +54,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         enderecoArea.innerHTML = `<p class="texto-muted">Nenhum endereço cadastrado. <a href="perfil.html#enderecos">Adicione um endereço</a> antes de finalizar.</p>`;
       }
 
- // Preencher cartões
+ // Preencher cartões — HTML para o 1º slot (name="cartao")
       const opcoesCartaoHTML = dados.cartoes && dados.cartoes.length > 0
         ? dados.cartoes.map((c, i) => `
             <label class="checkout-opcao">
               <input type="radio" name="cartao" value="${c.id}" ${i === 0 ? 'checked' : ''}>
+              <div class="checkout-opcao__info">
+                <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
+                ${c.is_preferencial ? '<span style="color:var(--cor-primaria)"> ★ Principal</span>' : ''}
+                <span class="texto-muted texto-pequeno">${c.nome_impresso}</span>
+              </div>
+            </label>`).join('')
+        : '';
+
+      // HTML para o 2º slot — OBRIGATÓRIO usar name="cartao2" para ser grupo separado
+      const opcoesCartao2HTML = dados.cartoes && dados.cartoes.length > 0
+        ? dados.cartoes.map(c => `
+            <label class="checkout-opcao">
+              <input type="radio" name="cartao2" value="${c.id}">
               <div class="checkout-opcao__info">
                 <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
                 ${c.is_preferencial ? '<span style="color:var(--cor-primaria)"> ★ Principal</span>' : ''}
@@ -80,14 +93,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
       }
 
-      // Popular 2º cartão (crédito) e cartão de débito com as mesmas opções
+      // Popular 2º cartão com HTML próprio (name="cartao2") — grupos completamente separados
       const cartaoArea2 = document.getElementById('cartaoOpcoes2');
       if (cartaoArea2) {
-        cartaoArea2.innerHTML = opcoesCartaoHTML + `
+        cartaoArea2.innerHTML = opcoesCartao2HTML + `
           <label class="checkout-opcao">
             <input type="radio" name="cartao2" value="novo2">
             <div class="checkout-opcao__info"><strong>+ Outro cartão</strong></div>
           </label>`;
+        // Nenhum pré-selecionado no 2º slot — usuário precisa escolher ativamente
+        cartaoArea2.querySelectorAll('[name="cartao2"]').forEach(r => r.checked = false);
       }
 
       const debitoArea = document.getElementById('cartaoDebitoOpcoes');
@@ -151,12 +166,34 @@ document.addEventListener('DOMContentLoaded', async function() {
       <div class="resumo-linha total"><span>Total</span><strong>R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong></div>`;
   }
 
-  // Mostrar form novo cartão
+  // Mostrar form novo cartão (1º cartão)
   document.addEventListener('change', (e) => {
     if (e.target.name === 'cartao') {
       const form = document.getElementById('novoCartaoForm');
       if (form) form.style.display = e.target.value === 'novo' ? 'block' : 'none';
     }
+    // Mostrar form novo cartão (2º cartão)
+    if (e.target.name === 'cartao2') {
+      const form2 = document.getElementById('novoCartaoForm2');
+      if (form2) form2.style.display = e.target.value === 'novo2' ? 'block' : 'none';
+    }
+  });
+
+  // Atualizar valor do 2º cartão automaticamente
+  document.getElementById('valorCartao1')?.addEventListener('input', () => {
+    const subtotal        = Carrinho.totalValor;
+    const frete           = subtotal >= 500 ? 0 : 49.90;
+    let desconto          = 0;
+    if (cupomAtivo) {
+      desconto = cupomAtivo.tipo === 'percentual'
+        ? subtotal * cupomAtivo.desconto
+        : cupomAtivo.desconto;
+    }
+    const totalComDesconto = Math.max(0, subtotal + frete - desconto);
+    const valor1 = parseFloat(document.getElementById('valorCartao1').value) || 0;
+    const valor2 = Math.max(0, totalComDesconto - valor1);
+    const labelValor2 = document.getElementById('labelValorCartao2');
+    if (labelValor2) labelValor2.textContent = 'R$ ' + valor2.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
   });
 
   if (document.getElementById('checkoutCartaoNum')) {
@@ -244,10 +281,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
       } else {
         // 2 cartões
-        const cartao2  = document.querySelector('[name="cartao2"]:checked');
+        const cartao2 = document.querySelector('[name="cartao2"]:checked');
         if (!cartao2) { alert('Selecione o 2º cartão.'); return; }
 
-        if (cartao1.value === cartao2.value) {
+        // Checar duplicidade: só é duplicado se ambos são cartões salvos com mesmo ID
+        const c1IsNovo = cartao1.value === 'novo';
+        const c2IsNovo = cartao2.value === 'novo2';
+        if (!c1IsNovo && !c2IsNovo && cartao1.value === cartao2.value) {
           alert('Selecione cartões diferentes.');
           return;
         }
@@ -259,8 +299,8 @@ document.addEventListener('DOMContentLoaded', async function() {
           alert('Informe o valor do 1º cartão.');
           return;
         }
-        if (valor1 > totalComDesconto) {
-          alert('O valor do 1º cartão é maior que o total da compra.');
+        if (valor1 >= totalComDesconto) {
+          alert('O valor do 1º cartão deve ser menor que o total da compra.');
           return;
         }
 
@@ -275,9 +315,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         pagamento = {
           metodo:    'DOIS_CARTOES',
-          cartao1Id: parseInt(cartao1.value),
+          cartao1Id: c1IsNovo ? null : parseInt(cartao1.value),
           valor1,
-          cartao2Id: parseInt(cartao2.value),
+          cartao2Id: c2IsNovo ? null : parseInt(cartao2.value),
           valor2,
         };
       }

@@ -269,11 +269,13 @@
             <div class="perfil-tab__header"><h2>Meus Pedidos</h2></div>
             <div class="pedidos-filtro">
               <button class="pedido-filtro-btn ativo" data-status="todos">Todos</button>
-              <button class="pedido-filtro-btn" data-status="em-processamento">Processando</button>
-              <button class="pedido-filtro-btn" data-status="entregue">Entregues</button>
+              <button class="pedido-filtro-btn" data-status="EM PROCESSAMENTO">Processando</button>
+              <button class="pedido-filtro-btn" data-status="ENTREGUE">Entregues</button>
+              <button class="pedido-filtro-btn" data-status="APROVADO">Aprovados</button>
+              <button class="pedido-filtro-btn" data-status="EM TRANSPORTE">Em Transporte</button>
             </div>
             <div class="pedidos-lista" id="pedidosList">
-              <p class="texto-muted">Você não tem pedidos recentes.</p>
+              <p class="texto-muted">Carregando pedidos...</p>
             </div>
           </section>
 
@@ -324,45 +326,42 @@
     </div>
   </footer>
   
- <div class="modal_overlay" id="modalSolicitarTroca">
-  <div class="modal_container">
-    <div class="modal_card">
-      <div class="modal_header">
-        <h3><i class="fas fa-right-left"></i> Solicitar Troca</h3>
-        <button class="btn-close" onclick="fecharModalTroca()">&times;</button>
-      </div>
-      
-      <div class="modal_body">
-        <p class="texto-muted mb-1">
-          Pedido: <span class="badge badge-outline" id="trocaPedidoCodigo">#0000</span>
-        </p>
+ <div class="modal-overlay" id="modalSolicitarTroca" style="display:none; align-items:center; justify-content:center;">
+  <div class="modal" style="max-width:500px; width:100%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <h3><i class="fas fa-right-left"></i> Solicitar Troca</h3>
+      <button class="btn btn-outline btn-sm" onclick="fecharModalTroca()">&times;</button>
+    </div>
+    
+    <div>
+      <p class="texto-muted" style="margin-bottom:1rem;">
+        Pedido: <strong id="trocaPedidoCodigo">#0000</strong>
+      </p>
 
+      <div class="input-grupo">
+        <label>Produto a trocar <span style="color:var(--cor-erro)">*</span></label>
+        <select class="input-field" id="trocaProdutoSelect"></select>
+      </div>
+
+      <div class="form-grid-2">
         <div class="input-grupo">
-          <label>Produto a trocar <span class="cor-erro">*</span></label>
-          <select class="input-field" id="trocaProdutoSelect"></select>
+          <label>Quantidade <span style="color:var(--cor-erro)">*</span></label>
+          <input type="number" class="input-field" id="trocaQuantidade" min="1" value="1">
         </div>
-
-        <div class="form-grid-2">
-          <div class="input-grupo">
-            <label>Quantidade <span class="cor-erro">*</span></label>
-            <input type="number" class="input-field" id="trocaQuantidade" min="1" value="1">
-          </div>
-          <div class="input-grupo">
-            </div>
-        </div>
-
-        <div class="input-grupo">
-          <label>Motivo da troca <span class="cor-erro">*</span></label>
-          <textarea class="input-field" id="trocaMotivo" rows="3" placeholder="Descreva detalhadamente o motivo..."></textarea>
-        </div>
-
-        <div id="trocaFeedback"></div>
+        <div class="input-grupo"></div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="fecharModalTroca()">Cancelar</button>
-        <button class="btn btn-primario" id="btnEnviarTroca">Enviar Solicitação</button>
+      <div class="input-grupo">
+        <label>Motivo da troca <span style="color:var(--cor-erro)">*</span></label>
+        <textarea class="input-field" id="trocaMotivo" rows="3" placeholder="Descreva detalhadamente o motivo..."></textarea>
       </div>
+
+      <div id="trocaFeedback"></div>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-top:1.5rem; justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="fecharModalTroca()">Cancelar</button>
+      <button class="btn btn-primario" id="btnEnviarTroca">Enviar Solicitação</button>
     </div>
   </div>
 </div>

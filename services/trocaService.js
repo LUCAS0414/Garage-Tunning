@@ -116,37 +116,27 @@ const TrocaService = {
         "UPDATE pedidos SET status = 'TROCADO' WHERE id = ?", [troca.pedido_id]
       );
 
-      //CRIAÇÃO DO CUPOM E ROTAS BANCO DE DADOS
-      //busca do cliente para criar cupom especial
+      // Criação do cupom de troca — vale o valor do item devolvido (validade 3 meses)
       const [[pedidoInfo]] = await conexao.execute(
-        `SELECT p.usuario_id, pi.quantidade, pi.preco_unitario
+        `SELECT p.usuario_id, pi.preco_unitario
          FROM solicitacoes_troca st
          JOIN pedidos p ON p.id = st.pedido_id
          JOIN pedido_itens pi ON pi.pedido_id = p.id AND pi.produto_id = st.produto_id
          WHERE st.id = ?`, [trocaId]
       );
 
-      //calcular valor do cupom de troca
-      const valorCupom = parseFloat(pedidoInfo.preco_unitario) * troca.quantidade;
-      const codigoCupom = 'TROCA-' + Date.now().toString(36).toUpperCase();
-      const dataExpiracao = new Date();
-      dataExpiracao.setMonth(dataExpiracao.getMonth() + 3);
+      if (pedidoInfo) {
+        const valorCupom  = parseFloat(pedidoInfo.preco_unitario) * troca.quantidade;
+        const codigoCupom = 'TROCA-' + Date.now().toString(36).toUpperCase();
+        const dataExp     = new Date();
+        dataExp.setMonth(dataExp.getMonth() + 3);
 
-      //verificar no banco se tem a coluna para data de expiração do cupom, se não tiver e não for obrigado a ter data remover a data de expiração
-      await conexao.execute(
-        `INSERT INTO cupons (codigo, valor, tipo_cupom, status, usuario_id, data_expiracao)
-        VALUES (?, ?, 'FIXO', 1, ?)`,
-        [codigoCupom, valorCupom, pedidoInfo.usuario_id]
-      );
-
-      const { usuario_id, quantidade, preco_unitario } = pedidoInfo;
-      const valorTotal = quantidade * preco_unitario;
-
-      await conexao.execute(
-        `INSERT INTO cupons (codigo, cliente_id, valor, tipo, data_expiracao, usado)
-         VALUES (?, ?, ?, 'PERCENTUAL', ?, 0)`,
-        [codigoCupom, usuario_id, valorTotal]
-      );
+        await conexao.execute(
+          `INSERT INTO cupons (codigo, cliente_id, valor, tipo, data_expiracao, usado)
+           VALUES (?, ?, ?, 'fixo', ?, 0)`,
+          [codigoCupom, pedidoInfo.usuario_id, valorCupom, dataExp.toISOString().split('T')[0]]
+        );
+      }
 
       await conexao.commit();
       return { recebido: true };
