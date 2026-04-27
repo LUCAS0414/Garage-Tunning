@@ -108,7 +108,7 @@
   <!-- MODAL: DETALHES DO PEDIDO -->
   <div class="modal-overlay" id="modalPedido">
     <div class="modal" style="max-width:620px; max-height:90vh; overflow-y:auto;">
-      <button class="modal__fechar" onclick="fecharModal('modalPedido')">✕</button>
+      <button class="modal__fechar" onclick="fecharModal('modalPedido')"><i class="fas fa-xmark"></i></button>
       <h2 style="margin-bottom:1.25rem;" id="modalPedidoTitulo">#GT-2024-0042</h2>
 
       <div id="modalPedidoConteudo"><!-- Renderizado via JS --></div>
@@ -122,10 +122,10 @@
       <!-- Área de troca -->
       <div id="trocaArea" style="display:none; margin-top:1.5rem;">
         <div class="form-secao"><h3>Processo de Troca</h3></div>
-        <div class="alerta alerta-aviso mb-2">⚠ Cliente solicitou troca. Verifique o motivo antes de autorizar.</div>
+        <div class="alerta alerta-aviso mb-2"><i class="fas fa-triangle-exclamation"></i> Cliente solicitou troca. Verifique o motivo antes de autorizar.</div>
         <div class="input-grupo">
           <label>Motivo da Troca</label>
-          <input type="text" class="input-field" id="motivoTroca" value="Produto com defeito" readonly>
+          <textarea class="input-field" id="motivoTroca" rows="3" maxlength="120" randoly style="resize: none; cursor: default;"></textarea>
         </div>
         <div style="display:flex; gap:0.75rem; margin-top:1rem;">
           <button class="btn btn-primario btn-sm" id="btnAutorizarTroca">✓ Autorizar Troca</button>
@@ -136,7 +136,7 @@
       <!-- Confirmar recebimento -->
       <div id="recebimentoArea" style="display:none; margin-top:1rem;">
         <button class="btn btn-outline btn-sm" id="btnConfirmarRecebimento" style="border-color:var(--cor-secundaria);color:var(--cor-secundaria);">
-          📦 Confirmar Recebimento do Item Devolvido
+          <i class="fas fa-box"></i> Confirmar Recebimento do Item Devolvido
         </button>
       </div>
 

@@ -130,6 +130,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (trocaArea) trocaArea.style.display = pedido.status === 'EM TROCA'         ? 'block' : 'none';
     if (recArea)   recArea.style.display   = pedido.status === 'TROCA AUTORIZADA' ? 'block' : 'none';
 
+    if (pedido.status === 'EM TROCA' || pedido.status === 'TROCA AUTORIZADA') {
+      fetch(`/api/admin/trocas?status=`)
+        .then(r => r.json())
+        .then(trocas => {
+          const troca = trocas.find(t => t.codigo_pedido === pedido.id.replace(/^GT-\d+-?/, '') || String(t.codigo_pedido) === String(pedido.id));
+          const el = document.getElementById('motivoTroca');
+          if (el) el.value = troca?.motivo || '(motivo não encontrado)';
+        })
+        .catch(() => {
+          const el = document.getElementById('motivoTroca');
+          if (el) el.value = '(erro ao buscar motivo)';
+        });
+    }
+
     abrirModal('modalPedido');
   }
 
@@ -186,11 +200,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     const pedido = pedidos.find(p => p.id === pedidoSelecionadoId);
     if (!pedido) return;
     try {
-      await fetch(`/api/admin/trocas/pedido/${pedido.pedidoId}/recebimento`, { method: 'PUT' });
-    } catch (err) { console.error(err); }
+      const resp = await fetch(`/api/admin/trocas/pedido/${pedido.pedidoID}/recebimento`,{method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({retornarEstoque: false}),
+      });
+      if (resp.ok){
+        const err = await resp.json();
+        Carrinho._mostrarFeedback('Erro: ' + (err.error || 'Falha ao confirmar recebimento.'));
+        return;
+      }
+    } catch (err) { 
+      console.error(err);
+      Carrinho._mostrarFeedback('Erro de conexão ao confirmar recebimento.');
+      return;
+    }
     pedido.status = 'TROCADO';
     renderizarTabela(); fecharModal('modalPedido');
-    Carrinho._mostrarFeedback('Recebimento confirmado!');
+    Carrinho._mostrarFeedback('Recebimento confirmado! Cupom gerado para o cliente.');
   });
 
   // Cupom manual (admin)
