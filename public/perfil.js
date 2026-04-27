@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // --- TROCA DE PRODUTO ---
   let trocaPedidoIdAtual = null;
 
-  // Chamada pelo onclick do botão — lê dados do mapa em memória
+  // Chamada do modal
   window.abrirModalTrocaPorId = function(pedidoId) {
     const pedido = window._pedidosMap && window._pedidosMap[pedidoId];
     if (!pedido) {
@@ -479,12 +479,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('trocaFeedback').innerHTML = '';
 
     const modal = document.getElementById('modalSolicitarTroca');
-    if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+    if (modal) {  
+        modal.classList.add('ativo');
+        document.body.style.overflow = 'hidden'; }
   };
 
   window.fecharModalTroca = function() {
     const modal = document.getElementById('modalSolicitarTroca');
-    if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
+    if (modal) { 
+        modal.classList.remove('ativo');
+        document.body.style.overflow = ''; }
   };
 
   document.getElementById('btnEnviarTroca')?.addEventListener('click', async () => {

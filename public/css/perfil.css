@@ -113,7 +113,7 @@
   padding: 1rem;
 }
 
-.modal-overlay-ativo{
+.modal-overlay.ativo{
   display: flex;
 }
 

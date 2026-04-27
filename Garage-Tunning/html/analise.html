@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análises | The Garage</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/shared.css">
+  <link rel="stylesheet" href="../css/analise.css">
+</head>
+<body class="admin-body">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__logo">
+      <span>🏁</span>
+      <div>
+        <span class="admin-sidebar__titulo">THE<span>GARAGE</span></span>
+        <span class="admin-sidebar__sub">Admin Panel</span>
+      </div>
+    </div>
+    <nav class="admin-nav">
+      <a href="admin-produtos.html" class="admin-nav__item">📦 Produtos</a>
+      <a href="admin-vendas.html" class="admin-nav__item">📋 Vendas</a>
+      <a href="analise.html" class="admin-nav__item ativo">📊 Análises</a>
+      <a href="index.html" class="admin-nav__item admin-nav__item--voltar">← Loja</a>
+    </nav>
+    <div class="admin-sidebar__user">
+      <span>👤</span>
+      <div><span class="admin-sidebar__user-nome">Admin</span><span class="texto-muted texto-pequeno">Administrador</span></div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <div>
+        <h1>Análises & Relatórios</h1>
+        <p class="texto-muted">Métricas de vendas e performance do catálogo</p>
+      </div>
+      <!-- Filtro por período -->
+      <div class="analise-filtro-periodo">
+        <button class="periodo-btn ativo" data-periodo="7d">7 dias</button>
+        <button class="periodo-btn" data-periodo="30d">30 dias</button>
+        <button class="periodo-btn" data-periodo="90d">90 dias</button>
+        <button class="periodo-btn" data-periodo="12m">12 meses</button>
+        <div class="periodo-custom">
+          <input type="date" class="input-field" id="periodoInicio" style="width:140px;">
+          <span class="texto-muted">→</span>
+          <input type="date" class="input-field" id="periodoFim" style="width:140px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs principais -->
+    <div class="analise-kpis">
+      <div class="kpi-card">
+        <div class="kpi-card__icon">💰</div>
+        <div class="kpi-card__dados">
+          <span class="kpi-card__valor texto-neon" id="kpiReceita">R$ 0</span>
+          <span class="kpi-card__label">Receita Total</span>
+          <span class="kpi-card__variacao positivo" id="kpiReceitaVar">+12.5%</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon">📦</div>
+        <div class="kpi-card__dados">
+          <span class="kpi-card__valor" id="kpiPedidos">0</span>
+          <span class="kpi-card__label">Pedidos Realizados</span>
+          <span class="kpi-card__variacao positivo" id="kpiPedidosVar">+8.3%</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon">🛒</div>
+        <div class="kpi-card__dados">
+          <span class="kpi-card__valor texto-azul" id="kpiTicket">R$ 0</span>
+          <span class="kpi-card__label">Ticket Médio</span>
+          <span class="kpi-card__variacao positivo" id="kpiTicketVar">+3.8%</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon">🔄</div>
+        <div class="kpi-card__dados">
+          <span class="kpi-card__valor texto-laranja" id="kpiTrocas">0</span>
+          <span class="kpi-card__label">Trocas Realizadas</span>
+          <span class="kpi-card__variacao negativo" id="kpiTrocasVar">+1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="analise-graficos">
+
+      <!-- Gráfico de vendas por período -->
+      <div class="grafico-card grafico-grande">
+        <div class="grafico-header">
+          <h3>Vendas por Período</h3>
+          <div class="grafico-legenda">
+            <span class="legenda-item legenda-verde">● Receita</span>
+            <span class="legenda-item legenda-azul">● Pedidos</span>
+          </div>
+        </div>
+        <div class="grafico-wrapper">
+          <canvas id="graficoVendas" width="800" height="300"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico por categoria -->
+      <div class="grafico-card">
+        <div class="grafico-header">
+          <h3>Vendas por Categoria</h3>
+        </div>
+        <div class="grafico-wrapper">
+          <canvas id="graficoCategorias" width="400" height="300"></canvas>
+        </div>
+        <!-- Legenda com valores -->
+        <div class="grafico-cat-legenda" id="graficoCatLegenda">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Segunda linha de gráficos -->
+    <div class="analise-graficos">
+
+      <!-- Top produtos -->
+      <div class="grafico-card">
+        <div class="grafico-header"><h3>Top Produtos</h3></div>
+        <div class="ranking-lista" id="rankingProdutos">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+
+      <!-- Status de pedidos (barras) -->
+      <div class="grafico-card">
+        <div class="grafico-header"><h3>Pedidos por Status</h3></div>
+        <div class="grafico-wrapper">
+          <canvas id="graficoStatus" width="400" height="280"></canvas>
+        </div>
+      </div>
+
+      <!-- Comparativo de categoria -->
+      <div class="grafico-card grafico-grande">
+        <div class="grafico-header">
+          <h3>Comparativo de Categorias — Histórico</h3>
+        </div>
+        <div class="grafico-wrapper">
+          <canvas id="graficoComparativo" width="800" height="280"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="../js/global.js"></script>
+  <script src="../js/analise.js"></script>
+</body>
+</html>
