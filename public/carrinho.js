@@ -84,7 +84,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (item && item.quantidade > 1) { Carrinho.atualizarQuantidade(id, item.quantidade - 1); renderizar(); }
     } else if (acao === 'aumentar') {
       const item = Carrinho.itens.find(i => String(i.id) === String(id));
-      if (item && item.quantidade < item.estoque) { Carrinho.atualizarQuantidade(id, item.quantidade + 1); renderizar(); }
+      if (item) {
+        const max = item.estoque != null ? item.estoque : Infinity;
+        if (item.quantidade < max) { Carrinho.atualizarQuantidade(id, item.quantidade + 1); renderizar(); }
+      }
     }
   });
 

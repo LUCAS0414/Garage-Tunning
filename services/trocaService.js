@@ -132,7 +132,7 @@ const TrocaService = {
         dataExp.setMonth(dataExp.getMonth() + 3);
 
         await conexao.execute(
-          `INSERT INTO cupons (codigo, cliente_id, valor, tipo_cupom, data_validade, status)
+          `INSERT INTO cupons (codigo, usuario_id, valor, tipo_cupom, data_validade, status)
            VALUES (?, ?, ?, 'FIXO', ?, 1)`,
           [codigoCupom, pedidoInfo.usuario_id, valorCupom, dataExp.toISOString().split('T')[0]]
         );

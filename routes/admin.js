@@ -6,9 +6,7 @@ const TrocaService   = require('../services/trocaService');
 const CupomService   = require('../services/cupomService');
 const AdminService   = require('../services/adminService');
 
-// ====================================================
 // DASHBOARD
-// ====================================================
 
 // GET /api/admin/dashboard
 router.get('/dashboard', async (req, res) => {
@@ -49,9 +47,7 @@ router.get('/historico-vendas', async (req, res) => {
   }
 });
 
-// ====================================================
 // PEDIDOS
-// ====================================================
 
 // GET /api/admin/pedidos?status=&busca=&pagina=&limite=
 router.get('/pedidos', async (req, res) => {
@@ -108,9 +104,7 @@ router.put('/pedidos/:id/status', async (req, res) => {
   }
 });
 
-// ====================================================
 // TROCAS
-// ====================================================
 
 // GET /api/admin/trocas?status=
 router.get('/trocas', async (req, res) => {
@@ -189,10 +183,13 @@ router.put('/trocas/pedido/:pedidoId/negar', async (req, res) => {
 router.put('/trocas/pedido/:pedidoId/recebimento', async (req, res) => {
   try {
     const [[troca]] = await pool.execute(
-      "SELECT id FROM solicitacoes_troca WHERE pedido_id = ? AND status = 'AUTORIZADO' LIMIT 1",
+       "SELECT id, status FROM solicitacoes_troca WHERE pedido_id = ? AND status IN ('PENDENTE', 'AUTORIZADO') LIMIT 1",
       [req.params.pedidoId]
     );
-    if (!troca) return res.status(404).json({ error: 'Troca autorizada não encontrada.' });
+    if (!troca) return res.status(404).json({ error: 'Troca não encontrada.' });
+    if (troca.status === 'PENDENTE') {
+      await TrocaService.autorizar(troca.id);
+    }
     const resultado = await TrocaService.confirmarRecebimento(troca.id, req.body.retornarEstoque === true);
     res.json(resultado);
   } catch (err) {
@@ -200,9 +197,7 @@ router.put('/trocas/pedido/:pedidoId/recebimento', async (req, res) => {
   }
 });
 
-// ====================================================
 // CUPONS
-// ====================================================
 
 // GET /api/admin/cupons
 router.get('/cupons', async (req, res) => {
@@ -237,9 +232,7 @@ router.put('/cupons/:id', async (req, res) => {
   }
 });
 
-// ====================================================
 // CLIENTES (lista para admin)
-// ====================================================
 
 // GET /api/admin/clientes?busca=&pagina=&limite=
 router.get('/clientes', async (req, res) => {
@@ -269,9 +262,7 @@ router.get('/clientes', async (req, res) => {
   }
 });
 
-// ====================================================
 // PRODUTOS (admin — sem restrição de apenasAtivos)
-// ====================================================
 
 // GET /api/admin/produtos — lista todos incluindo inativos
 router.get('/produtos', async (req, res) => {

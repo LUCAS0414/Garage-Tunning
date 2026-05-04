@@ -189,8 +189,85 @@ document.addEventListener('DOMContentLoaded', async function() {
       btn.classList.add('ativo');
       const tab = document.getElementById(`tab-${alvo}`);
       if (tab) tab.classList.add('ativo');
+      if (alvo === 'cupons') carregarCupons();
     });
   });
+
+  // ---- CUPONS ---- //
+  async function carregarCupons() {
+    const lista = document.getElementById('cuponsLista');
+    if (!lista) return;
+    lista.innerHTML = '<p class="texto-muted">Carregando cupons...</p>';
+
+    try {
+      const resp = await fetch(`/api/cupons/meus?clienteId=${userId}`);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const cupons = await resp.json();
+
+      if (!cupons.length) {
+        lista.innerHTML = '<p class="texto-muted">Você não possui cupons no momento.</p>';
+        return;
+      }
+
+      lista.innerHTML = cupons.map(c => {
+        const ativo     = c.status === 1;
+        const tipo      = (c.tipo_cupom || '').toLowerCase();
+        const valorFmt  = tipo === 'percentual'
+          ? `${c.valor}% de desconto`
+          : `R$ ${parseFloat(c.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} de desconto`;
+        const validade  = c.data_validade
+          ? new Date(c.data_validade).toLocaleDateString('pt-BR')
+          : 'Sem validade';
+        const corBorda  = ativo ? 'var(--cor-primaria)' : '#555';
+        const badgeAtivo = ativo
+          ? '<span style="background:#00ff8822;color:#00ff88;border:1px solid #00ff88;border-radius:4px;padding:2px 8px;font-size:0.72rem;font-weight:600;">DISPONÍVEL</span>'
+          : '<span style="background:#88888822;color:#888;border:1px solid #555;border-radius:4px;padding:2px 8px;font-size:0.72rem;font-weight:600;">UTILIZADO</span>';
+
+        return `
+          <div style="
+            border:1px solid ${corBorda};
+            border-left:4px solid ${corBorda};
+            border-radius:8px;
+            padding:1rem 1.25rem;
+            margin-bottom:0.75rem;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:0.75rem;
+            opacity:${ativo ? '1' : '0.55'};
+          ">
+            <div>
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.35rem;">
+                <span style="font-family:var(--fonte-mono);font-size:1.1rem;font-weight:700;color:var(--cor-primaria);letter-spacing:2px;">${c.codigo}</span>
+                ${badgeAtivo}
+              </div>
+              <div style="font-size:0.85rem;color:var(--cor-texto-muted);">
+                <span>${valorFmt}</span>
+                <span style="margin:0 0.5rem;">·</span>
+                <span>Válido até: ${validade}</span>
+              </div>
+            </div>
+            ${ativo ? `
+            <button onclick="copiarCupom('${c.codigo}')" class="btn btn-outline btn-sm" style="white-space:nowrap;">
+              <i class="fas fa-copy"></i> Copiar código
+            </button>` : ''}
+          </div>`;
+      }).join('');
+
+    } catch (err) {
+      console.error('Erro ao buscar cupons:', err);
+      lista.innerHTML = '<p class="texto-muted" style="color:#ff3344;">⚠ Erro ao carregar cupons.</p>';
+    }
+  }
+
+  window.copiarCupom = function(codigo) {
+    navigator.clipboard.writeText(codigo).then(() => {
+      Carrinho._mostrarFeedback(`Cupom ${codigo} copiado!`);
+    }).catch(() => {
+      prompt('Copie o código:', codigo);
+    });
+  };
 
   const hash = window.location.hash.replace('#', '');
   if (hash) {

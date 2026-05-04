@@ -59,13 +59,13 @@ const Carrinho = {
   },
 
   remover(id) {
-    this._dados = this._dados.filter((item) => item.id !== id);
+    this._dados = this._dados.filter((item) => String(item.id) !== String(id));
     this._salvar();
     this._atualizarUI();
   },
 
   atualizarQuantidade(id, quantidade) {
-    const item = this._dados.find((item) => item.id === id);
+    const item = this._dados.find((item) => String(item.id) === String(id));
     if (item) {
       item.quantidade = Math.max(1, quantidade);
       this._salvar();

@@ -200,11 +200,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     const pedido = pedidos.find(p => p.id === pedidoSelecionadoId);
     if (!pedido) return;
     try {
-      const resp = await fetch(`/api/admin/trocas/pedido/${pedido.pedidoID}/recebimento`,{method: 'PUT',
+      const resp = await fetch(`/api/admin/trocas/pedido/${pedido.pedidoId}/recebimento`,{method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({retornarEstoque: false}),
       });
-      if (resp.ok){
+      if (!resp.ok){
         const err = await resp.json();
         Carrinho._mostrarFeedback('Erro: ' + (err.error || 'Falha ao confirmar recebimento.'));
         return;
