@@ -4,10 +4,19 @@ const CupomService   = require('./cupomService');
 
 async function gerarCodigoPedido(conexao) {
   const ano = new Date().getFullYear();
-  const [[{ total }]] = await conexao.execute(
-    'SELECT COUNT(*) AS total FROM pedidos WHERE YEAR(data_pedido) = ?', [ano]
+  const [[row]] = await conexao.execute(
+    'SELECT codigo_pedido FROM pedidos WHERE codigo_pedido LIKE ? ORDER BY id DESC LIMIT 1', 
+    [`GT-${ano}-%`]
   );
-  return `GT-${ano}-${String(total + 1).padStart(4, '0')}`;
+  
+  let proximo = 1;
+  if (row && row.codigo_pedido) {
+    const partes = row.codigo_pedido.split('-');
+    if (partes.length === 3) {
+      proximo = parseInt(partes[2], 10) + 1;
+    }
+  }
+  return `GT-${ano}-${String(proximo).padStart(4, '0')}`;
 }
 
 const PedidoService = {

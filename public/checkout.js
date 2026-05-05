@@ -216,12 +216,16 @@ document.addEventListener('DOMContentLoaded', async function() {
       const resultado = await resp.json();
       if (resp.ok && resultado.valido) {
         const c = resultado.cupom;
+        const valorNum = parseFloat(c.valor);
         cupomAtivo = {
-          desconto: c.tipo === 'percentual' ? c.valor / 100 : c.valor,
+          desconto: c.tipo === 'percentual' ? valorNum / 100 : valorNum,
           tipo:     c.tipo,
           codigo:   c.codigo,
         };
-        feedbackEl.innerHTML = `<div class="alerta alerta-sucesso">✓ ${c.tipo === 'percentual' ? c.valor + '%' : 'R$ ' + c.valor} de desconto aplicado!</div>`;
+        const valorExibido = c.tipo === 'percentual'
+          ? (Number.isInteger(valorNum) ? valorNum : valorNum) + '%'
+          : 'R$ ' + valorNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        feedbackEl.innerHTML = `<div class="alerta alerta-sucesso">✓ ${valorExibido} de desconto aplicado!</div>`;
         atualizarCalculo();
       } else {
         feedbackEl.innerHTML = `<div class="alerta alerta-erro">⚠ ${resultado.motivo || 'Cupom inválido'}</div>`;
