@@ -23,6 +23,13 @@ function initNavbar() {
   const toggle = document.getElementById('navToggle');
   const menu = document.getElementById('navMenu');
 
+  // Mostrar link de Análises apenas para admin
+  const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
+  const navAnaliseItem = document.getElementById('navAnaliseItem');
+  if (navAnaliseItem && user.isAdmin) {
+    navAnaliseItem.style.display = '';
+  }
+
   //Scroll dinamico
   window.addEventListener('scroll', () => {
     if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20);

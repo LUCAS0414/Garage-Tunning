@@ -3,6 +3,15 @@
  * Schema novo: produtos não tem preco_original, is_novo, imagem_url, peso_kg, estoque_minimo.
  * Grupos de precificacao agora são A, B, C (não 'standard/premium/competitivo').
  */
+
+// ---- GUARD: somente administradores podem acessar esta página ----
+(function() {
+  const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
+  if (!user.logado || !user.isAdmin) {
+    window.location.replace('login.html');
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   carregarProdutos();
 

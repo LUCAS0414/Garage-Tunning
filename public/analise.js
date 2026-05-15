@@ -1,4 +1,12 @@
 
+// ---- GUARD: somente administradores podem acessar esta página ----
+(function() {
+  const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
+  if (!user.logado || !user.isAdmin) {
+    window.location.replace('login.html');
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', async function() {
 
   // ---- CORES POR CATEGORIA ----

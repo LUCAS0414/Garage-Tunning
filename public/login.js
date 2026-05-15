@@ -57,12 +57,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function setLoading(estado) {
-    btnLoginTexto.style.display  = estado ? 'none'   : 'inline';
-    btnLoginLoading.style.display = estado ? 'flex'   : 'none';
+    btnLoginTexto.style.display   = estado ? 'none' : 'inline';
+    btnLoginLoading.style.display = estado ? 'flex' : 'none';
     btnLogin.disabled             = estado;
   }
 
-  // Submit — chama a API real
+  // Submit — sempre usa /api/login; o backend detecta admin via is_admin
   form?.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/login', {
+      const res = await fetch('/api/login', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email: emailInput.value, senha: senhaInput.value })
@@ -90,11 +90,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const usuario = await res.json();
         localStorage.setItem('garage_user_id', usuario.id);
         localStorage.setItem('garage_user', JSON.stringify({ ...usuario, logado: true }));
-        window.location.href = 'perfil.html';
+        // Backend retorna isAdmin:true se is_admin=1 na tabela clientes
+        window.location.href = usuario.isAdmin ? 'analise.html' : 'perfil.html';
       } else {
         setLoading(false);
         alertaErro.style.display = 'flex';
-        alertaErro.textContent   = '⚠ Email ou senha incorretos.';
+        const data = await res.json().catch(() => ({}));
+        alertaErro.textContent = '⚠ ' + (data.error || 'Email ou senha incorretos.');
         emailInput.classList.add('erro');
         senhaInput.classList.add('erro');
       }

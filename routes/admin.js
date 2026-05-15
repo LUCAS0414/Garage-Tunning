@@ -1,10 +1,37 @@
 const express        = require('express');
 const router         = express.Router();
+const bcrypt         = require('bcrypt');
 const pool           = require('../db/config');
 const PedidoService  = require('../services/pedidoService');
 const TrocaService   = require('../services/trocaService');
 const CupomService   = require('../services/cupomService');
 const AdminService   = require('../services/adminService');
+
+// POST /api/admin/login
+// Body: { email, senha } — verifica SOMENTE a tabela usuarios (administradores)
+router.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
+  if (!email || !senha) return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
+
+  try {
+    const [[admin]] = await pool.execute(
+      `SELECT id, nome, email, senha_hash, tipo_usuario, status FROM usuarios WHERE email = ?`,
+      [email]
+    );
+
+    if (!admin) return res.status(401).json({ error: 'Email ou senha incorretos.' });
+    if (admin.status === 0) return res.status(403).json({ error: 'Conta inativada.' });
+
+    const senhaOk = await bcrypt.compare(senha, admin.senha_hash);
+    if (!senhaOk) return res.status(401).json({ error: 'Email ou senha incorretos.' });
+
+    const { senha_hash, ...dadosPublicos } = admin;
+    res.json({ ...dadosPublicos, tipo: admin.tipo_usuario, isAdmin: true });
+  } catch (err) {
+    console.error('[POST /api/admin/login]', err.message);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
 
 // DASHBOARD
 

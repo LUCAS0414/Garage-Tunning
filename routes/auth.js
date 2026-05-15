@@ -5,15 +5,18 @@ const pool    = require('../db/config');
 
 // POST /api/login
 // Body: { email, senha }
+// Busca SOMENTE na tabela clientes.
+// Se o campo is_admin = 1, retorna isAdmin:true (admin loga normalmente, sem toggle).
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
 
   try {
+    // Buscar na tabela clientes (inclui o campo is_admin)
     const [[cliente]] = await pool.execute(
       `SELECT id, codigo_cliente, nome, email, senha_hash, genero,
               data_nascimento, cpf, telefone_tipo, telefone_ddd, telefone_numero,
-              ranking, pontos_garagem, status
+              ranking, pontos_garagem, status, is_admin
        FROM clientes WHERE email = ?`,
       [email]
     );
@@ -24,8 +27,9 @@ router.post('/login', async (req, res) => {
     const senhaOk = await bcrypt.compare(senha, cliente.senha_hash);
     if (!senhaOk) return res.status(401).json({ error: 'Email ou senha incorretos.' });
 
-    const { senha_hash, ...dadosPublicos } = cliente;
-    res.json({ ...dadosPublicos, tipo: 'CLIENTE' });
+    const ehAdmin = cliente.is_admin === 1;
+    const { senha_hash, is_admin, ...dadosPublicos } = cliente;
+    res.json({ ...dadosPublicos, tipo: ehAdmin ? 'ADMIN' : 'CLIENTE', isAdmin: ehAdmin });
   } catch (err) {
     console.error('[POST /api/login]', err.message);
     res.status(500).json({ error: 'Erro interno no servidor.' });
