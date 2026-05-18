@@ -5,6 +5,7 @@ const pool           = require('../db/config');
 const ClienteService = require('../services/clienteServices');
 
 // GET /api/clientes/:id — perfil completo com endereços e cartões
+// Também suporta :id como e-mail (ex: /api/clientes/abner@gmail.com)
 router.get('/:id', async (req, res) => {
   try {
     const cliente = await ClienteService.buscarPorId(req.params.id);
@@ -12,6 +13,29 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     const status = err.message.includes('não encontrado') ? 404 : 500;
     res.status(status).json({ error: err.message });
+  }
+});
+
+// GET /api/clientes/:id/pedidos — pedidos do cliente (suporta ID numérico ou e-mail)
+router.get('/:id/pedidos', async (req, res) => {
+  const PedidoService = require('../services/pedidoService');
+  try {
+    let clienteId = req.params.id;
+
+    // Se o parâmetro parece um e-mail, resolve para o ID numérico primeiro
+    if (clienteId.includes('@')) {
+      const [[cliente]] = await pool.execute(
+        'SELECT id FROM clientes WHERE email = ?', [clienteId]
+      );
+      if (!cliente) return res.status(404).json({ error: 'Cliente não encontrado.' });
+      clienteId = cliente.id;
+    }
+
+    const pedidos = await PedidoService.listarPorCliente(clienteId);
+    res.json(pedidos);
+  } catch (err) {
+    console.error('[GET /api/clientes/:id/pedidos]', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 

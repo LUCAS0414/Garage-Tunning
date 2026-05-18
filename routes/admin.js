@@ -8,14 +8,14 @@ const CupomService   = require('../services/cupomService');
 const AdminService   = require('../services/adminService');
 
 // POST /api/admin/login
-// Body: { email, senha } — verifica SOMENTE a tabela usuarios (administradores)
+// Body: { email, senha } — verifica na tabela clientes onde is_admin = 1
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
 
   try {
     const [[admin]] = await pool.execute(
-      `SELECT id, nome, email, senha_hash, tipo_usuario, status FROM usuarios WHERE email = ?`,
+      `SELECT id, nome, email, senha_hash, status, is_admin FROM clientes WHERE email = ? AND is_admin = 1`,
       [email]
     );
 
@@ -25,8 +25,8 @@ router.post('/login', async (req, res) => {
     const senhaOk = await bcrypt.compare(senha, admin.senha_hash);
     if (!senhaOk) return res.status(401).json({ error: 'Email ou senha incorretos.' });
 
-    const { senha_hash, ...dadosPublicos } = admin;
-    res.json({ ...dadosPublicos, tipo: admin.tipo_usuario, isAdmin: true });
+    const { senha_hash, is_admin, ...dadosPublicos } = admin;
+    res.json({ ...dadosPublicos, tipo: 'ADMIN', isAdmin: true });
   } catch (err) {
     console.error('[POST /api/admin/login]', err.message);
     res.status(500).json({ error: 'Erro interno no servidor.' });

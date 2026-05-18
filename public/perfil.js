@@ -125,9 +125,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                   `<span class="texto-pequeno texto-muted">${i.nome_produto} x${i.quantidade}</span>`
                 ).join('<br>');
                 const btnTroca = p.status === 'ENTREGUE'
-                  ? `<button class="btn btn-outline btn-sm" style="margin-top:0.75rem;"
+                  ? `<button id="btn-solicitar-troca" class="btn btn-outline btn-sm" style="margin-top:0.75rem;"
                        onclick="abrirModalTrocaPorId(${p.id})">
-                       🔄 Solicitar Troca
+                       <i class="fas fa-arrows-rotate"></i> Solicitar Troca
                      </button>`
                   : '';
                 return `
