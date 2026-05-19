@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 5 — Cliente solicita troca/devolução de um item
 //                 ou do pedido completo
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

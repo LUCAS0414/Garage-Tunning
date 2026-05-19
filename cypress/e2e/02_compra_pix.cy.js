@@ -1,6 +1,4 @@
-// =====================================================
 // CASO DE USO 2 — Cliente realiza compra via PIX
-// =====================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

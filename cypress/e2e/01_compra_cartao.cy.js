@@ -1,6 +1,4 @@
-// =====================================================
 // CASO DE USO 1 — Cliente realiza compra com cartão
-// =====================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

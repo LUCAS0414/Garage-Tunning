@@ -1,6 +1,4 @@
-// ===================================================================
 // CASO DE USO 8 — Administrador NEGA a troca/devolução
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

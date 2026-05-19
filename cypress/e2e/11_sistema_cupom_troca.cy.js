@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 11 — Sistema gera cupom de troca após recebimento
 //                  do produto devolvido
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

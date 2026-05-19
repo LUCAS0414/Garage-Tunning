@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 4 — Cliente registra novo cartão e novo endereço
 //                 no ato da compra (via checkout)
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

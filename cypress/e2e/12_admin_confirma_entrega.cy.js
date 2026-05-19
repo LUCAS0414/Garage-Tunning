@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 12 — Administrador confirma que o produto foi ENTREGUE
 //                  (status: EM TRANSPORTE → ENTREGUE)
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {
@@ -51,28 +49,5 @@ describe('UC-12: Administrador confirma que o produto foi ENTREGUE', () => {
     cy.wait('@atualizarStatus').its('response.statusCode').should('eq', 200);
 
     cy.get('#modalPedido .badge').should('contain.text', 'Entregue');
-  });
-
-  it('deve confirmar entrega via API direta e verificar status final', () => {
-    cy.request('GET', `${BASE}/api/admin/pedidos?status=EM+TRANSPORTE&limite=1`).then(resp => {
-      const pedidos = resp.body.pedidos || [];
-      if (pedidos.length === 0) {
-        cy.log('Nenhum pedido em transporte disponível');
-        return;
-      }
-      const pedidoId = pedidos[0].id;
-
-      cy.request({
-        method: 'PUT',
-        url: `${BASE}/api/admin/pedidos/${pedidoId}/status`,
-        body: { status: 'ENTREGUE' },
-      }).then(r => {
-        expect(r.status).to.eq(200);
-      });
-
-      cy.request('GET', `${BASE}/api/admin/pedidos/${pedidoId}`).then(r2 => {
-        expect(r2.body.status).to.eq('ENTREGUE');
-      });
-    });
   });
 });

@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 6 — Administrador confirma o pagamento
 //                 (status: EM PROCESSAMENTO → APROVADO)
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

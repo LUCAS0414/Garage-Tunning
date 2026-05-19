@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 9 — Administrador define produto como EM TRANSPORTE
 //                 (status: APROVADO → EM TRANSPORTE)
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

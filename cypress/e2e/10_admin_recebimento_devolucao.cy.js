@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 10 — Administrador confirma recebimento do produto
 //                  devolvido + sistema gera cupom de troca
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {

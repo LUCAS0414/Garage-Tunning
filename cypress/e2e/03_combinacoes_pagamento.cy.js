@@ -1,7 +1,5 @@
-// ===================================================================
 // CASO DE USO 3 — Combinações de pagamento: cartão + cupom percentual
 //                 cartão + cupom fixo, dois cartões (2º cartão)
-// ===================================================================
 
 const DELAY = 800;
 for (const cmd of ['visit','click','type','clear','select','trigger']) {
