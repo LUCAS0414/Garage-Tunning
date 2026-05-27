@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/checkout.css">
 </head>
+
 <body>
   <!-- NAVBAR -->
   <div id="navbar-container"></div>
@@ -49,51 +51,13 @@
                 <div class="loading-placeholder">Carregando cartões...</div>
               </div>
 
-            <!--segundo cartão-->
-              <div id="segundoCartaoToggle" style="margin-top:1rem;">
-                <label class="checkbox-label" style="cursor:pointer; display:flex; align-items:center; gap:0.5rem;">
-                  <input type="checkbox" id="usarSegundoCartao">
-                  <span class="checkbox-custom"></span>
-                  <span class="texto-muted texto-pequeno">Dividir pagamento em 2 cartões</span>
-                </label>
-              </div>
+              <!-- Slots dinâmicos de N cartões -->
+              <div id="cartoesSlots" style="margin-top:1rem;"></div>
+              <button type="button" class="btn btn-outline btn-sm" id="btnAdicionarCartao" style="margin-top:0.75rem; display:none;">
+                <i class="fas fa-plus"></i> Adicionar cartão
+              </button>
 
-              <div id="segundoCartaoArea" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--cor-borda);">
-                <p class="texto-muted texto-pequeno" style="margin-bottom:0.5rem;">Valor no 1º cartão (mínimo R$ 10,00):</p>
-                <input type="number" class="input-field" id="valorCartao1" min="10" step="0.01" placeholder="R$ 0,00" style="margin-bottom:0.5rem;">
-                <p class="texto-muted texto-pequeno" style="margin-bottom:1rem;">
-                  Valor no 2º cartão: <strong id="labelValorCartao2">--</strong>
-                </p>
-
-                <p class="texto-muted texto-pequeno" style="margin-bottom:0.5rem; font-weight:600;">Selecione o 1º cartão acima e o 2º cartão abaixo:</p>
-                <div id="cartaoOpcoes2" class="checkout-opcoes-list"></div>
-
-                <!-- Form novo 2º cartão -->
-                <div id="novoCartaoForm2" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--cor-borda);">
-                  <p class="texto-muted texto-pequeno" style="margin-bottom:1rem;">Dados do 2º cartão:</p>
-                  <div class="form-grid-2">
-                    <div class="input-grupo">
-                      <label>Número <span class="required">*</span></label>
-                      <input type="text" class="input-field" id="checkoutCartaoNum2" placeholder="0000 0000 0000 0000" maxlength="19">
-                    </div>
-                    <div class="input-grupo">
-                      <label>Bandeira</label>
-                      <select class="input-field" id="checkoutCartaoBandeira2">
-                        <option value="VISA">Visa</option>
-                        <option value="MASTERCARD">Mastercard</option>
-                        <option value="ELO">Elo</option>
-                        <option value="AMEX">AmEx</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="input-grupo">
-                    <label>Nome Impresso <span class="required">*</span></label>
-                    <input type="text" class="input-field" id="checkoutCartaoNome2" placeholder="NOME COMO NO CARTÃO" style="text-transform:uppercase;">
-                  </div>
-                </div>
-              </div>
-
-            <!--Novo cartão-->
+              <!-- Novo cartão (1º slot / cartão único) -->
               <div id="novoCartaoForm" style="display:none; margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--cor-borda);">
                 <p class="texto-muted texto-pequeno" style="margin-bottom:1rem;">Dados do novo cartão:</p>
                 <div class="form-grid-2">
@@ -226,4 +190,5 @@
   <script src="global.js"></script>
   <script src="checkout.js"></script>
 </body>
+
 </html>

@@ -63,13 +63,26 @@ const PedidoService = {
      const { pagamento = {} } = dados;
      const metodoPag = pagamento.metodo || 'CARTAO_CREDITO';
 
-      // Validação do pagamento com 2 cartões (RN0034)
-      if (metodoPag === 'DOIS_CARTOES') {
-        if (pagamento.valor1 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
-        if (pagamento.valor2 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
-        const somaCartoes = pagamento.valor1 + pagamento.valor2;
-        if (Math.abs(somaCartoes - valorTotal) > 0.01) throw new Error('A soma dos cartões não bate com o total do pedido.');
+// Validação de pagamento
+if (metodoPag === 'DOIS_CARTOES') {
+  if (pagamento.valor1 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
+  if (pagamento.valor2 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
+  const soma = pagamento.valor1 + pagamento.valor2;
+  if (Math.abs(soma - valorTotal) > 0.01) throw new Error('A soma dos cartões não bate com o total do pedido.');
+}
+
+  if (metodoPag === 'MULTIPLOS_CARTOES') {
+      if (!Array.isArray(pagamento.cartoes) || pagamento.cartoes.length < 2) {
+        throw new Error('MULTIPLOS_CARTOES requer ao menos 2 cartões.');
       }
+      for (const c of pagamento.cartoes) {
+        if (c.valor < 10) throw new Error(`Valor mínimo por cartão é R$ 10,00.`);
+      }
+      const soma = pagamento.cartoes.reduce((s, c) => s + c.valor, 0);
+      if (Math.abs(soma - valorTotal) > 0.01) {
+        throw new Error(`A soma dos cartões (R$ ${soma.toFixed(2)}) não bate com o total (R$ ${valorTotal.toFixed(2)}).`);
+      }
+    }
 
       const [pedRes] = await conexao.execute(
         `INSERT INTO pedidos (codigo_pedido, usuario_id, endereco_entrega_id, cupom_id, valor_frete, valor_total, status, metodo_pagamento, pagamento_dados)

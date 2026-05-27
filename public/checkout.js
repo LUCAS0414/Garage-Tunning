@@ -6,20 +6,18 @@
 document.addEventListener('DOMContentLoaded', async function() {
 
   const usuario = JSON.parse(localStorage.getItem('garage_user') || '{}');
-
   if (!usuario.id) { window.location.href = 'login.html'; return; }
 
-  let cupomAtivo = null;
-
-// MÉTODO DE PAGAMENTO ATIVO
+  let cupomAtivo  = null;
+  let cartoesData = [];   // cartões salvos do cliente
   let metodoPagamento = 'cartao';
 
+  // ---- ABAS DE MÉTODO DE PAGAMENTO ----
   document.querySelectorAll('.metodo-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.metodo-tab').forEach(b => b.classList.remove('ativo'));
       btn.classList.add('ativo');
       metodoPagamento = btn.dataset.metodo;
-
       document.getElementById('metodoCartao').style.display  = metodoPagamento === 'cartao'  ? 'block' : 'none';
       document.getElementById('metodoPix').style.display     = metodoPagamento === 'pix'     ? 'block' : 'none';
       document.getElementById('metodoBoleto').style.display  = metodoPagamento === 'boleto'  ? 'block' : 'none';
@@ -27,18 +25,215 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  document.getElementById('usarSegundoCartao')?.addEventListener('change', (e) => {
-    document.getElementById('segundoCartaoArea').style.display = e.target.checked ? 'block' : 'none';
-  });
+  // ---- HELPERS DE TOTAL ----
+  function calcularTotal() {
+    const subtotal = Carrinho.totalValor;
+    const frete    = subtotal >= 500 ? 0 : 49.90;
+    let desconto   = 0;
+    if (cupomAtivo) {
+      desconto = cupomAtivo.tipo === 'percentual'
+        ? subtotal * cupomAtivo.desconto
+        : cupomAtivo.desconto;
+    }
+    return Math.max(0, subtotal + frete - desconto);
+  }
 
-  // ---- CARREGAR ENDEREÇOS E CARTÕES ----
+  // ---- GERENCIAMENTO DE SLOTS DE CARTÃO ----
+  function criarSlotHTML(index) {
+    const opcoesHTML = cartoesData.map(c => `
+      <label class="checkout-opcao">
+        <input type="radio" name="cartaoSlot${index}" value="${c.id}">
+        <div class="checkout-opcao__info">
+          <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
+          ${c.is_preferencial ? '<span style="color:var(--cor-primaria)"> ★ Principal</span>' : ''}
+          <span class="texto-muted texto-pequeno">${c.nome_impresso}</span>
+        </div>
+      </label>`).join('');
+
+    return `
+      <div class="cartao-slot" data-index="${index}"
+        style="margin-top:1rem; padding:1rem; border:1px solid var(--cor-borda); border-radius:8px;">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <span class="texto-muted texto-pequeno slot-label" style="font-weight:600;">Cartão ${index + 1}</span>
+          ${index > 0
+            ? `<button type="button" class="btn btn-danger btn-sm btn-remover-slot">Remover</button>`
+            : ''}
+        </div>
+
+        <div class="checkout-opcoes-list slot-opcoes">
+          ${opcoesHTML}
+          <label class="checkout-opcao">
+            <input type="radio" name="cartaoSlot${index}" value="novo${index}">
+            <div class="checkout-opcao__info"><strong>+ Novo cartão</strong></div>
+          </label>
+        </div>
+
+        <div class="novo-cartao-form-slot"
+          style="display:none; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--cor-borda);">
+          <div class="form-grid-2">
+            <div class="input-grupo">
+              <label>Número <span class="required">*</span></label>
+              <input type="text" class="input-field slot-num" placeholder="0000 0000 0000 0000" maxlength="19">
+            </div>
+            <div class="input-grupo">
+              <label>Bandeira</label>
+              <select class="input-field slot-bandeira">
+                <option value="VISA">Visa</option>
+                <option value="MASTERCARD">Mastercard</option>
+                <option value="ELO">Elo</option>
+                <option value="AMEX">AmEx</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-grupo">
+            <label>Nome Impresso <span class="required">*</span></label>
+            <input type="text" class="input-field slot-nome" placeholder="NOME COMO NO CARTÃO" style="text-transform:uppercase;">
+          </div>
+        </div>
+
+        <div class="slot-valor-wrap" style="margin-top:0.75rem; display:none;">
+          <label class="texto-pequeno texto-muted">Valor neste cartão (R$) <span class="required">*</span></label>
+          <input type="number" class="input-field slot-valor" min="10" step="0.01" placeholder="mínimo R$ 10,00">
+          <span class="slot-valor-auto texto-muted texto-pequeno" style="display:none; color:var(--cor-primaria);">
+            Calculado automaticamente (restante)
+          </span>
+        </div>
+      </div>`;
+  }
+
+  function adicionarSlot() {
+    const container = document.getElementById('cartoesSlots');
+    const existentes = container.querySelectorAll('.cartao-slot').length;
+
+    if (existentes === 0) {
+      // Primeira vez: esconder seção estática e criar 2 slots
+      const secaoEstatica = document.getElementById('cartaoOpcoes');
+      const formNovoEstatico = document.getElementById('novoCartaoForm');
+      if (secaoEstatica) secaoEstatica.style.display = 'none';
+      if (formNovoEstatico) formNovoEstatico.style.display = 'none';
+
+      // Pegar o cartão já selecionado na seção estática
+      const cartaoSelecionado = document.querySelector('[name="cartao"]:checked');
+      const cartaoIdPreSelecionado = cartaoSelecionado ? cartaoSelecionado.value : null;
+
+      // Criar Cartão 1 e Cartão 2
+      container.insertAdjacentHTML('beforeend', criarSlotHTML(0));
+      container.insertAdjacentHTML('beforeend', criarSlotHTML(1));
+
+      const slot0 = container.querySelectorAll('.cartao-slot')[0];
+      const slot1 = container.querySelectorAll('.cartao-slot')[1];
+      bindSlot(slot0);
+      bindSlot(slot1);
+
+      // Pré-selecionar no Cartão 1 o cartão que estava selecionado na seção estática
+      if (cartaoIdPreSelecionado && cartaoIdPreSelecionado !== 'novo') {
+        const radio = slot0.querySelector(`input[type="radio"][value="${cartaoIdPreSelecionado}"]`);
+        if (radio) radio.checked = true;
+      }
+    } else {
+      // Já tem slots: adicionar mais um
+      const index = existentes;
+      container.insertAdjacentHTML('beforeend', criarSlotHTML(index));
+      bindSlot(container.querySelectorAll('.cartao-slot')[index]);
+    }
+
+    sincronizarSlots();
+  }
+
+  function bindSlot(slot) {
+    // Mostrar form novo cartão ao selecionar "novo"
+    slot.querySelectorAll('input[type="radio"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const idx  = slot.dataset.index;
+        const form = slot.querySelector('.novo-cartao-form-slot');
+        form.style.display = r.value === `novo${idx}` ? 'block' : 'none';
+        sincronizarSlots();
+      });
+    });
+
+    // Remover slot
+    slot.querySelector('.btn-remover-slot')?.addEventListener('click', () => {
+      slot.remove();
+      const container = document.getElementById('cartoesSlots');
+      const restantes = container.querySelectorAll('.cartao-slot').length;
+
+      if (restantes <= 1) {
+        // Se sobrou 0 ou 1 slot, voltar para a seção estática
+        container.innerHTML = '';
+        const secaoEstatica = document.getElementById('cartaoOpcoes');
+        if (secaoEstatica) secaoEstatica.style.display = '';
+      } else {
+        renumerarSlots();
+      }
+      sincronizarSlots();
+    });
+
+    // Ao digitar valor, recalcular último
+    slot.querySelector('.slot-valor')?.addEventListener('input', sincronizarSlots);
+  }
+
+  function renumerarSlots() {
+    document.querySelectorAll('.cartao-slot').forEach((slot, i) => {
+      slot.dataset.index = i;
+      slot.querySelector('.slot-label').textContent = `Cartão ${i + 1}`;
+      slot.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.name  = `cartaoSlot${i}`;
+        if (r.value.startsWith('novo')) r.value = `novo${i}`;
+      });
+      // O 1º slot não tem botão remover; os outros sim
+      const btnRem = slot.querySelector('.btn-remover-slot');
+      if (i === 0 && btnRem) btnRem.remove();
+    });
+  }
+
+  function sincronizarSlots() {
+    const slots = [...document.querySelectorAll('.cartao-slot')];
+    const total = calcularTotal();
+
+    if (slots.length <= 1) {
+      if (slots[0]) slots[0].querySelector('.slot-valor-wrap').style.display = 'none';
+      return;
+    }
+
+    let somaAnteriores = 0;
+    slots.forEach((slot, i) => {
+      const wrap      = slot.querySelector('.slot-valor-wrap');
+      const input     = slot.querySelector('.slot-valor');
+      const autoLabel = slot.querySelector('.slot-valor-auto');
+      wrap.style.display = 'block';
+
+      if (i < slots.length - 1) {
+        input.readOnly = false;
+        input.style.color = '';
+        autoLabel.style.display = 'none';
+        if (!input.value || parseFloat(input.value) === 0) {
+          input.value = (10).toFixed(2);
+        }
+        somaAnteriores += parseFloat(input.value) || 0;
+      } else {
+        const restante = Math.max(0, total - somaAnteriores);
+        input.value    = restante.toFixed(2);
+        input.readOnly = true;
+        input.style.color = 'var(--cor-primaria)';
+        autoLabel.style.display = 'block';
+      }
+    });
+  }
+
+  // Botão adicionar cartão
+  document.getElementById('btnAdicionarCartao')?.addEventListener('click', adicionarSlot);
+
+  // ---- CARREGAR DADOS DO CHECKOUT ----
   async function carregarDadosCheckout() {
     try {
       const resp = await fetch(`/api/clientes/${usuario.id}`);
       if (!resp.ok) throw new Error('Falha ao carregar dados.');
       const dados = await resp.json();
 
-      // Preencher endereços
+      cartoesData = dados.cartoes || [];
+
+      // Endereços
       const enderecoArea = document.getElementById('enderecoOpcoes');
       if (enderecoArea && dados.enderecos && dados.enderecos.length > 0) {
         enderecoArea.innerHTML = dados.enderecos.map((end, i) => `
@@ -54,62 +249,49 @@ document.addEventListener('DOMContentLoaded', async function() {
         enderecoArea.innerHTML = `<p class="texto-muted">Nenhum endereço cadastrado. <a href="perfil.html#enderecos">Adicione um endereço</a> antes de finalizar.</p>`;
       }
 
- // Preencher cartões — HTML para o 1º slot (name="cartao")
-      const opcoesCartaoHTML = dados.cartoes && dados.cartoes.length > 0
-        ? dados.cartoes.map((c, i) => `
-            <label class="checkout-opcao">
-              <input type="radio" name="cartao" value="${c.id}" ${i === 0 ? 'checked' : ''}>
-              <div class="checkout-opcao__info">
-                <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
-                ${c.is_preferencial ? '<span style="color:var(--cor-primaria)"> ★ Principal</span>' : ''}
-                <span class="texto-muted texto-pequeno">${c.nome_impresso}</span>
-              </div>
-            </label>`).join('')
-        : '';
-
-      // HTML para o 2º slot — OBRIGATÓRIO usar name="cartao2" para ser grupo separado
-      const opcoesCartao2HTML = dados.cartoes && dados.cartoes.length > 0
-        ? dados.cartoes.map(c => `
-            <label class="checkout-opcao">
-              <input type="radio" name="cartao2" value="${c.id}">
-              <div class="checkout-opcao__info">
-                <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
-                ${c.is_preferencial ? '<span style="color:var(--cor-primaria)"> ★ Principal</span>' : ''}
-                <span class="texto-muted texto-pequeno">${c.nome_impresso}</span>
-              </div>
-            </label>`).join('')
-        : '';
-
+      // Cartões (1º slot — cartão único)
       const cartaoArea = document.getElementById('cartaoOpcoes');
       if (cartaoArea) {
-        cartaoArea.innerHTML = opcoesCartaoHTML + `
+        const opcoesHTML = cartoesData.map((c, i) => `
           <label class="checkout-opcao">
-            <input type="radio" name="cartao" value="novo" ${!opcoesCartaoHTML ? 'checked' : ''}>
-            <div class="checkout-opcao__info"><strong>+ ${opcoesCartaoHTML ? 'Novo cartão' : 'Adicionar cartão'}</strong></div>
+            <input type="radio" name="cartao" value="${c.id}" ${i === 0 ? 'checked' : ''}>
+            <div class="checkout-opcao__info">
+              <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
+              ${c.is_preferencial ? '<span style="color:var(--cor-primaria)"> ★ Principal</span>' : ''}
+              <span class="texto-muted texto-pequeno">${c.nome_impresso}</span>
+            </div>
+          </label>`).join('');
+
+        cartaoArea.innerHTML = opcoesHTML + `
+          <label class="checkout-opcao">
+            <input type="radio" name="cartao" value="novo" ${!opcoesHTML ? 'checked' : ''}>
+            <div class="checkout-opcao__info"><strong>+ ${opcoesHTML ? 'Novo cartão' : 'Adicionar cartão'}</strong></div>
           </label>`;
-        if (!opcoesCartaoHTML) {
+
+        if (!opcoesHTML) {
           const form = document.getElementById('novoCartaoForm');
           if (form) form.style.display = 'block';
         }
       }
 
-      // Popular 2º cartão com HTML próprio (name="cartao2") — grupos completamente separados
-      const cartaoArea2 = document.getElementById('cartaoOpcoes2');
-      if (cartaoArea2) {
-        cartaoArea2.innerHTML = opcoesCartao2HTML + `
-          <label class="checkout-opcao">
-            <input type="radio" name="cartao2" value="novo2">
-            <div class="checkout-opcao__info"><strong>+ Outro cartão</strong></div>
-          </label>`;
-        // Nenhum pré-selecionado no 2º slot — usuário precisa escolher ativamente
-        cartaoArea2.querySelectorAll('[name="cartao2"]').forEach(r => r.checked = false);
-      }
+      // Mostrar botão "Adicionar cartão" agora que os dados estão prontos
+      document.getElementById('btnAdicionarCartao').style.display = 'inline-block';
 
+      // Débito
       const debitoArea = document.getElementById('cartaoDebitoOpcoes');
       if (debitoArea) {
-        debitoArea.innerHTML = opcoesCartaoHTML + `
+        const opcoesDebitoHTML = cartoesData.map((c, i) => `
           <label class="checkout-opcao">
-            <input type="radio" name="cartaoDebito" value="novoDebito" ${!opcoesCartaoHTML ? 'checked' : ''}>
+            <input type="radio" name="cartaoDebito" value="${c.id}" ${i === 0 ? 'checked' : ''}>
+            <div class="checkout-opcao__info">
+              <strong>${c.bandeira}</strong> •••• ${String(c.numero_cartao).slice(-4)}
+              <span class="texto-muted texto-pequeno">${c.nome_impresso}</span>
+            </div>
+          </label>`).join('');
+
+        debitoArea.innerHTML = opcoesDebitoHTML + `
+          <label class="checkout-opcao">
+            <input type="radio" name="cartaoDebito" value="novoDebito" ${!opcoesDebitoHTML ? 'checked' : ''}>
             <div class="checkout-opcao__info"><strong>+ Cartão de débito</strong></div>
           </label>`;
       }
@@ -121,20 +303,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   await carregarDadosCheckout();
 
+  // Mostrar form novo cartão (cartão único)
+  document.addEventListener('change', (e) => {
+    if (e.target.name === 'cartao') {
+      const form = document.getElementById('novoCartaoForm');
+      if (form) form.style.display = e.target.value === 'novo' ? 'block' : 'none';
+    }
+  });
+
   // ---- RENDERIZAR RESUMO ----
   function renderizarResumo() {
     const itens         = Carrinho.itens;
     const checkoutItens = document.getElementById('checkoutItens');
     if (!checkoutItens) return;
 
-    if (itens.length === 0) {
-      window.location.href = 'carrinho.html';
-      return;
-    }
+    if (itens.length === 0) { window.location.href = 'carrinho.html'; return; }
 
     checkoutItens.innerHTML = itens.map(item => {
-      const emoji = item.categoria === 'JDM' ? '🇯🇵' : item.categoria === 'Americanos' ? '🇺🇸'
-                  : item.categoria === 'Italianos' ? '🇮🇹' : item.categoria === 'Alemães' ? '🇩🇪' : '🔧';
+      const emoji = item.categoria === 'JDM' ? '🇯🇵'
+                  : item.categoria === 'Americanos' ? '🇺🇸'
+                  : item.categoria === 'Italianos' ? '🇮🇹'
+                  : item.categoria === 'Alemães' ? '🇩🇪' : '🔧';
       return `
         <div class="checkout-item-linha">
           <div class="checkout-item-img">${emoji}</div>
@@ -164,37 +353,9 @@ document.addEventListener('DOMContentLoaded', async function() {
       <div class="resumo-linha"><span>Frete</span><span>${frete === 0 ? '<span style="color:var(--cor-primaria)">Grátis</span>' : 'R$ ' + frete.toFixed(2)}</span></div>
       ${desconto > 0 ? `<div class="resumo-linha" style="color:var(--cor-primaria)"><span>Desconto</span><span>- R$ ${desconto.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span></div>` : ''}
       <div class="resumo-linha total"><span>Total</span><strong>R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong></div>`;
+
+    sincronizarSlots();
   }
-
-  // Mostrar form novo cartão (1º cartão)
-  document.addEventListener('change', (e) => {
-    if (e.target.name === 'cartao') {
-      const form = document.getElementById('novoCartaoForm');
-      if (form) form.style.display = e.target.value === 'novo' ? 'block' : 'none';
-    }
-    // Mostrar form novo cartão (2º cartão)
-    if (e.target.name === 'cartao2') {
-      const form2 = document.getElementById('novoCartaoForm2');
-      if (form2) form2.style.display = e.target.value === 'novo2' ? 'block' : 'none';
-    }
-  });
-
-  // Atualizar valor do 2º cartão automaticamente
-  document.getElementById('valorCartao1')?.addEventListener('input', () => {
-    const subtotal        = Carrinho.totalValor;
-    const frete           = subtotal >= 500 ? 0 : 49.90;
-    let desconto          = 0;
-    if (cupomAtivo) {
-      desconto = cupomAtivo.tipo === 'percentual'
-        ? subtotal * cupomAtivo.desconto
-        : cupomAtivo.desconto;
-    }
-    const totalComDesconto = Math.max(0, subtotal + frete - desconto);
-    const valor1 = parseFloat(document.getElementById('valorCartao1').value) || 0;
-    const valor2 = Math.max(0, totalComDesconto - valor1);
-    const labelValor2 = document.getElementById('labelValorCartao2');
-    if (labelValor2) labelValor2.textContent = 'R$ ' + valor2.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-  });
 
   if (document.getElementById('checkoutCartaoNum')) {
     mascaraCartao(document.getElementById('checkoutCartaoNum'));
@@ -215,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
       const resultado = await resp.json();
       if (resp.ok && resultado.valido) {
-        const c = resultado.cupom;
+        const c        = resultado.cupom;
         const valorNum = parseFloat(c.valor);
         cupomAtivo = {
           desconto: c.tipo === 'percentual' ? valorNum / 100 : valorNum,
@@ -223,7 +384,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           codigo:   c.codigo,
         };
         const valorExibido = c.tipo === 'percentual'
-          ? (Number.isInteger(valorNum) ? valorNum : valorNum) + '%'
+          ? valorNum + '%'
           : 'R$ ' + valorNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         feedbackEl.innerHTML = `<div class="alerta alerta-sucesso">✓ ${valorExibido} de desconto aplicado!</div>`;
         atualizarCalculo();
@@ -235,26 +396,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-// ---- CONFIRMAR PEDIDO ----
+  // ---- CONFIRMAR PEDIDO ----
   document.getElementById('btnConfirmarPedido')?.addEventListener('click', async () => {
     const endereco = document.querySelector('[name="endereco"]:checked');
     if (!endereco) { alert('Selecione um endereço de entrega.'); return; }
 
-    // ---- Calcular total real com desconto ----
     const subtotal         = Carrinho.totalValor;
     const frete            = subtotal >= 500 ? 0 : 49.90;
     let   desconto         = 0;
-
     if (cupomAtivo) {
       desconto = cupomAtivo.tipo === 'percentual'
         ? subtotal * cupomAtivo.desconto
         : cupomAtivo.desconto;
     }
-
     const totalComDesconto = Math.max(0, subtotal + frete - desconto);
     const temCupom         = cupomAtivo && desconto > 0;
 
-    // ---- Montar objeto pagamento ----
     let pagamento;
 
     if (metodoPagamento === 'pix') {
@@ -270,64 +427,69 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     } else {
       // CARTÃO DE CRÉDITO
-      const cartao1 = document.querySelector('[name="cartao"]:checked');
-      if (!cartao1) { alert('Selecione um cartão.'); return; }
+      const slots = [...document.querySelectorAll('.cartao-slot')];
 
-      const usarDois = document.getElementById('usarSegundoCartao')?.checked;
+      if (slots.length === 0) {
+        // Fluxo legado (sem slots adicionados): usa o seletor #cartaoOpcoes
+        const cartao1 = document.querySelector('[name="cartao"]:checked');
+        if (!cartao1) { alert('Selecione um cartão.'); return; }
 
-      if (!usarDois) {
-        // 1 cartão — RN0034: mínimo R$10 se não tem cupom cobrindo
         if (!temCupom && totalComDesconto < 10) {
           alert('Valor mínimo para pagamento com cartão é R$ 10,00.');
           return;
         }
         pagamento = { metodo: 'CARTAO_CREDITO', cartaoId: parseInt(cartao1.value) };
 
+      } else if (slots.length === 1) {
+        // 1 slot: cartão único
+        const radio = slots[0].querySelector('input[type="radio"]:checked');
+        if (!radio) { alert('Selecione um cartão.'); return; }
+        if (!temCupom && totalComDesconto < 10) {
+          alert('Valor mínimo para pagamento com cartão é R$ 10,00.');
+          return;
+        }
+        pagamento = { metodo: 'CARTAO_CREDITO', cartaoId: parseInt(radio.value) };
+
       } else {
-        // 2 cartões
-        const cartao2 = document.querySelector('[name="cartao2"]:checked');
-        if (!cartao2) { alert('Selecione o 2º cartão.'); return; }
+        // N slots: múltiplos cartões
+        const cartoesPayload = [];
+        for (let i = 0; i < slots.length; i++) {
+          const slot  = slots[i];
+          const radio = slot.querySelector('input[type="radio"]:checked');
+          if (!radio) { alert(`Selecione um cartão no slot ${i + 1}.`); return; }
 
-        // Checar duplicidade: só é duplicado se ambos são cartões salvos com mesmo ID
-        const c1IsNovo = cartao1.value === 'novo';
-        const c2IsNovo = cartao2.value === 'novo2';
-        if (!c1IsNovo && !c2IsNovo && cartao1.value === cartao2.value) {
-          alert('Selecione cartões diferentes.');
-          return;
+          const valor = parseFloat(slot.querySelector('.slot-valor').value);
+          if (isNaN(valor) || valor <= 0) { alert(`Informe um valor válido no cartão ${i + 1}.`); return; }
+          if (!temCupom && valor < 10) {
+            alert(`Valor mínimo por cartão é R$ 10,00 (Cartão ${i + 1} com R$ ${valor.toFixed(2)}).`);
+            return;
+          }
+
+          const cartaoId = radio.value.startsWith('novo') ? null : parseInt(radio.value);
+
+          // Verificar duplicidade de cartões salvos
+          if (cartaoId !== null && cartoesPayload.some(c => c.cartaoId === cartaoId)) {
+            alert(`O cartão selecionado no slot ${i + 1} já está sendo usado em outro slot.`);
+            return;
+          }
+
+          cartoesPayload.push({ cartaoId, valor: parseFloat(valor.toFixed(2)) });
         }
 
-        const valor1 = parseFloat(document.getElementById('valorCartao1').value);
-        const valor2 = parseFloat((totalComDesconto - valor1).toFixed(2));
-
-        if (isNaN(valor1) || valor1 <= 0) {
-          alert('Informe o valor do 1º cartão.');
+        const somaCartoes = cartoesPayload.reduce((s, c) => s + c.valor, 0);
+        if (Math.abs(somaCartoes - totalComDesconto) > 0.02) {
+          alert(`A soma dos cartões (R$ ${somaCartoes.toFixed(2)}) não bate com o total (R$ ${totalComDesconto.toFixed(2)}).`);
           return;
-        }
-        if (valor1 >= totalComDesconto) {
-          alert('O valor do 1º cartão deve ser menor que o total da compra.');
-          return;
-        }
-
-        // RN0034 sem cupom: ambos >= R$10
-        // RN0035 com cupom: pode ter < R$10, mas precisa ser positivo
-        if (!temCupom) {
-          if (valor1 < 10) { alert('Valor mínimo por cartão é R$ 10,00 (RN0034).'); return; }
-          if (valor2 < 10) { alert(`O 2º cartão ficaria com R$ ${valor2.toFixed(2)}, abaixo do mínimo de R$ 10,00 (RN0034).`); return; }
-        } else {
-          if (valor1 <= 0 || valor2 <= 0) { alert('Ambos os cartões precisam ter valor positivo.'); return; }
         }
 
         pagamento = {
-          metodo:    'DOIS_CARTOES',
-          cartao1Id: c1IsNovo ? null : parseInt(cartao1.value),
-          valor1,
-          cartao2Id: c2IsNovo ? null : parseInt(cartao2.value),
-          valor2,
+          metodo:  'MULTIPLOS_CARTOES',
+          cartoes: cartoesPayload,
         };
       }
     }
 
-    // ---- Enviar pedido ----
+    // Enviar pedido
     const btnTexto = document.getElementById('btnConfTexto');
     const btnLoad  = document.getElementById('btnConfLoad');
     const btn      = document.getElementById('btnConfirmarPedido');
@@ -345,7 +507,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         itens: Carrinho.itens.map(i => ({ produtoId: i.id, quantidade: i.quantidade })),
       };
 
-      const resp    = await fetch('/api/pedidos', {
+      const resp      = await fetch('/api/pedidos', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });

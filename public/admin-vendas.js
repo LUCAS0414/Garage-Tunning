@@ -104,16 +104,53 @@ document.addEventListener('DOMContentLoaded', async function() {
     abrirDetalhe(pedido);
   });
 
-  function abrirDetalhe(pedido) {
+  async function abrirDetalhe(pedido) {
     document.getElementById('modalPedidoTitulo').textContent = `#${pedido.id}`;
     const statusInfo = STATUS[pedido.status] || { label: pedido.status, badge: '' };
 
-    const itensHTML = pedido.itens.map(i =>
+    const ehTroca = pedido.status === 'EM TROCA' || pedido.status === 'TROCA AUTORIZADA';
+
+    // Se for pedido em troca, busca os itens da solicitação de troca
+    let itensExibidos = pedido.itens;
+    let totalExibido  = pedido.total;
+    let trocaMotivo   = '';
+
+    if (ehTroca) {
+      try {
+        const r = await fetch(`/api/admin/trocas?status=`);
+        const trocas = await r.json();
+        // Filtra as trocas deste pedido (pelo código)
+        const trocasDoPedido = trocas.filter(t => String(t.codigo_pedido) === String(pedido.id));
+
+        if (trocasDoPedido.length > 0) {
+          trocaMotivo = trocasDoPedido[0].motivo || '';
+
+          // Monta lista de itens apenas dos produtos em troca
+          itensExibidos = trocasDoPedido.map(t => {
+            // Busca o preço unitário do produto dentro dos itens do pedido
+            const itemOriginal = pedido.itens.find(i => i.nome === t.produto_nome);
+            const preco = itemOriginal ? itemOriginal.preco : 0;
+            return {
+              nome: t.produto_nome,
+              qty:  t.quantidade,
+              preco,
+            };
+          });
+          totalExibido = itensExibidos.reduce((s, i) => s + (i.preco * i.qty), 0);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar troca:', err);
+      }
+    }
+
+    const itensHTML = itensExibidos.map(i =>
       `<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid var(--cor-borda);font-size:0.85rem;">
         <span>${i.nome} x${i.qty}</span>
         <span>R$ ${(i.preco * i.qty).toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
       </div>`
     ).join('');
+
+    const labelTotal = ehTroca ? 'Valor da Troca:' : 'Total:';
 
     document.getElementById('modalPedidoConteudo').innerHTML = `
       <div style="display:flex;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
@@ -123,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       </div>
       <div style="margin-bottom:1rem;">${itensHTML}</div>
       <div style="text-align:right;font-family:var(--fonte-titulo);font-size:1.3rem;color:var(--cor-primaria);">
-        Total: R$ ${pedido.total.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+        ${labelTotal} R$ ${totalExibido.toLocaleString('pt-BR', {minimumFractionDigits:2})}
       </div>`;
 
     const proximos = STATUS[pedido.status]?.proximos || [];
@@ -139,18 +176,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (trocaArea) trocaArea.style.display = pedido.status === 'EM TROCA'         ? 'block' : 'none';
     if (recArea)   recArea.style.display   = pedido.status === 'TROCA AUTORIZADA' ? 'block' : 'none';
 
-    if (pedido.status === 'EM TROCA' || pedido.status === 'TROCA AUTORIZADA') {
-      fetch(`/api/admin/trocas?status=`)
-        .then(r => r.json())
-        .then(trocas => {
-          const troca = trocas.find(t => t.codigo_pedido === pedido.id.replace(/^GT-\d+-?/, '') || String(t.codigo_pedido) === String(pedido.id));
-          const el = document.getElementById('motivoTroca');
-          if (el) el.value = troca?.motivo || '(motivo não encontrado)';
-        })
-        .catch(() => {
-          const el = document.getElementById('motivoTroca');
-          if (el) el.value = '(erro ao buscar motivo)';
-        });
+    // Preenche motivo da troca (já buscado acima)
+    if (ehTroca) {
+      const el = document.getElementById('motivoTroca');
+      if (el) el.value = trocaMotivo || '(motivo não encontrado)';
     }
 
     abrirModal('modalPedido');

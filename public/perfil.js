@@ -526,83 +526,113 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 
   // --- TROCA DE PRODUTO ---
-  let trocaPedidoIdAtual = null;
+let trocaPedidoIdAtual = null;
 
-  // Chamada do modal
-  window.abrirModalTrocaPorId = function(pedidoId) {
-    const pedido = window._pedidosMap && window._pedidosMap[pedidoId];
-    if (!pedido) {
-      alert('Dados do pedido não encontrados. Recarregue a página.');
-      return;
-    }
-    window.abrirModalTroca(pedido.id, pedido.codigo_pedido, pedido.itens || []);
-  };
+window.abrirModalTrocaPorId = function(pedidoId) {
+  const pedido = window._pedidosMap && window._pedidosMap[pedidoId];
+  if (!pedido) {
+    alert('Dados do pedido não encontrados. Recarregue a página.');
+    return;
+  }
+  window.abrirModalTroca(pedido.id, pedido.codigo_pedido, pedido.itens || []);
+};
 
-  window.abrirModalTroca = function(pedidoId, codigoPedido, itens) {
-    trocaPedidoIdAtual = pedidoId;
-    document.getElementById('trocaPedidoCodigo').textContent = '#' + codigoPedido;
+window.abrirModalTroca = function(pedidoId, codigoPedido, itens) {
+  trocaPedidoIdAtual = pedidoId;
+  document.getElementById('trocaPedidoCodigo').textContent = '#' + codigoPedido;
 
-    const select = document.getElementById('trocaProdutoSelect');
-    if (!itens || itens.length === 0) {
-      select.innerHTML = '<option value="">Nenhum item encontrado</option>';
-    } else {
-      select.innerHTML = itens.map(i =>
-        `<option value="${i.produto_id || i.id}">${i.nome_produto} (x${i.quantidade})</option>`
-      ).join('');
-    }
-
-    document.getElementById('trocaQuantidade').value = 1;
-    document.getElementById('trocaMotivo').value = '';
-    document.getElementById('trocaFeedback').innerHTML = '';
-
-    const modal = document.getElementById('modalSolicitarTroca');
-    if (modal) {  
-        modal.classList.add('ativo');
-        document.body.style.overflow = 'hidden'; }
-  };
-
-  window.fecharModalTroca = function() {
-    const modal = document.getElementById('modalSolicitarTroca');
-    if (modal) { 
-        modal.classList.remove('ativo');
-        document.body.style.overflow = ''; }
-  };
-
-  document.getElementById('btnEnviarTroca')?.addEventListener('click', async () => {
-    const produtoId  = document.getElementById('trocaProdutoSelect').value;
-    const quantidade = parseInt(document.getElementById('trocaQuantidade').value);
-    const motivo     = document.getElementById('trocaMotivo').value.trim();
-    const feedback   = document.getElementById('trocaFeedback');
-
-    if (!motivo) {
-      feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Informe o motivo da troca.</div>';
-      return;
-    }
-
-    try {
-      const resp = await fetch(`${API}/api/trocas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clienteId:  userId,
-          pedidoId:   trocaPedidoIdAtual,
-          produtoId:  parseInt(produtoId),
-          quantidade,
-          motivo,
-        }),
-      });
-      const resultado = await resp.json();
-
-      if (resp.ok) {
-        feedback.innerHTML = '<div class="alerta alerta-sucesso">✓ Solicitação enviada! Aguarde a análise.</div>';
-        setTimeout(() => window.fecharModalTroca(), 2000);
-      } else {
-        feedback.innerHTML = `<div class="alerta alerta-erro">⚠ ${resultado.error}</div>`;
+  const lista = document.getElementById('trocaItensLista');
+  if (!itens || itens.length === 0) {
+    lista.innerHTML = '<p class="texto-muted texto-pequeno">Nenhum item encontrado.</p>';
+  } else {
+    const linhas = [];
+    itens.forEach(item => {
+      const qty = item.quantidade || 1;
+      for (let u = 1; u <= qty; u++) {
+        linhas.push(`
+          <label class="checkbox-label" style="margin-bottom:0.35rem; display:flex; align-items:center; gap:0.5rem;">
+            <input type="checkbox" class="troca-item-check"
+              data-produto-id="${item.produto_id || item.id}"
+              data-nome="${item.nome_produto}">
+            <span class="checkbox-custom"></span>
+            <span style="font-size:0.85rem;">${item.nome_produto} — Unidade ${u}</span>
+          </label>`);
       }
-    } catch (err) {
-      feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Erro de conexão.</div>';
-    }
+    });
+    lista.innerHTML = linhas.join('');
+  }
+
+  document.getElementById('trocaSelecionarTudo').checked = false;
+  document.getElementById('trocaMotivo').value = '';
+  document.getElementById('trocaFeedback').innerHTML = '';
+
+  const modal = document.getElementById('modalSolicitarTroca');
+  if (modal) {
+    modal.classList.add('ativo');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.fecharModalTroca = function() {
+  const modal = document.getElementById('modalSolicitarTroca');
+  if (modal) {
+    modal.classList.remove('ativo');
+    document.body.style.overflow = '';
+  }
+};
+
+document.getElementById('trocaSelecionarTudo')?.addEventListener('change', function() {
+  document.querySelectorAll('.troca-item-check').forEach(cb => cb.checked = this.checked);
+});
+
+document.getElementById('btnEnviarTroca')?.addEventListener('click', async () => {
+  const checks   = [...document.querySelectorAll('.troca-item-check:checked')];
+  const motivo   = document.getElementById('trocaMotivo').value.trim();
+  const feedback = document.getElementById('trocaFeedback');
+
+  if (checks.length === 0) {
+    feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Selecione ao menos um item.</div>';
+    return;
+  }
+  if (!motivo) {
+    feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Informe o motivo da troca.</div>';
+    return;
+  }
+
+  // Agrupar checkboxes por produto_id → quantidade
+  const agrupado = {};
+  checks.forEach(cb => {
+    const pid = cb.dataset.produtoId;
+    agrupado[pid] = (agrupado[pid] || 0) + 1;
   });
+  const itens = Object.entries(agrupado).map(([produtoId, quantidade]) => ({
+    produtoId: parseInt(produtoId),
+    quantidade,
+  }));
+
+  try {
+    const resp = await fetch(`${API}/api/trocas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clienteId: userId,
+        pedidoId:  trocaPedidoIdAtual,
+        itens,
+        motivo,
+      }),
+    });
+    const resultado = await resp.json();
+
+    if (resp.ok) {
+      feedback.innerHTML = '<div class="alerta alerta-sucesso">✓ Solicitação enviada! Aguarde a análise.</div>';
+      setTimeout(() => window.fecharModalTroca(), 2000);
+    } else {
+      feedback.innerHTML = `<div class="alerta alerta-erro">⚠ ${resultado.error}</div>`;
+    }
+  } catch (err) {
+    feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Erro de conexão.</div>';
+  }
+});
 
   // Inicializa
   carregarPerfil();

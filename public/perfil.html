@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/perfil.css">
 </head>
+
 <body>
 
   <div id="navbar-container"></div>
@@ -269,7 +271,9 @@
           </section>
 
           <section class="perfil-tab" id="tab-pedidos">
-            <div class="perfil-tab__header"><h2>Meus Pedidos</h2></div>
+            <div class="perfil-tab__header">
+              <h2>Meus Pedidos</h2>
+            </div>
             <div class="pedidos-filtro">
               <button class="pedido-filtro-btn ativo" data-status="todos">Todos</button>
               <button class="pedido-filtro-btn" data-status="EM PROCESSAMENTO">Processando</button>
@@ -283,14 +287,18 @@
           </section>
 
           <section class="perfil-tab" id="tab-cupons">
-            <div class="perfil-tab__header"><h2><i class="fas fa-ticket"></i> Meus Cupons</h2></div>
+            <div class="perfil-tab__header">
+              <h2><i class="fas fa-ticket"></i> Meus Cupons</h2>
+            </div>
             <div id="cuponsLista" style="margin-top:1rem;">
               <p class="texto-muted">Carregando cupons...</p>
             </div>
           </section>
 
           <section class="perfil-tab" id="tab-senha">
-            <div class="perfil-tab__header"><h2>Alterar Senha</h2></div>
+            <div class="perfil-tab__header">
+              <h2>Alterar Senha</h2>
+            </div>
             <form class="auth-form" id="formAlterarSenha" style="max-width:420px;" novalidate>
               <div class="input-grupo">
                 <label>Senha Atual</label>
@@ -306,7 +314,9 @@
                   <button type="button" class="input-senha-toggle" id="toggleNova"><i class="fas fa-eye"></i></button>
                 </div>
                 <div class="senha-forca" id="novaSenhaForca" style="display:none">
-                  <div class="senha-forca__barra"><div class="senha-forca__fill" id="novaSenhaFill"></div></div>
+                  <div class="senha-forca__barra">
+                    <div class="senha-forca__fill" id="novaSenhaFill"></div>
+                  </div>
                   <div class="senha-forca__info"><span class="senha-forca__nivel" id="novaSenhaNivel"></span></div>
                 </div>
               </div>
@@ -335,34 +345,31 @@
       </div>
     </div>
   </footer>
-  
+
   <!--Modal de troca-->
- <div class="modal-overlay" id="modalSolicitarTroca">
+<div class="modal-overlay" id="modalSolicitarTroca">
   <div class="modal" style="max-width:500px; width:100%;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
       <h3><i class="fas fa-right-left"></i> Solicitar Troca</h3>
       <button class="btn btn-outline btn-sm" onclick="fecharModalTroca()">&times;</button>
     </div>
-    
+
     <div>
       <p class="texto-muted" style="margin-bottom:1rem;">
         Pedido: <strong id="trocaPedidoCodigo">#0000</strong>
       </p>
 
       <div class="input-grupo">
-        <label>Produto a trocar <span style="color:var(--cor-erro)">*</span></label>
-        <select class="input-field" id="trocaProdutoSelect"></select>
+        <label>Itens para troca <span style="color:var(--cor-erro)">*</span></label>
+        <label class="checkbox-label" style="margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+          <input type="checkbox" id="trocaSelecionarTudo">
+          <span class="checkbox-custom"></span>
+          <span style="font-size:0.85rem; color:var(--cor-texto-muted);">Selecionar Tudo</span>
+        </label>
+        <div id="trocaItensLista" style="max-height:200px; overflow-y:auto; border:1px solid var(--cor-borda); border-radius:6px; padding:0.5rem;"></div>
       </div>
 
-      <div class="form-grid-2">
-        <div class="input-grupo">
-          <label>Quantidade <span style="color:var(--cor-erro)">*</span></label>
-          <input type="number" class="input-field" id="trocaQuantidade" min="1" value="1">
-        </div>
-        <div class="input-grupo"></div>
-      </div>
-
-      <div class="input-grupo">
+      <div class="input-grupo" style="margin-top:1rem;">
         <label>Motivo da troca <span style="color:var(--cor-erro)">*</span></label>
         <textarea class="input-field" id="trocaMotivo" rows="3" placeholder="Descreva detalhadamente o motivo..."></textarea>
       </div>
@@ -380,4 +387,5 @@
   <script src="global.js"></script>
   <script src="perfil.js"></script>
 </body>
+
 </html>
