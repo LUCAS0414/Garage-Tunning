@@ -29,8 +29,50 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('produtoNome').textContent  = produto.nome;
   document.getElementById('breadNome').textContent    = produto.nome;
   document.getElementById('breadCat').textContent     = produto.categoria;
-  document.getElementById('produtoPreco').textContent = `R$ ${produto.preco.toLocaleString('pt-BR')}`;
   document.getElementById('specCodigo').textContent   = produto.codigo;
+
+  // Preço De (10% mais caro)
+  const precoDe = (produto.preco * 1.1).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('precoOriginal').textContent = `R$ ${precoDe}`;
+
+  // Preço Por (preço real)
+  document.getElementById('produtoPreco').textContent = `R$ ${produto.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Parcelamento 12x
+  const preco12x = (produto.preco / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const elParcelamento = document.querySelector('.produto-parcelamento strong');
+  if (elParcelamento) {
+    elParcelamento.textContent = `R$ ${preco12x}`;
+  }
+
+  // Preço PIX (5% de desconto)
+  const precoPix = (produto.preco * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const elPix = document.querySelector('.produto-pix strong');
+  if (elPix) {
+    elPix.textContent = `R$ ${precoPix}`;
+  }
+
+  // Descrição Real do Banco de Dados
+  const elDesc = document.querySelector('.produto-descricao-texto');
+  if (elDesc) {
+    if (produto.descricao) {
+      const paragrafos = produto.descricao
+        .split(/\n+/)
+        .map(p => p.trim())
+        .filter(p => p.length > 0)
+        .map(p => `<p>${p}</p>`)
+        .join('');
+      elDesc.innerHTML = `
+        <h3>Sobre o Produto</h3>
+        ${paragrafos}
+      `;
+    } else {
+      elDesc.innerHTML = `
+        <h3>Sobre o Produto</h3>
+        <p>Sem descrição cadastrada.</p>
+      `;
+    }
+  }
 
   // Estoque
   const estoqueTexto = document.getElementById('estoqueTexto');

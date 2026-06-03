@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/pedidos',  require('./routes/pedidos'));    // POST /api/pedidos, 
 app.use('/api/trocas',   require('./routes/trocas'));     // POST /api/trocas (solicitar troca)
 app.use('/api/clientes', require('./routes/clientes'));   // GET/PUT /api/clientes/:id, endereços, cartões
 app.use('/api/admin',    require('./routes/admin'));      // Rotas administrativas
+app.use('/api/chat', chatRoutes);                         // Rotas do chat
 
 // ---- HEALTH CHECK ----
 app.get('/api/health', (req, res) => {

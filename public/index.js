@@ -62,7 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="produto-card__categoria">${produto.categoria}</div>
           <div class="produto-card__nome">${produto.nome}</div>
           <div class="produto-card__codigo">#${produto.codigo}</div>
-          <div class="produto-card__preco">R$ ${produto.preco.toLocaleString('pt-BR')}</div>
+          <div class="produto-card__preco">
+            <span class="produto-card__preco-original">R$ ${(produto.preco * 1.1).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            R$ ${produto.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
         </div>
         <div class="produto-card__acoes">
           <a href="produto.html?id=${produto.id}" class="btn btn-primario btn-sm w-100">Ver Produto</a>
