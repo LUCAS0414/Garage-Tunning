@@ -150,8 +150,11 @@
 
       <!-- Comparativo de categoria -->
       <div class="grafico-card grafico-grande">
-        <div class="grafico-header">
-          <h3>Comparativo de Categorias — Histórico</h3>
+        <div class="grafico-header" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+          <h3>Volume de Produtos Vendidos por Categoria (Unidades)</h3>
+          <div class="grafico-filtros-categoria" id="filtrosCategoria" style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <!-- Gerado via JS -->
+          </div>
         </div>
         <div class="grafico-wrapper">
           <canvas id="graficoComparativo" width="800" height="280"></canvas>

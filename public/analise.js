@@ -18,6 +18,59 @@ document.addEventListener('DOMContentLoaded', async function() {
     'Peças':      '#cc88ff',
   };
 
+  let categoriasAtivas = new Set(Object.keys(COR_CAT));
+  let dadosGraficoComparativo = { labels: [], linhasPorCategoria: [] };
+
+  function initFiltrosCategoria() {
+    const container = document.getElementById('filtrosCategoria');
+    if (!container) return;
+    container.innerHTML = Object.keys(COR_CAT).map(cat => `
+      <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.9em; color: #ccc;">
+        <input type="checkbox" class="filtro-cat-cb" value="${cat}" checked>
+        <span style="color: ${COR_CAT[cat]}; text-shadow: 0 0 5px ${COR_CAT[cat]}88;">●</span> ${cat}
+      </label>
+    `).join('');
+
+    container.querySelectorAll('.filtro-cat-cb').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        if (e.target.checked) categoriasAtivas.add(e.target.value);
+        else categoriasAtivas.delete(e.target.value);
+        desenharGraficoComparativo();
+      });
+    });
+  }
+
+  function desenharGraficoComparativo() {
+    const canvasComp = document.getElementById('graficoComparativo');
+    if (!canvasComp) return;
+
+    const labels = dadosGraficoComparativo.labels;
+    const linhasPorCat = dadosGraficoComparativo.linhasPorCategoria;
+    
+    if (!labels.length || !linhasPorCat.length) {
+      setTimeout(() => drawLineChart(canvasComp, [], []), 50);
+      return;
+    }
+
+    const seriesComp = [];
+    Object.keys(COR_CAT).forEach(cat => {
+      if (categoriasAtivas.has(cat)) {
+        const dados = labels.map(label => {
+          const point = linhasPorCat.find(l => l.categoria === cat && (l.periodo ? String(l.periodo).substring(5) : '') === label);
+          return point ? parseInt(point.unidades || 0) : 0;
+        });
+        
+        seriesComp.push({
+          nome: cat,
+          cor: COR_CAT[cat],
+          dados: dados
+        });
+      }
+    });
+
+    setTimeout(() => drawLineChart(canvasComp, labels, seriesComp), 50);
+  }
+
   const COR_STATUS = {
     'ENTREGUE':         '#00cc64',
     'EM TRANSPORTE':    '#00ccff',
@@ -208,17 +261,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         agrupamento  = 'semana';
         break;
       default: // 12m
-        dataInicio   = new Date(hoje.getFullYear(), 0, 1).toISOString().split('T')[0];
+        dataInicio   = new Date(hoje);
+        dataInicio.setMonth(dataInicio.getMonth() - 12);
+        dataInicio   = dataInicio.toISOString().split('T')[0];
         agrupamento  = 'mes';
     }
     const dataFim = hoje.toISOString().split('T')[0];
 
     const [dashboard, historico, distribuicao] = await Promise.all([
-      //correção do endereço banco de dados
-      fetch('/api/admin/stats').then(r => r.json()).catch(() => ({})),
-      fetch(`/api/admin/analise?dataInicio=${dataInicio}&dataFim=${dataFim}&agrupamento=${agrupamento}`)
+      fetch('/api/admin/dashboard').then(r => r.json()).catch(() => ({})),
+      fetch(`/api/admin/historico-vendas?dataInicio=${dataInicio}&dataFim=${dataFim}&agrupamento=${agrupamento}`)
         .then(r => r.json()).catch(() => ({ linhas: [], porCategoria: [], topProdutos: [] })),
-      fetch('/api/admin/analise/status').then(r => r.json()).catch(() => []),
+      fetch('/api/admin/distribuicao-status').then(r => r.json()).catch(() => []),
     ]);
 
     return { dashboard, historico, distribuicao };
@@ -322,25 +376,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
 
-    // Gráfico comparativo por categoria ao longo do tempo
-    const canvasComp = el('graficoComparativo');
-    if (canvasComp && porCat.length > 0) {
-      // Usa dados de categorias como séries fixas por período (simplificado)
-      const seriesComp = porCat.map(c => ({
-        nome: c.categoria,
-        cor:  COR_CAT[c.categoria] || '#888888',
-        dados: [parseFloat(c.receita || 0)],
-      }));
-      setTimeout(() => {
-        drawLineChart(canvasComp, [periodo], seriesComp);
-      }, 50);
-    } else if (canvasComp) {
-      setTimeout(() => {
-        drawLineChart(canvasComp, labels, [
-          { nome: 'Receita Total', cor: '#00ff88', dados: receitas },
-        ]);
-      }, 50);
-    }
+    // Gráfico comparativo por categoria ao longo do tempo (Volume de Produtos / Unidades)
+    const linhasPorCat = historico.linhasPorCategoria || [];
+    dadosGraficoComparativo = { labels, linhasPorCategoria: linhasPorCat };
+    desenharGraficoComparativo();
   }
 
   // ---- EVENTOS PERÍODO ----
@@ -356,6 +395,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   window.addEventListener('resize', () => renderizar(periodoAtivo));
 
+  initFiltrosCategoria();
   renderizar(periodoAtivo);
 
   // Tempo real: atualiza a cada 30 segundos

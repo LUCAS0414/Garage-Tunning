@@ -8,26 +8,26 @@
   widget.id = 'gt-chat-widget';
   widget.innerHTML = `
     <button id="gtChatToggle" aria-label="Abrir chat">
-      <span id="gtChatIconOpen">💬</span>
+      <span id="gtChatIconOpen"><i class="fas fa-comments"></i></span>
       <span id="gtChatIconClose" style="display:none">✕</span>
       <span id="gtChatBadge">1</span>
     </button>
     <div id="gtChatNotif" style="display:none">
       <div id="gtChatNotif__avatar">
-        <span>🏁</span>
+        <span><i class="fas fa-flag-checkered"></i></span>
         <strong>The Mecânico</strong>
       </div>
-      <p id="gtChatNotif__msg">Se quiser facilitar sua busca ou precisar de ajuda com algo, só mandar no chat para o mecânico 🔧</p>
+      <p id="gtChatNotif__msg">Se quiser facilitar sua busca ou precisar de ajuda com algo, só mandar no chat para o mecânico<i class="fas fa-screwdriver"></i></p>
       <button id="gtChatNotif__close" aria-label="Fechar notificação">✕</button>
     </div>
     <div id="gtChatBox" style="display:none">
       <div id="gtChatHeader">
-        <span>🏁 The Mecânico</span>
+        <span><i class="fas fa-flag-checkered"></i> The Mecânico</span>
       </div>
       <div id="gtChatMsgs"></div>
       <div id="gtChatInput">
         <input id="gtChatField" type="text" placeholder="Ex: Preciso de uma suspensão esportiva..." maxlength="300" />
-        <button id="gtChatSend">➤</button>
+        <button id="gtChatSend"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
   `;
@@ -241,7 +241,7 @@
     open.style.display = 'none';
     close.style.display = 'inline';
     if (!document.querySelector('#gtChatMsgs .gt-msg')) {
-      addMsg('Olá! Sou o assistente mecânico virtual da The Garage. Me diga o que você procura — posso recomendar peças, veículos e acessórios do nosso catálogo 🏁', 'bot');
+      addMsg('Olá! Sou o assistente mecânico virtual da The Garage. Me diga o que você procura — posso recomendar peças, veículos e acessórios do nosso catálogo', 'bot');
     }
   });
 
@@ -264,7 +264,7 @@
     hideNotif();
 
     if (!visible && !document.querySelector('#gtChatMsgs .gt-msg')) {
-      addMsg('Olá! Sou o assistente mecânico virtual da The Garage. Me diga o que você procura — posso recomendar peças, veículos e acessórios do nosso catálogo 🏁', 'bot');
+      addMsg('Olá! Sou o assistente mecânico virtual da The Garage. Me diga o que você procura — posso recomendar peças, veículos e acessórios do nosso catálogo', 'bot');
     }
   });
 

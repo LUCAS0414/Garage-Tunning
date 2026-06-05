@@ -92,7 +92,29 @@ const AdminService = {
       [dataInicio, dataFim]
     );
 
-    return { linhas, porCategoria, topProdutos };
+    const [linhasPorCategoria] = await pool.execute(
+      `SELECT ${formatoData} AS periodo,
+         CASE
+           WHEN pr.categoria_id = 1  THEN 'Peças'
+           WHEN pr.categoria_id = 8  THEN 'JDM'
+           WHEN pr.categoria_id = 9  THEN 'Americanos'
+           WHEN pr.categoria_id = 10 THEN 'Italianos'
+           WHEN pr.categoria_id = 11 THEN 'Alemães'
+           ELSE 'Peças'
+         END AS categoria,
+         SUM(pi.quantidade)   AS unidades,
+         SUM(pi.quantidade * pi.preco_unitario) AS receita
+       FROM pedido_itens pi
+       JOIN pedidos  p  ON p.id  = pi.pedido_id
+       JOIN produtos pr ON pr.id = pi.produto_id
+       WHERE p.status NOT IN ('REPROVADO')
+         AND p.data_pedido BETWEEN ? AND DATE_ADD(?, INTERVAL 1 DAY)
+       GROUP BY ${groupBy}, categoria
+       ORDER BY MIN(p.data_pedido), categoria`,
+      [dataInicio, dataFim]
+    );
+
+    return { linhas, porCategoria, topProdutos, linhasPorCategoria };
   },
 
   async distribuicaoStatus() {

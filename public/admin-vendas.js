@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   let pedidos = [];
   try {
-    const resp = await fetch('/api/admin/pedidos?limite=100');
+    const resp = await fetch('/api/admin/pedidos?limite=500');
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const dados = await resp.json();
 
