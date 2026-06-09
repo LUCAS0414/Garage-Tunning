@@ -5,7 +5,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Cria a tabela de uso de tokens automaticamente se não existir
+// Teste consumo de token
 pool.execute(`
   CREATE TABLE IF NOT EXISTS chat_uso_tokens (
     id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -20,11 +20,10 @@ pool.execute(`
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 `).catch(err => console.error('[chat_uso_tokens] Erro ao criar tabela:', err.message));
 
-// Registra o uso de tokens de forma assíncrona (não bloqueia a resposta)
+// Registra o uso de tokens
 async function registrarUso(email, mensagem, resposta, sucesso = true) {
   if (!email) return;
   try {
-    // Estimativa simples: 1 token ≈ 4 caracteres
     const tokensEst = Math.ceil((mensagem.length + (resposta || '').length) / 4);
     await pool.execute(
       'INSERT INTO chat_uso_tokens (email, mensagem, tokens_est, sucesso) VALUES (?, ?, ?, ?)',
@@ -35,7 +34,7 @@ async function registrarUso(email, mensagem, resposta, sucesso = true) {
   }
 }
 
-// Lista de stop words em português para limpar as buscas e evitar resultados aleatórios
+// Lista de stop words
 const STOP_WORDS = new Set([
   'para', 'com', 'sem', 'por', 'uma', 'uma', 'uns', 'umas', 'este', 'esta', 'estes', 'estas',
   'aquele', 'aquela', 'aqueles', 'aquelas', 'esse', 'essa', 'esses', 'essas', 'como', 'mais',
@@ -49,7 +48,7 @@ const STOP_WORDS = new Set([
   'criança', 'menino', 'menina', 'jovem', 'velho', 'adulto', 'idoso'
 ]);
 
-// Busca produtos relevantes no banco por palavras-chave da mensagem
+// Busca produtos relevantes no banco
 async function buscarProdutosRelevantes(mensagem) {
   const palavras = mensagem
     .toLowerCase()
@@ -57,7 +56,7 @@ async function buscarProdutosRelevantes(mensagem) {
     .split(/\s+/)
     .filter(p => p.length >= 3 && !STOP_WORDS.has(p));
 
-  // Se não tem palavras-chave relevantes, pega os produtos mais populares
+  // Seem palavra relevante
   if (!palavras.length) {
     const [rows] = await pool.execute(
       `SELECT p.id, p.nome, p.descricao, p.preco_venda, p.estoque_atual, c.nome AS categoria
@@ -68,7 +67,7 @@ async function buscarProdutosRelevantes(mensagem) {
     return rows;
   }
 
-  // Faz a busca com OR trazendo até 40 resultados para a IA filtrar cognitivamente
+  // Busca com OR
   const likes = palavras.map(() => '(p.nome LIKE ? OR p.descricao LIKE ? OR c.nome LIKE ?)').join(' OR ');
   const params = palavras.flatMap(p => [`%${p}%`, `%${p}%`, `%${p}%`]);
 
@@ -81,7 +80,7 @@ async function buscarProdutosRelevantes(mensagem) {
     params
   );
 
-  // Se não achou nada específico, retorna amostra geral
+  // Retorno geral
   if (!rows.length) {
     const [geral] = await pool.execute(
       `SELECT p.id, p.nome, p.descricao, p.preco_venda, p.estoque_atual, c.nome AS categoria
@@ -113,7 +112,6 @@ async function buscarHistoricoCliente(clienteId) {
 }
 
 // POST /api/chat
-// Body: { mensagem, historico: [{role, content}], clienteId?, email? }
 router.post('/', async (req, res) => {
   const { mensagem, historico = [], clienteId, email } = req.body;
   if (!mensagem?.trim()) return res.status(400).json({ error: 'Mensagem vazia.' });
@@ -194,13 +192,13 @@ ${listaProdutos}${historicoCompras}`;
     let geminiSucesso = false;
     let modeloUsado = '';
 
-    // Prepara o histórico uma única vez
+    // Prepara o histórico
     const geminiHistory = historico.slice(-6).map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }]
     }));
 
-    // Cascata de modelos: tenta do mais capaz para o mais leve
+    // Cascata de modelos
     const modelos = ['gemini-3.5-flash', 'gemini-2.5-flash'];
 
     for (const nomeModelo of modelos) {
@@ -213,9 +211,9 @@ ${listaProdutos}${historicoCompras}`;
 
         const chat = model.startChat({ history: geminiHistory });
         
-        // Timeout de 10 segundos (10000ms)
+        // Timeout de 15 segundos (15000ms)
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('TIMEOUT: Limite de 10 segundos excedido')), 10000)
+          setTimeout(() => reject(new Error('TIMEOUT: Limite de 10 segundos excedido')), 15000)
         );
 
         const result = await Promise.race([
@@ -257,14 +255,14 @@ ${listaProdutos}${historicoCompras}`;
       });
     }
 
-    // Se chegou aqui, todos os modelos falharam — ativa fallback local
+    // Ativa fallback local
     console.warn('[Gemini] Todos os modelos falharam. Ativando fallback básico.');
   } catch (apiErr) {
     console.warn('[Gemini API Fallback ativo]:', apiErr.message);
 
     const palavrasMinusculas = mensagem.toLowerCase();
 
-    // Filtra produtos relevantes pela categoria/nome da busca do usuário
+    // Filtra produtos relevantes
     let categoriaBuscada = '';
     if (palavrasMinusculas.includes('suspensao') || palavrasMinusculas.includes('mola') || palavrasMinusculas.includes('amortecedor')) {
       categoriaBuscada = 'Suspensão';
@@ -280,12 +278,10 @@ ${listaProdutos}${historicoCompras}`;
       categoriaBuscada = 'Freios';
     }
 
-    // Filtra apenas os produtos que correspondem à categoria buscada ou têm a palavra-chave no nome
+    // Filtra apenas os produtos que correspondem à categoria buscada
     const produtosFiltrados = produtos.filter(p => {
       const nomeMatch = p.nome.toLowerCase().includes(palavrasMinusculas.split(/\s+/)[0]);
       const catMatch = categoriaBuscada && p.categoria && p.categoria.toLowerCase().includes(categoriaBuscada.toLowerCase());
-
-      // Se estamos buscando peças, remove carros de colecionador da resposta
       const isCarro = p.categoria && (p.categoria.includes('JDM') || p.categoria.includes('Alemães') || p.categoria.includes('Italianos') || p.categoria.includes('Americanos'));
       if (categoriaBuscada && isCarro) return false;
 
@@ -302,7 +298,7 @@ ${listaProdutos}${historicoCompras}`;
       resposta = `Para o projeto do seu veículo, no momento não encontrei peças específicas correspondentes em nosso catálogo. Tente buscar por termos diretos como 'suspensão', 'roda' ou 'escapamento'.`;
     }
 
-    // Registra uso do fallback (sucesso=0 pois a IA não respondeu)
+    // Registra uso do fallback
     registrarUso(email, mensagem, resposta, false);
 
     res.json({

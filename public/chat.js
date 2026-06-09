@@ -1,9 +1,9 @@
 (function () {
-  // ── Estado ──────────────────────────────────────────────
+  // Estado
   let historico = [];
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
 
-  // ── HTML do widget ───────────────────────────────────────
+  // HTML
   const widget = document.createElement('div');
   widget.id = 'gt-chat-widget';
   widget.innerHTML = `
@@ -33,7 +33,7 @@
   `;
   document.body.appendChild(widget);
 
-  // ── Estilos ──────────────────────────────────────────────
+  // Estilo
   const style = document.createElement('style');
   style.textContent = `
     @keyframes gt-float {
@@ -144,7 +144,7 @@
   `;
   document.head.appendChild(style);
 
-  // ── Funções ──────────────────────────────────────────────
+  // Função
   function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, 
       tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
@@ -205,7 +205,7 @@
     field.focus();
   }
 
-  // ── Notificação automática ────────────────────────────────
+  // Notificação automatica
   let notifTimer = null;
 
   function showNotif() {
@@ -250,7 +250,7 @@
     hideNotif();
   });
 
-  // ── Eventos ──────────────────────────────────────────────
+  // Eventos
   document.getElementById('gtChatToggle').addEventListener('click', () => {
     const box = document.getElementById('gtChatBox');
     const open = document.getElementById('gtChatIconOpen');

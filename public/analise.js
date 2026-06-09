@@ -1,5 +1,4 @@
 
-// ---- GUARD: somente administradores podem acessar esta página ----
 (function() {
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!user.logado || !user.isAdmin) {
@@ -9,7 +8,7 @@
 
 document.addEventListener('DOMContentLoaded', async function() {
 
-  // ---- CORES POR CATEGORIA ----
+  // Cores
   const COR_CAT = {
     'JDM':        '#00ff88',
     'Americanos': '#ff6600',
@@ -82,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     'TROCADO':          '#888888',
   };
 
-  // ---- TOAST ----
+  // Toast
   function toast(msg) {
     const t = document.createElement('div');
     t.className = 'toast-feedback';
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     setTimeout(() => { t.classList.remove('ativo'); setTimeout(() => t.remove(), 300); }, 3000);
   }
 
-  // ---- HELPERS DE CANVAS ----
+  // Canvas
   function drawLineChart(canvas, labels, series) {
     const ctx = canvas.getContext('2d');
     const W = canvas.offsetWidth || 800;
@@ -242,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
-  // ---- BUSCAR DADOS DA API ----
+  // Busca API
   async function buscarDados(periodo) {
     const hoje = new Date();
     let dataInicio, agrupamento;
@@ -278,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     return { dashboard, historico, distribuicao };
   }
 
-  // ---- RENDERIZAR ----
+  // Renderizar
   async function renderizar(periodo) {
     const { dashboard, historico, distribuicao } = await buscarDados(periodo);
 
@@ -299,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const linhas    = historico.linhas || [];
     const labels    = linhas.map(l => l.periodo ? String(l.periodo).substring(5) : '');
     const receitas  = linhas.map(l => parseFloat(l.receita || 0));
-    const pedidosSerie = linhas.map(l => parseInt(l.total_pedidos || 0) * 100); // escala visual
+    const pedidosSerie = linhas.map(l => parseInt(l.total_pedidos || 0) * 100); 
 
     const canvasVendas = el('graficoVendas');
     if (canvasVendas) {
@@ -311,10 +310,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       }, 50);
     }
 
-    // Gráfico categorias (barras)
+    // Gráfico categorias
     const porCat     = historico.porCategoria || [];
     const catLabels  = porCat.map(c => c.categoria);
-    const catValores = porCat.map(c => parseFloat(c.receita || 0) / 1000); // em R$ mil
+    const catValores = porCat.map(c => parseFloat(c.receita || 0) / 1000);
     const catCores   = catLabels.map(c => COR_CAT[c] || '#888888');
 
     const canvasCat = el('graficoCategorias');
@@ -344,7 +343,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       catLegenda.innerHTML = '<p class="texto-muted texto-pequeno">Sem vendas no período.</p>';
     }
 
-    // Gráfico de status (barras)
+    // Gráfico de status
     const distList   = Array.isArray(distribuicao) ? distribuicao : [];
     const stLabels   = distList.map(d => d.status);
     const stValores  = distList.map(d => parseInt(d.total || 0));
@@ -376,13 +375,13 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
 
-    // Gráfico comparativo por categoria ao longo do tempo (Volume de Produtos / Unidades)
+    // Gráfico comparativo por categoria ao longo do tempo
     const linhasPorCat = historico.linhasPorCategoria || [];
     dadosGraficoComparativo = { labels, linhasPorCategoria: linhasPorCat };
     desenharGraficoComparativo();
   }
 
-  // ---- EVENTOS PERÍODO ----
+  // Eventos período
   let periodoAtivo = '7d';
   document.querySelectorAll('.periodo-btn').forEach(btn => {
     btn.addEventListener('click', () => {
