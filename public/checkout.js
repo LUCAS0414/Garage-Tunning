@@ -1,18 +1,13 @@
-/**
- * checkout.js
- * Carrega endereços e cartões do cliente da API.
- * Envia pedido real para POST /api/pedidos.
- */
 document.addEventListener('DOMContentLoaded', async function() {
 
   const usuario = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!usuario.id) { window.location.href = 'login.html'; return; }
 
   let cupomAtivo  = null;
-  let cartoesData = [];   // cartões salvos do cliente
+  let cartoesData = [];   // Cartões salvos do cliente
   let metodoPagamento = 'cartao';
 
-  // ---- ABAS DE MÉTODO DE PAGAMENTO ----
+  // ---- abas de método de pagamento ----
   document.querySelectorAll('.metodo-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.metodo-tab').forEach(b => b.classList.remove('ativo'));
@@ -25,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // ---- HELPERS DE TOTAL ----
+  // ---- helpers de total ----
   function calcularTotal() {
     const subtotal = Carrinho.totalValor;
     const frete    = subtotal >= 500 ? 0 : 49.90;
@@ -38,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     return Math.max(0, subtotal + frete - desconto);
   }
 
-  // ---- GERENCIAMENTO DE SLOTS DE CARTÃO ----
+  // ---- gerenciamento de slots de cartão ----
   function criarSlotHTML(index) {
     const opcoesHTML = cartoesData.map(c => `
       <label class="checkout-opcao">
@@ -117,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const cartaoSelecionado = document.querySelector('[name="cartao"]:checked');
       const cartaoIdPreSelecionado = cartaoSelecionado ? cartaoSelecionado.value : null;
 
-      // Criar Cartão 1 e Cartão 2
+      // Criar cartão 1 e cartão 2
       container.insertAdjacentHTML('beforeend', criarSlotHTML(0));
       container.insertAdjacentHTML('beforeend', criarSlotHTML(1));
 
@@ -126,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       bindSlot(slot0);
       bindSlot(slot1);
 
-      // Pré-selecionar no Cartão 1 o cartão que estava selecionado na seção estática
+      // Pré-selecionar no cartão 1 o cartão que estava selecionado na seção estática
       if (cartaoIdPreSelecionado && cartaoIdPreSelecionado !== 'novo') {
         const radio = slot0.querySelector(`input[type="radio"][value="${cartaoIdPreSelecionado}"]`);
         if (radio) radio.checked = true;
@@ -152,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
     });
 
-    // Remover slot
+    // REMOVER SLOT
     slot.querySelector('.btn-remover-slot')?.addEventListener('click', () => {
       slot.remove();
       const container = document.getElementById('cartoesSlots');
@@ -221,10 +216,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
-  // Botão adicionar cartão
+  // BOTÃO ADICIONAR CARTÃO
   document.getElementById('btnAdicionarCartao')?.addEventListener('click', adicionarSlot);
 
-  // ---- CARREGAR DADOS DO CHECKOUT ----
+  // ---- carregar dados do checkout ----
   async function carregarDadosCheckout() {
     try {
       const resp = await fetch(`/api/clientes/${usuario.id}`);
@@ -233,7 +228,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
       cartoesData = dados.cartoes || [];
 
-      // Endereços
+      // ENDEREÇOS
       const enderecoArea = document.getElementById('enderecoOpcoes');
       if (enderecoArea && dados.enderecos && dados.enderecos.length > 0) {
         enderecoArea.innerHTML = dados.enderecos.map((end, i) => `
@@ -274,10 +269,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
       }
 
-      // Mostrar botão "Adicionar cartão" agora que os dados estão prontos
+      // Mostrar botão "adicionar cartão" agora que os dados estão prontos
       document.getElementById('btnAdicionarCartao').style.display = 'inline-block';
 
-      // Débito
+      // DÉBITO
       const debitoArea = document.getElementById('cartaoDebitoOpcoes');
       if (debitoArea) {
         const opcoesDebitoHTML = cartoesData.map((c, i) => `
@@ -311,7 +306,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- RENDERIZAR RESUMO ----
+  // ---- renderizar resumo ----
   function renderizarResumo() {
     const itens         = Carrinho.itens;
     const checkoutItens = document.getElementById('checkoutItens');
@@ -361,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     mascaraCartao(document.getElementById('checkoutCartaoNum'));
   }
 
-  // ---- APLICAR CUPOM ----
+  // ---- aplicar cupom ----
   document.getElementById('btnAplicarCupomCheckout')?.addEventListener('click', async () => {
     const codigo     = document.getElementById('checkoutCupom')?.value.trim().toUpperCase();
     const feedbackEl = document.getElementById('checkoutCupomFeedback');
@@ -396,7 +391,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- CONFIRMAR PEDIDO ----
+  // ---- confirmar pedido ----
   document.getElementById('btnConfirmarPedido')?.addEventListener('click', async () => {
     const endereco = document.querySelector('[name="endereco"]:checked');
     if (!endereco) { alert('Selecione um endereço de entrega.'); return; }
@@ -430,7 +425,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       const slots = [...document.querySelectorAll('.cartao-slot')];
 
       if (slots.length === 0) {
-        // Fluxo legado (sem slots adicionados): usa o seletor #cartaoOpcoes
+        // Fluxo legado (sem slots adicionados): usa o seletor #cartaoopcoes
         const cartao1 = document.querySelector('[name="cartao"]:checked');
         if (!cartao1) { alert('Selecione um cartão.'); return; }
 
@@ -489,7 +484,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
 
-    // Enviar pedido
+    // ENVIAR PEDIDO
     const btnTexto = document.getElementById('btnConfTexto');
     const btnLoad  = document.getElementById('btnConfLoad');
     const btn      = document.getElementById('btnConfirmarPedido');

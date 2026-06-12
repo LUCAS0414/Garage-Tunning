@@ -3,8 +3,6 @@ const router       = express.Router();
 const CupomService = require('../services/cupomService');
 const pool         = require('../db/config');
 
-// POST /api/cupons/validar
-// Body: { codigo, clienteId, total }
 router.post('/validar', async (req, res) => {
   const { codigo, clienteId, total } = req.body;
   if (!codigo) return res.status(400).json({ valido: false, motivo: 'Código do cupom não informado.' });
@@ -21,8 +19,6 @@ router.post('/validar', async (req, res) => {
   }
 });
 
-// GET /api/cupons/meus?clienteId=X
-// Retorno de todos os cupons vinculados ao cliente
 router.get('/meus', async (req, res) => {
   const { clienteId } = req.query;
   if (!clienteId) return res.status(400).json({ error: 'clienteId é obrigatório.' });

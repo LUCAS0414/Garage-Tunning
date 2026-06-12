@@ -46,21 +46,30 @@
         <h1>Análises & Relatórios</h1>
         <p class="texto-muted">Métricas de vendas e performance do catálogo</p>
       </div>
-      <!-- Filtro por período -->
-      <div class="analise-filtro-periodo">
-        <button class="periodo-btn ativo" data-periodo="7d">7 dias</button>
-        <button class="periodo-btn" data-periodo="30d">30 dias</button>
-        <button class="periodo-btn" data-periodo="90d">90 dias</button>
-        <button class="periodo-btn" data-periodo="12m">12 meses</button>
-        <div class="periodo-custom">
+      <!-- FILTRO POR PERÍODO -->
+      <div class="analise-filtro-periodo" style="display: flex; gap: 10px; align-items: center;">
+        <select id="tipoFiltro" class="input-field" style="padding: 8px; border-radius: 4px; background: #2a2a2a; color: #fff; border: 1px solid #444; cursor: pointer;">
+          <option value="pre">Períodos pré-definidos</option>
+          <option value="custom">Data personalizada</option>
+        </select>
+
+        <div id="filtroPre" style="display: flex; gap: 10px;">
+          <button class="periodo-btn ativo" data-periodo="7d">7 dias</button>
+          <button class="periodo-btn" data-periodo="30d">30 dias</button>
+          <button class="periodo-btn" data-periodo="90d">90 dias</button>
+          <button class="periodo-btn" data-periodo="12m">12 meses</button>
+        </div>
+
+        <div id="filtroCustom" class="periodo-custom" style="display: none; align-items: center; gap: 10px;">
           <input type="date" class="input-field" id="periodoInicio" style="width:140px;">
           <span class="texto-muted">→</span>
           <input type="date" class="input-field" id="periodoFim" style="width:140px;">
+          <button id="btnAplicarCustom" style="padding: 8px 15px; border-radius: 4px; background: #00ff88; color: #000; border: none; cursor: pointer; font-weight: bold;">Aplicar</button>
         </div>
       </div>
     </div>
 
-    <!-- KPIs principais -->
+    <!-- KPIS PRINCIPAIS -->
     <div class="analise-kpis">
       <div class="kpi-card">
         <div class="kpi-card__icon"><i class="fas fa-sack-dollar"></i></div>
@@ -96,7 +105,7 @@
       </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- GRÁFICOS -->
     <div class="analise-graficos">
 
       <!-- Gráfico de vendas por período -->
@@ -113,7 +122,7 @@
         </div>
       </div>
 
-      <!-- Gráfico por categoria -->
+      <!-- GRÁFICO POR CATEGORIA -->
       <div class="grafico-card">
         <div class="grafico-header">
           <h3>Vendas por Categoria</h3>
@@ -121,9 +130,9 @@
         <div class="grafico-wrapper">
           <canvas id="graficoCategorias" width="400" height="300"></canvas>
         </div>
-        <!-- Legenda com valores -->
+        <!-- LEGENDA COM VALORES -->
         <div class="grafico-cat-legenda" id="graficoCatLegenda">
-          <!-- Gerado via JS -->
+          
         </div>
       </div>
 
@@ -132,11 +141,11 @@
     <!-- Segunda linha de gráficos -->
     <div class="analise-graficos">
 
-      <!-- Top produtos -->
+      <!-- TOP PRODUTOS -->
       <div class="grafico-card">
         <div class="grafico-header"><h3>Top Produtos</h3></div>
         <div class="ranking-lista" id="rankingProdutos">
-          <!-- Gerado via JS -->
+          
         </div>
       </div>
 
@@ -148,12 +157,12 @@
         </div>
       </div>
 
-      <!-- Comparativo de categoria -->
+      <!-- COMPARATIVO DE CATEGORIA -->
       <div class="grafico-card grafico-grande">
         <div class="grafico-header" style="flex-direction: column; align-items: flex-start; gap: 10px;">
           <h3>Volume de Produtos Vendidos por Categoria (Unidades)</h3>
           <div class="grafico-filtros-categoria" id="filtrosCategoria" style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <!-- Gerado via JS -->
+            
           </div>
         </div>
         <div class="grafico-wrapper">

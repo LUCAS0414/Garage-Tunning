@@ -1,14 +1,7 @@
-// carrinhoService.js
-// Schema novo: tabela `carrinho` foi removida.
-// O carrinho é gerenciado inteiramente no localStorage pelo frontend (global.js).
-// Este service expõe apenas validação de estoque e dados de produto para o front.
 const pool = require('../db/config');
 
 const CarrinhoService = {
-
-  // Valida se uma lista de itens tem estoque suficiente.
-  // Recebe: [{ produtoId, quantidade }]
-  // Retorna: { valido, problemas }
+  
   async validarItens(itens) {
     const problemas = [];
     for (const item of itens) {

@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>`;
     }).join('');
 
-    // Cálculos
+    // CÁLCULOS
     const subtotal = Carrinho.totalValor;
     const frete    = subtotal >= 500 ? 0 : 49.90;
     let desconto   = 0;
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (aviso) aviso.style.display = 'flex';
   }
 
-  // Eventos dos itens
+  // EVENTOS DOS ITENS
   document.getElementById('carrinhoItens')?.addEventListener('click', (e) => {
     const btn  = e.target.closest('[data-acao]');
     if (!btn)  return;
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Cupom via API
+  // CUPOM VIA API
   document.getElementById('btnAplicarCupom')?.addEventListener('click', async () => {
     const codigo     = document.getElementById('cupomInput').value.trim().toUpperCase();
     const feedbackEl = document.getElementById('cupomFeedback');
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Timer visual (sem reserva server-side — apenas UX)
+  // Timer visual (sem reserva server-side — apenas ux)
   let tempoRestante = 15 * 60;
   const timer = setInterval(() => {
     tempoRestante--;

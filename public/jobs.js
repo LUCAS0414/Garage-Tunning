@@ -1,4 +1,4 @@
-// jobs.js
+// JOBS.JS
 // Schema novo: tabelas carrinho e reservas_estoque foram removidas.
 // Jobs de reserva e abandono de carrinho não são mais aplicáveis.
 // Mantido apenas para extensão futura.

@@ -1,12 +1,4 @@
-/**
- * admin-vendas.js
- * Schema novo: pedidos usa codigo_pedido, usuario_id, valor_total, data_pedido.
- * Status em MAIÚSCULO: 'EM PROCESSAMENTO', 'APROVADO', 'REPROVADO', 'EM TRANSPORTE',
- *                      'ENTREGUE', 'EM TROCA', 'TROCA AUTORIZADA', 'TROCADO'
- * Tabela de itens: pedido_itens (sem nome_produto — precisa JOIN com produtos).
- */
 
-// ---- GUARD: somente administradores podem acessar esta página ----
 (function() {
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!user.logado || !user.isAdmin) {
@@ -185,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     abrirModal('modalPedido');
   }
 
-  // Mudar status — persiste na API
+  // Mudar status — persiste na api
   document.getElementById('acoesPedido')?.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-novo-status]');
     if (!btn) return;
@@ -211,7 +203,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     Carrinho._mostrarFeedback(`Status: ${STATUS[novoStatus]?.label}`);
   });
 
-  // Autorizar troca
+  // AUTORIZAR TROCA
   document.getElementById('btnAutorizarTroca')?.addEventListener('click', async () => {
     const pedido = pedidos.find(p => p.id === pedidoSelecionadoId);
     if (!pedido) return;
@@ -257,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     Carrinho._mostrarFeedback('Recebimento confirmado! Cupom gerado para o cliente.');
   });
 
-  // Cupom manual (admin)
+  // CUPOM MANUAL (ADMIN)
   document.getElementById('btnGerarCupom')?.addEventListener('click', () => abrirModal('modalCupom'));
 
   document.getElementById('btnGerarCodigoCupom')?.addEventListener('click', () => {

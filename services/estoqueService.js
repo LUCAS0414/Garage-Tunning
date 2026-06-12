@@ -1,12 +1,7 @@
-// estoqueService.js
-// Schema novo: reservas_estoque, carrinho e logs_estoque foram removidos.
-// Apenas darBaixa() e reentrada() permanecem (sem log de movimentação).
 const pool = require('../db/config');
 
 const EstoqueService = {
 
-  // Dá baixa no estoque após confirmação de venda.
-  // Deve ser chamado dentro de uma transação externa.
   async darBaixa(produtoId, quantidade, conexao) {
     const [[produto]] = await conexao.execute(
       'SELECT estoque_atual FROM produtos WHERE id = ? FOR UPDATE', [produtoId]
@@ -21,8 +16,6 @@ const EstoqueService = {
     );
   },
 
-  // Reinserção de produto ao estoque após troca.
-  // Deve ser chamado dentro de uma transação externa.
   async reentrada(produtoId, quantidade, conexao) {
     const [[produto]] = await conexao.execute(
       'SELECT id FROM produtos WHERE id = ? FOR UPDATE', [produtoId]

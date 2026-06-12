@@ -2,9 +2,6 @@ const express      = require('express');
 const router       = express.Router();
 const TrocaService = require('../services/trocaService');
 
-// POST /api/trocas
-// Body novo:    { clienteId, pedidoId, itens: [{produtoId, quantidade}], motivo }
-// Body legado:  { clienteId, pedidoId, produtoId, quantidade, motivo }
 router.post('/', async (req, res) => {
   const { clienteId, pedidoId, itens, produtoId, quantidade, motivo } = req.body;
 

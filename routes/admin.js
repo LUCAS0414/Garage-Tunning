@@ -7,8 +7,6 @@ const TrocaService   = require('../services/trocaService');
 const CupomService   = require('../services/cupomService');
 const AdminService   = require('../services/adminService');
 
-// POST /api/admin/login
-// Body: { email, senha } — verifica na tabela clientes onde is_admin = 1
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
@@ -34,8 +32,6 @@ router.post('/login', async (req, res) => {
 });
 
 // DASHBOARD
-
-// GET /api/admin/dashboard
 router.get('/dashboard', async (req, res) => {
   try {
     const stats = await AdminService.estatisticasDashboard();
@@ -46,7 +42,6 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
-// GET /api/admin/distribuicao-status
 router.get('/distribuicao-status', async (req, res) => {
   try {
     const dados = await AdminService.distribuicaoStatus();
@@ -56,7 +51,6 @@ router.get('/distribuicao-status', async (req, res) => {
   }
 });
 
-// GET /api/admin/historico-vendas?dataInicio=YYYY-MM-DD&dataFim=YYYY-MM-DD&agrupamento=dia|semana|mes
 router.get('/historico-vendas', async (req, res) => {
   try {
     const hoje    = new Date().toISOString().split('T')[0];
@@ -76,7 +70,6 @@ router.get('/historico-vendas', async (req, res) => {
 
 // PEDIDOS
 
-// GET /api/admin/pedidos?status=&busca=&pagina=&limite=
 router.get('/pedidos', async (req, res) => {
   try {
     const { status, busca, pagina = 1, limite = 20 } = req.query;
@@ -106,7 +99,6 @@ router.get('/pedidos', async (req, res) => {
   }
 });
 
-// GET /api/admin/pedidos/:id — detalhe completo
 router.get('/pedidos/:id', async (req, res) => {
   try {
     const pedido = await PedidoService.detalhe(req.params.id);
@@ -117,8 +109,6 @@ router.get('/pedidos/:id', async (req, res) => {
   }
 });
 
-// PUT /api/admin/pedidos/:id/status
-// Body: { status }
 router.put('/pedidos/:id/status', async (req, res) => {
   const { status } = req.body;
   if (!status) return res.status(400).json({ error: 'Status é obrigatório.' });
@@ -132,8 +122,6 @@ router.put('/pedidos/:id/status', async (req, res) => {
 });
 
 // TROCAS
-
-// GET /api/admin/trocas?status=
 router.get('/trocas', async (req, res) => {
   try {
     const trocas = await TrocaService.listarAdmin({ status: req.query.status || null });
@@ -143,7 +131,6 @@ router.get('/trocas', async (req, res) => {
   }
 });
 
-// PUT /api/admin/trocas/:trocaId/autorizar
 router.put('/trocas/:trocaId/autorizar', async (req, res) => {
   try {
     const resultado = await TrocaService.autorizar(req.params.trocaId);
@@ -153,7 +140,6 @@ router.put('/trocas/:trocaId/autorizar', async (req, res) => {
   }
 });
 
-// PUT /api/admin/trocas/:trocaId/negar
 router.put('/trocas/:trocaId/negar', async (req, res) => {
   try {
     const resultado = await TrocaService.negar(req.params.trocaId);
@@ -163,8 +149,6 @@ router.put('/trocas/:trocaId/negar', async (req, res) => {
   }
 });
 
-// PUT /api/admin/trocas/:trocaId/recebimento
-// Body: { retornarEstoque: true|false }
 router.put('/trocas/:trocaId/recebimento', async (req, res) => {
   try {
     const resultado = await TrocaService.confirmarRecebimento(
@@ -226,7 +210,6 @@ router.put('/trocas/pedido/:pedidoId/recebimento', async (req, res) => {
 
 // CUPONS
 
-// GET /api/admin/cupons
 router.get('/cupons', async (req, res) => {
   try {
     const cupons = await CupomService.listar();
@@ -236,8 +219,6 @@ router.get('/cupons', async (req, res) => {
   }
 });
 
-// POST /api/admin/cupons
-// Body: { codigo, tipo, valor, data_validade?, usuario_id? }
 router.post('/cupons', async (req, res) => {
   try {
     const resultado = await CupomService.gerar(req.body);
@@ -247,7 +228,6 @@ router.post('/cupons', async (req, res) => {
   }
 });
 
-// PUT /api/admin/cupons/:id — ativar/desativar cupom
 router.put('/cupons/:id', async (req, res) => {
   const { status } = req.body;
   if (status === undefined) return res.status(400).json({ error: 'Status é obrigatório.' });
@@ -260,8 +240,6 @@ router.put('/cupons/:id', async (req, res) => {
 });
 
 // CLIENTES (lista para admin)
-
-// GET /api/admin/clientes?busca=&pagina=&limite=
 router.get('/clientes', async (req, res) => {
   try {
     const { busca, pagina = 1, limite = 20 } = req.query;
@@ -290,8 +268,6 @@ router.get('/clientes', async (req, res) => {
 });
 
 // PRODUTOS (admin — sem restrição de apenasAtivos)
-
-// GET /api/admin/produtos — lista todos incluindo inativos
 router.get('/produtos', async (req, res) => {
   try {
     const ProdutoService = require('../services/produtosService');

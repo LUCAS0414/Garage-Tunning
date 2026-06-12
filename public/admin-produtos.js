@@ -1,10 +1,4 @@
-/**
- * admin-produtos.js
- * Schema novo: produtos não tem preco_original, is_novo, imagem_url, peso_kg, estoque_minimo.
- * Grupos de precificacao agora são A, B, C (não 'standard/premium/competitivo').
- */
 
-// ---- GUARD: somente administradores podem acessar esta página ----
 (function() {
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!user.logado || !user.isAdmin) {
@@ -44,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let produtoEditandoId   = null;
 let produtoInativandoId = null;
 
-// Grupos A, B, C conforme seed
+// Grupos a, b, c conforme seed
 const MARKUP = { A: 0.60, B: 0.40, C: 0.25 };
 
 async function carregarProdutos() {

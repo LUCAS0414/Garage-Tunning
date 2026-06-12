@@ -30,7 +30,7 @@ const PedidoService = {
     try {
       await conexao.beginTransaction();
 
-      // 1) Calcular subtotal e validar estoque
+      // calcular subtotal e validar estoque
       let subtotal = 0;
       for (const item of itens) {
         const [[prod]] = await conexao.execute(
@@ -46,7 +46,7 @@ const PedidoService = {
         subtotal += item._preco * item.quantidade;
       }
 
-      // 2) Aplicar cupom
+      // APLICAR CUPOM
       let desconto   = 0;
       let cupomDados = null;
       if (cupomCodigo) {
@@ -59,11 +59,11 @@ const PedidoService = {
       const valorTotal = Math.max(0, subtotal + parseFloat(frete) - desconto);
       const codigo     = await gerarCodigoPedido(conexao);
 
-      // 3) Inserir pedido
+      // INSERIR PEDIDO
      const { pagamento = {} } = dados;
      const metodoPag = pagamento.metodo || 'CARTAO_CREDITO';
 
-// Validação de pagamento
+// VALIDAÇÃO DE PAGAMENTO
 if (metodoPag === 'DOIS_CARTOES') {
   if (pagamento.valor1 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
   if (pagamento.valor2 < 10) throw new Error('Valor mínimo por cartão é R$ 10,00 (RN0034).');
@@ -91,7 +91,7 @@ if (metodoPag === 'DOIS_CARTOES') {
       );
       const pedidoId = pedRes.insertId;
 
-      // 4) Inserir itens e dar baixa no estoque
+      //inserir itens e dar baixa no estoque
       for (const item of itens) {
         await conexao.execute(
           `INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unitario)
@@ -101,7 +101,7 @@ if (metodoPag === 'DOIS_CARTOES') {
         await EstoqueService.darBaixa(item.produtoId, item.quantidade, conexao);
       }
 
-      // 5) Aplicar cupom (desativar se for de uso único)
+      //aplicar cupom (desativar se for de uso único)
       if (cupomDados) await CupomService.aplicar(cupomDados.id, conexao);
 
       await conexao.commit();

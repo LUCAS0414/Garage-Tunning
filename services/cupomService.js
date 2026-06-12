@@ -1,7 +1,3 @@
-// cupomService.js
-// Schema novo da tabela cupons: id, codigo, valor, tipo_cupom, data_validade, status, usuario_id
-// Removidos: usos_maximos, usos_atuais, descricao, origem, ativo, cliente_id
-// Removida tabela: cupons_uso
 const pool = require('../db/config');
 
 const CupomService = {
@@ -22,7 +18,7 @@ const CupomService = {
       return { valido: false, motivo: 'Cupom não pertence a este cliente.' };
     }
 
-    // tipo_cupom em MAIÚSCULO no banco — normalizar
+    // Tipo_cupom em maiúsculo no banco — normalizar
     const tipoNorm = (cupom.tipo_cupom || '').toLowerCase();
     let desconto = 0;
     if (tipoNorm === 'percentual') {
@@ -54,9 +50,6 @@ const CupomService = {
     return { id: result.insertId, codigo: codigo.toUpperCase() };
   },
 
-  // Inativa cupom após uso (chamado dentro de transação externa).
-  // Como não existe mais tabela cupons_uso, apenas desativa o cupom
-  // se for de uso único (usuario_id preenchido).
   async aplicar(cupomId, conexao) {
     const [[cupom]] = await conexao.execute(
       'SELECT usuario_id FROM cupons WHERE id = ?', [cupomId]

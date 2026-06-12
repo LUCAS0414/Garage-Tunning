@@ -2,7 +2,6 @@ const express        = require('express');
 const router         = express.Router();
 const PedidoService  = require('../services/pedidoService');
 
-// POST /api/pedidos
 router.post('/', async (req, res) => {
   try {
     const resultado = await PedidoService.criar(req.body);
@@ -14,7 +13,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/pedidos/cliente/:clienteId — pedidos do cliente (usado pelo perfil.js)
 router.get('/cliente/:clienteId', async (req, res) => {
   try {
     const pedidos = await PedidoService.listarPorCliente(req.params.clienteId);
@@ -25,7 +23,6 @@ router.get('/cliente/:clienteId', async (req, res) => {
   }
 });
 
-// GET /api/pedidos/detalhe/:id — detalhe de um pedido (deve vir ANTES de /:id)
 router.get('/detalhe/:id', async (req, res) => {
   try {
     const pedido = await PedidoService.detalhe(req.params.id);
@@ -36,7 +33,6 @@ router.get('/detalhe/:id', async (req, res) => {
   }
 });
 
-// GET /api/pedidos/:pedidoId — detalhe por id genérico
 router.get('/:pedidoId', async (req, res) => {
   try {
     const pedido = await PedidoService.detalhe(req.params.pedidoId);

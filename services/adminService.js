@@ -1,5 +1,3 @@
-// adminService.js
-// Schema novo: pedidos usa data_pedido, valor_total, usuario_id, codigo_pedid
 const pool = require('../db/config');
 
 const AdminService = {

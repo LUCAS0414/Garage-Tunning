@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarComponentes();
 });
 
-//carregar nav
+// CARREGAR NAV
 async function carregarComponentes() {
   const navContainer = document.querySelector('#navbar-container');
   if (navContainer) {
@@ -23,19 +23,19 @@ function initNavbar() {
   const toggle = document.getElementById('navToggle');
   const menu = document.getElementById('navMenu');
 
-  // Mostrar link de Análises apenas para admin
+  // Mostrar link de análises apenas para admin
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   const navAnaliseItem = document.getElementById('navAnaliseItem');
   if (navAnaliseItem && user.isAdmin) {
     navAnaliseItem.style.display = '';
   }
 
-  //Scroll dinamico
+  // SCROLL DINAMICO
   window.addEventListener('scroll', () => {
     if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20);
   });
 
-  //Menu hamburguer
+  // MENU HAMBURGUER
   if (toggle && menu) {
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('ativo');
@@ -43,16 +43,11 @@ function initNavbar() {
     });
   }
 }
-//Carrinho
+// CARRINHO
 const Carrinho = {
-  //dados do carrinho lembrar de conectar com back
+  // Dados do carrinho lembrar de conectar com back
   _dados: JSON.parse(localStorage.getItem('garage_carrinho') || '[]'),
 
-  /**
-   * Adiciona item ao carrinho
-   * @param {Object} produto - { id, nome, preco, imagem, categoria }
-   * @param {number} quantidade
-   */
   adicionar(produto, quantidade = 1) {
     const existente = this._dados.find((item) => item.id === produto.id);
     if (existente) {
@@ -110,7 +105,7 @@ const Carrinho = {
       badge.textContent = this.totalItens;
       badge.style.display = this.totalItens > 0 ? 'flex' : 'none';
     }
-    //Atualiza paginas
+    // ATUALIZA PAGINAS
     window.dispatchEvent(
       new CustomEvent('carrinhoAtualizado', {
         detail: { itens: this._dados, total: this.totalValor },
@@ -135,12 +130,12 @@ const Carrinho = {
   },
 };
 
-//Inicializar carrinho
+// INICIALIZAR CARRINHO
 document.addEventListener('DOMContentLoaded', () => {
   Carrinho.inicializar();
 });
 
-//Carrossel
+// CARROSSEL
 class Carrossel {
   constructor(wrapperSelector, opcoes = {}) {
     this.wrapper = document.querySelector(wrapperSelector);
@@ -186,7 +181,7 @@ class Carrossel {
   _navegar(direcao) {
     this.indiceAtual += direcao;
 
-    //loop
+    // LOOP
     if (this.indiceAtual > this._maxIndice()) {
       this.indiceAtual = 0;
     } else if (this.indiceAtual < 0) {
@@ -206,7 +201,7 @@ class Carrossel {
   }
 
   _init() {
-    // Controles
+    // CONTROLES
     this.btnPrev?.addEventListener('click', () => {
       this._navegar(-1);
       this._resetAutoPlay();
@@ -217,7 +212,7 @@ class Carrossel {
       this._resetAutoPlay();
     });
 
-    //touch e swip para celular
+    // Touch e swip para celular
     let startX = 0;
     this.track?.addEventListener(
       'touchstart',
@@ -261,7 +256,7 @@ class Carrossel {
   }
 }
 
-//Tabs
+// TABS
 function initTabs(containerSelector) {
   const container = document.querySelector(containerSelector);
   if (!container) return;
@@ -282,11 +277,11 @@ function initTabs(containerSelector) {
     });
   });
 
-  // Ativar primeiro
+  // ATIVAR PRIMEIRO
   botoes[0]?.click();
 }
 
-//Modal
+// MODAL
 function abrirModal(id) {
   const modal = document.getElementById(id);
   if (modal) {
@@ -319,7 +314,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-//Utilitarios
+// UTILITARIOS
 
 function formatarPreco(valor) {
   return new Intl.NumberFormat('pt-BR', {
@@ -422,7 +417,7 @@ function verificarForcaSenha(senha) {
   };
 }
 
-//head dinamico
+// HEAD DINAMICO
 const toastStyle = document.createElement('style');
 toastStyle.textContent = `
   .toast-feedback {

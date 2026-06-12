@@ -4,8 +4,6 @@ const bcrypt         = require('bcrypt');
 const pool           = require('../db/config');
 const ClienteService = require('../services/clienteServices');
 
-// GET /api/clientes/:id — perfil completo com endereços e cartões
-// Também suporta :id como e-mail (ex: /api/clientes/abner@gmail.com)
 router.get('/:id', async (req, res) => {
   try {
     const cliente = await ClienteService.buscarPorId(req.params.id);
@@ -16,7 +14,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// GET /api/clientes/:id/pedidos — pedidos do cliente (suporta ID numérico ou e-mail)
 router.get('/:id/pedidos', async (req, res) => {
   const PedidoService = require('../services/pedidoService');
   try {
@@ -39,7 +36,6 @@ router.get('/:id/pedidos', async (req, res) => {
   }
 });
 
-// PUT /api/clientes/:id — atualizar dados pessoais
 router.put('/:id', async (req, res) => {
   try {
     const resultado = await ClienteService.atualizar(req.params.id, req.body);
@@ -49,7 +45,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// PUT /api/clientes/:id/senha — alterar senha
 router.put('/:id/senha', async (req, res) => {
   const { novaSenha } = req.body;
   if (!novaSenha || novaSenha.length < 6) {
@@ -63,7 +58,6 @@ router.put('/:id/senha', async (req, res) => {
   }
 });
 
-// DELETE /api/clientes/:id/conta — inativar conta
 router.delete('/:id/conta', async (req, res) => {
   try {
     const resultado = await ClienteService.inativar(req.params.id);
@@ -75,8 +69,6 @@ router.delete('/:id/conta', async (req, res) => {
 });
 
 // ---- ENDEREÇOS ----
-
-// GET /api/clientes/:id/enderecos
 router.get('/:id/enderecos', async (req, res) => {
   try {
     const enderecos = await ClienteService.listarEnderecos(req.params.id);
@@ -86,7 +78,6 @@ router.get('/:id/enderecos', async (req, res) => {
   }
 });
 
-// POST /api/clientes/:id/enderecos
 router.post('/:id/enderecos', async (req, res) => {
   try {
     const resultado = await ClienteService.adicionarEndereco(req.params.id, req.body);
@@ -96,7 +87,6 @@ router.post('/:id/enderecos', async (req, res) => {
   }
 });
 
-// DELETE /api/clientes/:id/enderecos/:endId
 router.delete('/:id/enderecos/:endId', async (req, res) => {
   try {
     const resultado = await ClienteService.removerEndereco(req.params.endId, req.params.id);
@@ -108,8 +98,6 @@ router.delete('/:id/enderecos/:endId', async (req, res) => {
 });
 
 // ---- CARTÕES ----
-
-// POST /api/clientes/:id/cartoes
 router.post('/:id/cartoes', async (req, res) => {
   const { numero_cartao, nome_impresso, bandeira, is_preferencial } = req.body;
   if (!numero_cartao || !nome_impresso) {
@@ -128,7 +116,6 @@ router.post('/:id/cartoes', async (req, res) => {
   }
 });
 
-// DELETE /api/clientes/:id/cartoes/:cartaoId
 router.delete('/:id/cartoes/:cartaoId', async (req, res) => {
   try {
     const [result] = await pool.execute(

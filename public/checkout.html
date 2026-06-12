@@ -25,7 +25,7 @@
         <!-- COLUNA ESQUERDA -->
         <div class="checkout-left">
 
-          <!-- Endereço -->
+          <!-- ENDEREÇO -->
           <div class="checkout-card">
             <h2 class="checkout-section-titulo"><i class="fas fa-map-marker-alt"></i> Endereço de Entrega</h2>
             <div id="enderecoOpcoes" class="checkout-opcoes-list">
@@ -33,11 +33,11 @@
             </div>
           </div>
 
-          <!-- Pagamento -->
+          <!-- PAGAMENTO -->
           <div class="checkout-card">
             <h2 class="checkout-section-titulo"><i class="fas fa-credit-card"></i> Forma de Pagamento</h2>
 
-            <!--Métodos de pagamento-->
+            <!-- MÉTODOS DE PAGAMENTO -->
             <div class="metodo-abas-container">
               <button class="btn btn-outline btn-sm metodo-tab ativo" data-metodo="cartao"> <i class="fas fa-credit-card"></i> Cartão de Crédito</button>
               <button class="btn btn-outline btn-sm metodo-tab" data-metodo="debito"> <i class="fas fa-credit-card"></i> Cartão de Débito</button>
@@ -45,13 +45,13 @@
               <button class="btn btn-outline btn-sm metodo-tab" data-metodo="boleto"> <i class="fas fa-file-invoce-dollar"></i> Boleto</button>
             </div>
 
-            <!--Cartão de Crédito-->
+            <!-- CARTÃO DE CRÉDITO -->
             <div id="metodoCartao">
               <div id="cartaoOpcoes" class="checkout-opcoes-list">
                 <div class="loading-placeholder">Carregando cartões...</div>
               </div>
 
-              <!-- Slots dinâmicos de N cartões -->
+              <!-- Slots dinâmicos de n cartões -->
               <div id="cartoesSlots" style="margin-top:1rem;"></div>
               <button type="button" class="btn btn-outline btn-sm" id="btnAdicionarCartao" style="margin-top:0.75rem; display:none;">
                 <i class="fas fa-plus"></i> Adicionar cartão
@@ -86,7 +86,7 @@
               </div>
             </div>
 
-            <!--PIX-->
+            <!-- PIX -->
             <div id="metodoPix" style="display:none;">
               <div style="text-align:center; padding:2rem 1rem;">
                 <div style="font-size:3rem; margin-bottom:1rem;">⚡</div>
@@ -95,7 +95,7 @@
               </div>
             </div>
 
-            <!--Boleto-->
+            <!-- BOLETO -->
             <div id="metodoBoleto" style="display:none;">
               <div style="text-align:center; padding:2rem 1rem;">
                 <div style="font-size:3rem; margin-bottom:1rem;">📄</div>
@@ -104,7 +104,7 @@
               </div>
             </div>
 
-            <!--Cartão de Débito-->
+            <!-- CARTÃO DE DÉBITO -->
             <div id="metodoDebito" style="display:none;">
               <div id="cartaoDebitoOpcoes" class="checkout-opcoes-list"></div>
               <div id="novoCartaoDebitoForm" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--cor-borda);">
@@ -131,7 +131,7 @@
             </div>
           </div>
 
-          <!-- Cupom -->
+          <!-- CUPOM -->
           <div class="checkout-card">
             <h2 class="checkout-section-titulo"><i class="fas fa-ticket-alt"></i> Cupom de Desconto</h2>
             <div style="display:flex; gap:0.75rem;">

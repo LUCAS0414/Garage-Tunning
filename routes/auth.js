@@ -3,10 +3,6 @@ const router  = express.Router();
 const bcrypt  = require('bcrypt');
 const pool    = require('../db/config');
 
-// POST /api/login
-// Body: { email, senha }
-// Busca SOMENTE na tabela clientes.
-// Se o campo is_admin = 1, retorna isAdmin:true (admin loga normalmente, sem toggle).
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'Email e senha são obrigatórios.' });

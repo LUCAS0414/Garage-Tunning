@@ -2,7 +2,6 @@ const pool         = require('../db/config');
 const EstoqueService = require('./estoqueService');
 const CupomService   = require('./cupomService');
 
-// Job 1: expira reservas de estoque vencidas e remove itens do carrinho. RN0044
 function iniciarJobReservas() {
   setInterval(async () => {
     try {
@@ -10,15 +9,10 @@ function iniciarJobReservas() {
     } catch (err) {
       console.error('[JOB:Reservas] Erro:', err.message);
     }
-  }, 60 * 1000); // a cada 1 minuto
+  }, 60 * 1000); // A cada 1 minuto
   console.log('[JOB] Job de reservas de estoque iniciado (intervalo: 1 min).');
 }
 
-/*
-  Job 2: envia cupom de abandono de carrinho de 3%
-  para clientes de ranking "Iniciante" com itens há >48h. RN0047
-  (Sem NodeMailer: registra o cupom no banco e loga o e-mail no console)
- */
 function iniciarJobAbandonoCarrinho() {
   async function verificar() {
     try {
@@ -59,7 +53,7 @@ function iniciarJobAbandonoCarrinho() {
     }
   }
 
-  setInterval(verificar, 60 * 60 * 1000); // a cada 1 hora
+  setInterval(verificar, 60 * 60 * 1000); // A cada 1 hora
   console.log('[JOB] Job de abandono de carrinho iniciado (intervalo: 1h).');
 }
 

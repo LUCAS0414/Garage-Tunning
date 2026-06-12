@@ -31,28 +31,28 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('breadCat').textContent     = produto.categoria;
   document.getElementById('specCodigo').textContent   = produto.codigo;
 
-  // Preço De (10% mais caro)
+  // Preço de (10% mais caro)
   const precoDe = (produto.preco * 1.1).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('precoOriginal').textContent = `R$ ${precoDe}`;
 
-  // Preço Por (preço real)
+  // Preço por (preço real)
   document.getElementById('produtoPreco').textContent = `R$ ${produto.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  // Parcelamento 12x
+  // PARCELAMENTO 12X
   const preco12x = (produto.preco / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const elParcelamento = document.querySelector('.produto-parcelamento strong');
   if (elParcelamento) {
     elParcelamento.textContent = `R$ ${preco12x}`;
   }
 
-  // Preço PIX (5% de desconto)
+  // Preço pix (5% de desconto)
   const precoPix = (produto.preco * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const elPix = document.querySelector('.produto-pix strong');
   if (elPix) {
     elPix.textContent = `R$ ${precoPix}`;
   }
 
-  // Descrição Real do Banco de Dados
+  // Descrição real do banco de dados
   const elDesc = document.querySelector('.produto-descricao-texto');
   if (elDesc) {
     if (produto.descricao) {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   }
 
-  // Estoque
+  // ESTOQUE
   const estoqueTexto = document.getElementById('estoqueTexto');
   const estoqueDot   = document.querySelector('.estoque-dot');
   if (produto.estoque === 0) {
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('qtyInput')?.setAttribute('max', produto.estoque);
   document.getElementById('qtyMaxHint').textContent = `Máx. ${produto.estoque} por pedido`;
 
-  // Controles de quantidade
+  // CONTROLES DE QUANTIDADE
   const qtyInput = document.getElementById('qtyInput');
   const qtyMax   = produto.estoque || 1;
 

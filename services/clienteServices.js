@@ -3,8 +3,6 @@ const bcrypt = require('bcrypt');
 
 const ClienteService = {
 
-  // ---- CLIENTE ----
-
   async buscarPorId(id) {
     const [clientes] = await pool.execute(
       `SELECT id, codigo_cliente, nome, genero, data_nascimento, cpf,

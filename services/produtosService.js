@@ -1,8 +1,5 @@
 const db = require('../db/config.js');
 
-// Schema novo: categorias 2–7 removidas. Todas as peças usam categoria_id = 1.
-// Colunas removidas de produtos: preco_original, peso_kg, estoque_minimo, is_novo, imagem_url
-
 function mapCatToId(cat) {
   const map = { 'JDM': 8, 'Americanos': 9, 'Italianos': 10, 'Alemães': 11 };
   return map[cat] || 1;

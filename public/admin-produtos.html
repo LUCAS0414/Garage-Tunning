@@ -38,7 +38,7 @@
   <!-- CONTEÚDO PRINCIPAL -->
   <main class="admin-main">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="admin-header">
       <div>
         <h1>Gestão de Produtos</h1>
@@ -47,7 +47,7 @@
       <button class="btn btn-primario" id="btnNovoProduto">+ Novo Produto</button>
     </div>
 
-    <!-- Status rápidos integrar com back depois-->
+    <!-- Status rápidos integrar com back depois -->
     <div class="admin-stats">
       <div class="admin-stat-card">
         <div class="admin-stat-card__num" id="statTotal">12</div>
@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <!-- Filtro Arrumar parte de busca e filtro-->
+    <!-- Filtro arrumar parte de busca e filtro -->
     <div class="admin-toolbar">
       <div class="navbar__busca" style="border-radius:4px; flex:1; max-width:320px;"">
         <input type="text" id="prodBusca" placeholder="Buscar produtos...">
@@ -88,7 +88,7 @@
       </select>
     </div>
 
-    <!-- Tabela de produtos -->
+    <!-- TABELA DE PRODUTOS -->
     <div class="admin-tabela-wrapper">
       <table class="admin-tabela" id="tabelaProdutos">
         <thead>
@@ -104,7 +104,7 @@
           </tr>
         </thead>
         <tbody id="tabelaProdutosBody">
-          <!-- Renderizado via JS -->
+          <!-- RENDERIZADO VIA JS -->
         </tbody>
       </table>
     </div>
@@ -117,10 +117,10 @@
       <button class="modal__fechar" onclick="fecharModal('modalProduto')">✕</button>
       <h2 style="margin-bottom:1.5rem;" id="modalProdTitulo">Novo Produto</h2>
 
-      <!-- id="formProduto" - referência para POST/PUT /api/admin/produtos -->
+      <!-- Id="formproduto" - referência para post/put /api/admin/produtos -->
       <form id="formProduto">
 
-        <!-- Informações básicas -->
+        <!-- INFORMAÇÕES BÁSICAS -->
         <div class="form-secao"><h3>Informações Básicas</h3></div>
 
         <div class="input-grupo">
@@ -151,7 +151,7 @@
           <textarea class="input-field" id="prodDescricao" rows="3" style="resize:vertical;"></textarea>
         </div>
 
-        <!-- Precificação -->
+        <!-- PRECIFICAÇÃO -->
         <div class="form-secao"><h3>Precificação</h3></div>
 
         <div class="form-grid-2">
@@ -196,7 +196,7 @@
           <input type="number" class="input-field" id="prodPrecoOriginal" placeholder="R$ (deixar vazio se não houver)" step="0.01">
         </div>
 
-        <!-- Estoque -->
+        <!-- ESTOQUE -->
         <div class="form-secao"><h3>Controle de Estoque</h3></div>
 
         <div class="form-grid-2">
@@ -240,7 +240,7 @@
           </div>
         </div>
 
-        <!-- Imagem e Destaques -->
+        <!-- IMAGEM E DESTAQUES -->
         <div class="form-secao"><h3>Imagem e Destaques</h3></div>
 
         <div class="input-grupo">
@@ -254,7 +254,7 @@
           <label for="prodIsNovo" style="margin:0;">Marcar como <strong>Novidade</strong> (exibe tag "Novo" na loja)</label>
         </div>
 
-        <!-- Status -->
+        <!-- STATUS -->
         <div class="form-secao"><h3>Status</h3></div>
 
         <div class="input-grupo">

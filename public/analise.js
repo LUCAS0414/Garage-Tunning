@@ -1,4 +1,3 @@
-
 (function() {
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!user.logado || !user.isAdmin) {
@@ -8,7 +7,7 @@
 
 document.addEventListener('DOMContentLoaded', async function() {
 
-  // Cores
+  // CORES
   const COR_CAT = {
     'JDM':        '#00ff88',
     'Americanos': '#ff6600',
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     'TROCADO':          '#888888',
   };
 
-  // Toast
+  // TOAST
   function toast(msg) {
     const t = document.createElement('div');
     t.className = 'toast-feedback';
@@ -91,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     setTimeout(() => { t.classList.remove('ativo'); setTimeout(() => t.remove(), 300); }, 3000);
   }
 
-  // Canvas
+  // CANVAS
   function drawLineChart(canvas, labels, series) {
     const ctx = canvas.getContext('2d');
     const W = canvas.offsetWidth || 800;
@@ -116,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const allValues = series.flatMap(s => s.dados);
     const maxVal = Math.max(...allValues, 1) * 1.15;
 
-    // Grid
+    // GRID
     ctx.strokeStyle = 'rgba(255,255,255,0.05)';
     ctx.lineWidth = 1;
     for (let i = 0; i <= 5; i++) {
@@ -132,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       ctx.fillText(val >= 1000 ? 'R$' + (val / 1000).toFixed(0) + 'k' : val.toFixed(0), pad.left - 6, y + 4);
     }
 
-    // Labels X
+    // LABELS X
     ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.font = '10px monospace';
     ctx.textAlign = 'center';
@@ -142,14 +141,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       ctx.fillText(label, x, H - 15);
     });
 
-    // Séries
+    // SÉRIES
     series.forEach(s => {
       const pontos = s.dados.map((v, i) => ({
         x: pad.left + (labels.length > 1 ? (chartW / (labels.length - 1)) * i : chartW / 2),
         y: pad.top + chartH - (v / maxVal) * chartH,
       }));
 
-      // Área
+      // ÁREA
       ctx.beginPath();
       ctx.moveTo(pontos[0].x, pad.top + chartH);
       pontos.forEach(p => ctx.lineTo(p.x, p.y));
@@ -161,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Linha
+      // LINHA
       ctx.beginPath();
       ctx.strokeStyle = s.cor;
       ctx.lineWidth = 2;
@@ -169,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       pontos.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
       ctx.stroke();
 
-      // Pontos
+      // PONTOS
       pontos.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
@@ -241,31 +240,47 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   }
 
-  // Busca API
+  // BUSCA API
   async function buscarDados(periodo) {
     const hoje = new Date();
-    let dataInicio, agrupamento;
+    let dataInicio, dataFim, agrupamento;
 
-    switch (periodo) {
-      case '7d':
-        dataInicio   = new Date(hoje - 7  * 86400000).toISOString().split('T')[0];
-        agrupamento  = 'dia';
-        break;
-      case '30d':
-        dataInicio   = new Date(hoje - 30 * 86400000).toISOString().split('T')[0];
-        agrupamento  = 'semana';
-        break;
-      case '90d':
-        dataInicio   = new Date(hoje - 90 * 86400000).toISOString().split('T')[0];
-        agrupamento  = 'semana';
-        break;
-      default: // 12m
-        dataInicio   = new Date(hoje);
-        dataInicio.setMonth(dataInicio.getMonth() - 12);
-        dataInicio   = dataInicio.toISOString().split('T')[0];
-        agrupamento  = 'mes';
+    dataFim = hoje.toISOString().split('T')[0];
+
+    if (periodo === 'custom') {
+      const inputInicio = document.getElementById('periodoInicio').value;
+      const inputFim = document.getElementById('periodoFim').value;
+      
+      dataInicio = inputInicio || dataFim;
+      dataFim = inputFim || dataFim;
+      
+      const diffMs = new Date(dataFim) - new Date(dataInicio);
+      const diffDias = Math.max(1, diffMs / 86400000);
+      
+      if (diffDias > 90) agrupamento = 'mes';
+      else if (diffDias > 30) agrupamento = 'semana';
+      else agrupamento = 'dia';
+    } else {
+      switch (periodo) {
+        case '7d':
+          dataInicio   = new Date(hoje - 7  * 86400000).toISOString().split('T')[0];
+          agrupamento  = 'dia';
+          break;
+        case '30d':
+          dataInicio   = new Date(hoje - 30 * 86400000).toISOString().split('T')[0];
+          agrupamento  = 'semana';
+          break;
+        case '90d':
+          dataInicio   = new Date(hoje - 90 * 86400000).toISOString().split('T')[0];
+          agrupamento  = 'semana';
+          break;
+        default: // 12M
+          dataInicio   = new Date(hoje);
+          dataInicio.setMonth(dataInicio.getMonth() - 12);
+          dataInicio   = dataInicio.toISOString().split('T')[0];
+          agrupamento  = 'mes';
+      }
     }
-    const dataFim = hoje.toISOString().split('T')[0];
 
     const [dashboard, historico, distribuicao] = await Promise.all([
       fetch('/api/admin/dashboard').then(r => r.json()).catch(() => ({})),
@@ -277,11 +292,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     return { dashboard, historico, distribuicao };
   }
 
-  // Renderizar
+  // RENDERIZAR
   async function renderizar(periodo) {
     const { dashboard, historico, distribuicao } = await buscarDados(periodo);
 
-    // KPIs do dashboard
+    // KPIS DO DASHBOARD
     const stats = dashboard;
     const receitaTotal  = parseFloat(stats.receita_total  || 0);
     const totalPedidos  = parseInt(stats.total_pedidos    || 0);
@@ -310,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }, 50);
     }
 
-    // Gráfico categorias
+    // GRÁFICO CATEGORIAS
     const porCat     = historico.porCategoria || [];
     const catLabels  = porCat.map(c => c.categoria);
     const catValores = porCat.map(c => parseFloat(c.receita || 0) / 1000);
@@ -323,7 +338,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }, 50);
     }
 
-    // Legenda categorias
+    // LEGENDA CATEGORIAS
     const catLegenda = el('graficoCatLegenda');
     if (catLegenda && porCat.length > 0) {
       const totalCat = porCat.reduce((s, c) => s + parseFloat(c.receita || 0), 0);
@@ -343,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       catLegenda.innerHTML = '<p class="texto-muted texto-pequeno">Sem vendas no período.</p>';
     }
 
-    // Gráfico de status
+    // GRÁFICO DE STATUS
     const distList   = Array.isArray(distribuicao) ? distribuicao : [];
     const stLabels   = distList.map(d => d.status);
     const stValores  = distList.map(d => parseInt(d.total || 0));
@@ -356,7 +371,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }, 50);
     }
 
-    // Ranking de produtos
+    // RANKING DE PRODUTOS
     const topProd  = historico.topProdutos || [];
     const ranking  = el('rankingProdutos');
     if (ranking) {
@@ -381,8 +396,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     desenharGraficoComparativo();
   }
 
-  // Eventos período
+  // EVENTOS PERÍODO
   let periodoAtivo = '7d';
+  
+  const tipoFiltro = document.getElementById('tipoFiltro');
+  const filtroPre = document.getElementById('filtroPre');
+  const filtroCustom = document.getElementById('filtroCustom');
+  const btnAplicarCustom = document.getElementById('btnAplicarCustom');
+
+  if (tipoFiltro) {
+    tipoFiltro.addEventListener('change', (e) => {
+      if (e.target.value === 'custom') {
+        filtroPre.style.display = 'none';
+        filtroCustom.style.display = 'flex';
+        periodoAtivo = 'custom';
+        renderizar('custom');
+      } else {
+        filtroPre.style.display = 'flex';
+        filtroCustom.style.display = 'none';
+        const btnAtivo = document.querySelector('.periodo-btn.ativo');
+        periodoAtivo = btnAtivo ? btnAtivo.dataset.periodo : '7d';
+        renderizar(periodoAtivo);
+      }
+    });
+  }
+
+  if (btnAplicarCustom) {
+    btnAplicarCustom.addEventListener('click', () => {
+      periodoAtivo = 'custom';
+      renderizar('custom');
+    });
+  }
+
   document.querySelectorAll('.periodo-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('ativo'));
@@ -405,7 +450,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (document.hidden) {
       clearInterval(intervaloTempReal);
     } else {
-      renderizar(periodoAtivo); // atualiza ao voltar
+      renderizar(periodoAtivo); // ATUALIZA AO VOLTAR
       intervaloTempReal = setInterval(() => renderizar(periodoAtivo), 30000);
     }
 });

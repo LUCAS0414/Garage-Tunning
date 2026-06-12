@@ -10,14 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnLoginTexto   = document.getElementById('btnLoginTexto');
   const btnLoginLoading = document.getElementById('btnLoginLoading');
 
-  // Mostrar/ocultar senha
+  // MOSTRAR/OCULTAR SENHA
   document.getElementById('toggleSenhaLogin')?.addEventListener('click', function() {
     const tipo = senhaInput.type === 'password' ? 'text' : 'password';
     senhaInput.type = tipo;
     this.innerHTML = tipo === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
   });
 
-  // Recuperar senha
+  // RECUPERAR SENHA
   document.getElementById('btnEsqueciSenha')?.addEventListener('click', function(e) {
     e.preventDefault();
     abrirModal('modalSenha');
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Validação de email
+  // VALIDAÇÃO DE EMAIL
   emailInput?.addEventListener('blur', () => validarEmail());
   senhaInput?.addEventListener('input', () => {
     if (errSenha) errSenha.style.display = 'none';
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const usuario = await res.json();
         localStorage.setItem('garage_user_id', usuario.id);
         localStorage.setItem('garage_user', JSON.stringify({ ...usuario, logado: true }));
-        // Backend retorna isAdmin:true se is_admin=1 na tabela clientes
+        // Backend retorna isadmin:true se is_admin=1 na tabela clientes
         window.location.href = usuario.isAdmin ? 'analise.html' : 'perfil.html';
       } else {
         setLoading(false);

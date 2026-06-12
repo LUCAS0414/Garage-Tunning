@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async function() {
 
-  // Detectar categoria pela URL
+  // Detectar categoria pela url
   const pagina = window.location.pathname.split('/').pop();
   let categoriaId = 'JDM';
   if      (pagina.includes('americanos')) categoriaId = 'Americanos';
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     disponivel: true, ordem: 'relevancia',
   };
 
-  // Mapeia campos da API para o formato esperado pelo template
+  // Mapeia campos da api para o formato esperado pelo template
   // Schema novo: sem preco_original, is_novo, imagem_url, peso_kg
   function mapearProduto(p) {
     return {
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   document.getElementById('catTotalProd').textContent = todosProdutos.length;
 
-  // Carrossel hero
+  // CARROSSEL HERO
   const trackHero = document.getElementById('trackCatHero');
   if (trackHero) {
     trackHero.innerHTML = todosProdutos.map(p => gerarCardHTML(p)).join('');

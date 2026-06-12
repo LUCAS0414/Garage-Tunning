@@ -44,7 +44,7 @@
       <button class="btn btn-outline" id="btnGerarCupom"><i class="fas fa-ticket"></i> Gerar Cupom</button>
     </div>
 
-    <!-- Stats -->
+    <!-- STATS -->
     <div class="admin-stats">
       <div class="admin-stat-card">
         <div class="admin-stat-card__num" id="statPedidos">0</div>
@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <!-- Filtros -->
+    <!-- FILTROS -->
     <div class="admin-toolbar">
       <div class="navbar__busca" style="border-radius:4px; flex:1; max-width:320px;">
         <input type="text" id="vendaBusca" placeholder="Buscar pedido, cliente...">
@@ -83,7 +83,7 @@
       </select>
     </div>
 
-    <!-- Tabela de pedidos -->
+    <!-- TABELA DE PEDIDOS -->
     <div class="admin-tabela-wrapper">
       <table class="admin-tabela" id="tabelaVendas">
         <thead>
@@ -98,28 +98,28 @@
           </tr>
         </thead>
         <tbody id="tabelaVendasBody">
-          <!-- Gerado via JS -->
+          
         </tbody>
       </table>
     </div>
 
   </main>
 
-  <!-- MODAL: DETALHES DO PEDIDO -->
+  <!-- Modal: detalhes do pedido -->
   <div class="modal-overlay" id="modalPedido">
     <div class="modal" style="max-width:620px; max-height:90vh; overflow-y:auto;">
       <button class="modal__fechar" onclick="fecharModal('modalPedido')"><i class="fas fa-xmark"></i></button>
       <h2 style="margin-bottom:1.25rem;" id="modalPedidoTitulo">#GT-2024-0042</h2>
 
-      <div id="modalPedidoConteudo"><!-- Renderizado via JS --></div>
+      <div id="modalPedidoConteudo"><!-- RENDERIZADO VIA JS --></div>
 
-      <!-- Ações de status -->
+      <!-- AÇÕES DE STATUS -->
       <div class="form-secao"><h3>Alterar Status</h3></div>
       <div class="acao-vendas" id="acoesPedido">
-        <!-- Gerado via JS baseado no status atual -->
+        
       </div>
 
-      <!-- Área de troca -->
+      <!-- ÁREA DE TROCA -->
       <div id="trocaArea" style="display:none; margin-top:1.5rem;">
         <div class="form-secao"><h3>Processo de Troca</h3></div>
         <div class="alerta alerta-aviso mb-2"><i class="fas fa-triangle-exclamation"></i> Cliente solicitou troca. Verifique o motivo antes de autorizar.</div>
@@ -133,7 +133,7 @@
         </div>
       </div>
 
-      <!-- Confirmar recebimento -->
+      <!-- CONFIRMAR RECEBIMENTO -->
       <div id="recebimentoArea" style="display:none; margin-top:1rem;">
         <button class="btn btn-outline btn-sm" id="btnConfirmarRecebimento" style="border-color:var(--cor-secundaria);color:var(--cor-secundaria);">
           <i class="fas fa-box"></i> Confirmar Recebimento do Item Devolvido
@@ -143,7 +143,7 @@
     </div>
   </div>
 
-  <!-- Gerar Cupom-->
+  <!-- GERAR CUPOM -->
   <div class="modal-overlay" id="modalCupom">
     <div class="modal">
       <button class="modal__fechar" onclick="fecharModal('modalCupom')">✕</button>
@@ -187,7 +187,7 @@
         <input type="text" class="input-field" id="cupomCliente" placeholder="Email ou ID do cliente">
       </div>
 
-      <!-- Preview -->
+      <!-- PREVIEW -->
       <div class="preco-calc-visual" id="cupomPreview" style="display:none">
         <div class="preco-calc__linha--total">
           <span>Cupom criado:</span>

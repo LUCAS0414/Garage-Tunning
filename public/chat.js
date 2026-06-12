@@ -1,5 +1,5 @@
 (function () {
-  // Estado
+  // ESTADO
   let historico = [];
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
 
@@ -33,7 +33,7 @@
   `;
   document.body.appendChild(widget);
 
-  // Estilo
+  // ESTILO
   const style = document.createElement('style');
   style.textContent = `
     @keyframes gt-float {
@@ -74,7 +74,6 @@
     #gtChatSend { background:var(--cor-primaria, #e8b800); border:none; padding:0 16px; color:#000; font-size:16px; cursor:pointer; }
     #gtChatSend:disabled { opacity:.5; cursor:default; }
 
-    /* ── Bolha de notificação ── */
     #gtChatNotif {
       position: absolute;
       bottom: 66px;
@@ -127,7 +126,6 @@
       transition: color .2s;
     }
     #gtChatNotif__close:hover { color: #ccc; }
-    /* bolinha de badge */
     #gtChatBadge {
       position: absolute;
       top: -3px; right: -3px;
@@ -144,7 +142,7 @@
   `;
   document.head.appendChild(style);
 
-  // Função
+  // FUNÇÃO
   function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, 
       tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
@@ -153,7 +151,7 @@
 
   function parseMarkdownLinks(texto) {
     const escaped = escapeHTML(texto);
-    // Regex para achar [Texto](Link)
+    // Regex para achar [texto](link)
     const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
     return escaped.replace(linkRegex, (match, text, url) => {
       return `<a href="${url}" target="_blank" class="gt-chat-link">${text}</a>`;
@@ -205,7 +203,7 @@
     field.focus();
   }
 
-  // Notificação automatica
+  // NOTIFICAÇÃO AUTOMATICA
   let notifTimer = null;
 
   function showNotif() {
@@ -250,7 +248,7 @@
     hideNotif();
   });
 
-  // Eventos
+  // EVENTOS
   document.getElementById('gtChatToggle').addEventListener('click', () => {
     const box = document.getElementById('gtChatBox');
     const open = document.getElementById('gtChatIconOpen');

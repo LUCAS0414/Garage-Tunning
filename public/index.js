@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  //Hero Slide
+  // HERO SLIDE
   let slideAtual = 0;
   const slides = document.querySelectorAll('.hero__slide');
   const dots = document.querySelectorAll('.hero__dot');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resetarProgresso();
   }
 
-  //retorno
+  // RETORNO
   function resetarProgresso() {
     clearInterval(timerProgresso);
     clearTimeout(timerSlide);
@@ -44,9 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
     dot.addEventListener('click', () => irParaSlide(parseInt(dot.dataset.idx)));
   });
 
-  // Iniciar
+  // INICIAR
   if (slides.length > 0) resetarProgresso();
-
 
   // Cards sem badges (preco_original e is_novo removidos do schema)
   function gerarProdutoCardHTML(produto) {
@@ -73,8 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>`;
   }
 
-
-  //Preencher
+  // PREENCHER
   function preencherCarrossel(trackId, produtos) {
     const track = document.getElementById(trackId);
     if (!track) return;
@@ -93,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
 
-  // Busca produtos da API real e preenche os carrosseis
+  // Busca produtos da api real e preenche os carrosseis
   async function carregarProdutos() {
     let todosProdutos = [];
     try {
@@ -103,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
       todosProdutos = (dados.produtos || []).map(mapearProduto);
     } catch (err) {
       console.error('Erro ao buscar produtos da API:', err);
-      // fallback: usa DadosMock se a API falhar
+      // Fallback: usa dadosmock se a api falhar
       todosProdutos = (typeof DadosMock !== 'undefined') ? DadosMock.produtos : [];
     }
 
@@ -121,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     preencherCarrossel('trackAlemaes', alemaes);
     preencherCarrossel('trackPecas', pecas);
 
-    // Contadores por categoria
+    // CONTADORES POR CATEGORIA
     document.querySelectorAll('[data-cat]').forEach(el => {
       const cat = el.dataset.cat;
       const qtd = todosProdutos.filter(p => p.categoria === cat).length;

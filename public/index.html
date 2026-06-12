@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Garage</title>
-  <!--Fonte icones-->
+  <!-- FONTE ICONES -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!--css-->
+  <!-- CSS -->
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/index.css">
@@ -15,14 +15,14 @@
 </head>
 
 <body>
-  <!--nav-->
+  <!-- NAV -->
   <div id="navbar-container"></div>
 
-  <!--Hero Banner-->
+  <!-- HERO BANNER -->
   <section class="hero">
     <div class="hero__slides" id="heroSlides">
 
-      <!--Slide 1-->
+      <!-- SLIDE 1 -->
       <div class="hero__slide ativo" data-slide="0" style="background-image:url(https://i.pinimg.com/1200x/70/8c/a2/708ca2e87fdb19c6748703f9aa263707.jpg); background-size: cover; background-position: center;">
         <div class="container hero__content">
           <div class="hero__texto">
@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <!--Slide 2-->
+      <!-- SLIDE 2 -->
       <div class="hero__slide" data-slide="1" style="background-image:url(https://i.pinimg.com/736x/30/31/f6/3031f6e04e88c866468ad800afe633ea.jpg); background-size: cover; background-position: center;">
         <div class="container hero__content">
           <div class="hero__texto">
@@ -72,7 +72,7 @@
         </div>
       </div>
 
-      <!--Slide 3-->
+      <!-- SLIDE 3 -->
       <div class="hero__slide" data-slide="2" style="background-image:url(https://i.pinimg.com/736x/72/4d/93/724d93bbe388986b6032545a319159fd.jpg); background-size: cover; background-position: center;">
         <div class="container hero__content">
           <div class="hero__texto">
@@ -99,7 +99,7 @@
 
     </div>
 
-    <!--Controles-->
+    <!-- CONTROLES -->
     <div class="hero__controles">
       <button class="hero__btn-slide hero__btn-slide--prev" id="heroPrev" aria-label="Slide anterior"><i class="fas fa-chevron-left"></i></button>
       <div class="hero__dots" id="heroDots">
@@ -110,13 +110,13 @@
       <button class="hero__btn-slide hero__btn-slide--next" id="heroNext" aria-label="Próximo slide"><i class="fas fa-chevron-right"></i></button>
     </div>
 
-    <!--Barra de progresso-->
+    <!-- BARRA DE PROGRESSO -->
     <div class="hero__progress">
       <div class="hero__progress-bar" id="heroProgress"></div>
     </div>
   </section>
 
-  <!--Seção categorias-->
+  <!-- SEÇÃO CATEGORIAS -->
   <section class="secao secao-categorias" id="categorias">
     <div class="container">
       <div class="secao-titulo">
@@ -125,7 +125,7 @@
       </div>
 
       <div class="categorias-grid">
-        <!--JDM-->
+        <!-- JDM -->
         <a href="categoria-jdm.html" class="categoria-card jp__cor" data-categoria="jdm">
           <div class="categoria-card__bg"></div>
           <div class="categoria-card__bandeira">JP</div>
@@ -137,7 +137,7 @@
           <div class="categoria-card__glow jp__cor"></div>
         </a>
 
-        <!--US-->
+        <!-- US -->
         <a href="categoria-americanos.html" class="categoria-card us__cor" data-categoria="americanos">
           <div class="categoria-card__bg"></div>
           <div class="categoria-card__bandeira">US</div>
@@ -150,7 +150,7 @@
           <div class="categoria-card__glow"></div>
         </a>
 
-        <!--IT-->
+        <!-- IT -->
         <a href="categoria-italianos.html" class="categoria-card it__cor" data-categoria="italianos">
           <div class="categoria-card__bg"></div>
           <div class="categoria-card__bandeira">IT</div>
@@ -162,7 +162,7 @@
           <div class="categoria-card__glow"></div>
         </a>
 
-        <!--AL-->
+        <!-- AL -->
         <a href="categoria-alemaes.html" class="categoria-card al__cor" data-categoria="alemaes">
           <div class="categoria-card__bg"></div>
           <div class="categoria-card__bandeira">AL</div>
@@ -174,7 +174,7 @@
           <div class="categoria-card__glow"></div>
         </a>
 
-        <!--PC-->
+        <!-- PC -->
         <a href="categoria-pecas.html" class="categoria-card pc__cor" data-categoria="alemaes">
           <div class="categoria-card__bg"></div>
           <div class="categoria-card__bandeira">PC</div>
@@ -190,7 +190,7 @@
     </div>
   </section>
 
-  <!--Produtos em destaque-->
+  <!-- PRODUTOS EM DESTAQUE -->
   <section class="secao" id="destaque">
     <div class="container">
       <div class="secao-titulo">
@@ -198,7 +198,7 @@
         <p>Os produtos mais pedidos da semana</p>
       </div>
 
-      <!--carrossel do js-->
+      <!-- CARROSSEL DO JS -->
       <div class="carrossel-wrapper" id="carrosselDestaque">
         <div class="carrossel-track" id="trackDestaque">
 
@@ -209,7 +209,7 @@
     </div>
   </section>
 
-  <!--Seção JDM-->
+  <!-- SEÇÃO JDM -->
   <section class="secao secao-categoria-strip" id="secJDM">
     <div class="container">
       <div class="secao-strip__header">
@@ -229,7 +229,7 @@
     </div>
   </section>
 
-  <!--Seção Americanos-->
+  <!-- SEÇÃO AMERICANOS -->
   <section class="secao secao-categoria-strip secao-escura" id="secAmericanos">
     <div class="container">
       <div class="secao-strip__header">
@@ -249,7 +249,7 @@
     </div>
   </section>
 
-  <!--Banner CTA-->
+  <!-- BANNER CTA -->
   <section class="banner-cta">
     <div class="container">
       <div class="banner-cta__inner">
@@ -262,7 +262,7 @@
     </div>
   </section>
 
-  <!--Seção Italianos-->
+  <!-- SEÇÃO ITALIANOS -->
   <section class="secao secao-categoria-strip" id="secItalianos">
     <div class="container">
       <div class="secao-strip__header">
@@ -282,7 +282,7 @@
     </div>
   </section>
 
-  <!--Seção alemães-->
+  <!-- SEÇÃO ALEMÃES -->
   <section class="secao secao-categoria-strip secao-escura" id="secAlemaes">
     <div class="container">
       <div class="secao-strip__header">
@@ -302,7 +302,7 @@
     </div>
   </section>
 
-  <!--Seção peças-->
+  <!-- SEÇÃO PEÇAS -->
   <section class="secao secao-categoria-strip" id="secPecas">
     <div class="container">
       <div class="secao-strip__header">
@@ -322,7 +322,7 @@
     </div>
   </section>
 
-  <!--Rodapé-->
+  <!-- RODAPÉ -->
   <footer class="footer">
     <div class="container">
       <div class="footer__grid">
@@ -380,7 +380,7 @@
     </div>
   </footer>
 
-  <!--Sripts JS-->
+  <!-- SRIPTS JS -->
   <script src="global.js"></script>
   <script src="index.js"></script>
   <script src="/chat.js"></script>

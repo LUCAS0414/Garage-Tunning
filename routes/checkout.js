@@ -1,8 +1,3 @@
-/**
- * checkout.js
- * Carrega endereços e cartões do cliente da API.
- * Envia pedido real para POST /api/pedidos.
- */
 document.addEventListener('DOMContentLoaded', async function() {
 
   const API     = 'http://localhost:3000';

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async function() {
 
-  // URL relativa — funciona em qualquer porta/ambiente (igual ao checkout.js)
+  // Url relativa — funciona em qualquer porta/ambiente (igual ao checkout.js)
   const API = '';
   const userId = localStorage.getItem('garage_user_id') ||
                  JSON.parse(localStorage.getItem('garage_user') || '{}').id;
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
 
-  // ---- CARREGAR DADOS INICIAIS ---- //
+  // ---- carregar dados iniciais ---- //
   async function carregarPerfil() {
     try {
       const response = await fetch(`${API}/api/clientes/${userId}`);
@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
       const user = await response.json();
 
-      // Header
+      // HEADER
       document.getElementById('perfilNome').textContent  = user.nome;
       document.getElementById('perfilEmail').textContent = `${user.email} | Nível: ${user.ranking || 'Iniciante'}`;
 
-      // Aba dados
+      // ABA DADOS
       if (document.getElementById('dNome'))       document.getElementById('dNome').textContent       = user.nome;
       if (document.getElementById('dEmail'))      document.getElementById('dEmail').textContent      = user.email;
       if (document.getElementById('dCpf'))        document.getElementById('dCpf').textContent        = user.cpf || 'Não informado';
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
       if (document.getElementById('editGenero'))  document.getElementById('editGenero').value        = user.genero || '';
 
-      // Listar endereços
+      // LISTAR ENDEREÇOS
       const listaEnd = document.getElementById('enderecosList');
       if (listaEnd) {
         if (user.enderecos && user.enderecos.length > 0) {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
       }
 
-      // Listar cartões
+      // LISTAR CARTÕES
       const listaCartoes = document.getElementById('cartoesList');
       if (listaCartoes) {
         if (user.cartoes && user.cartoes.length > 0) {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 'TROCA AUTORIZADA': { label: 'Troca Autorizada',  cor: '#cc88ff' },
                 'TROCADO':          { label: 'Trocado',           cor: '#888888' },
               };
-              // Mapa em memória: pedidoId → dados do pedido (evita JSON.parse inline no onclick)
+              // Mapa em memória: pedidoid → dados do pedido (evita json.parse inline no onclick)
               window._pedidosMap = {};
               pedidos.forEach(p => { window._pedidosMap[p.id] = p; });
 
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } catch (e) { alert('Erro ao remover cartão.'); }
   };
 
-  // ---- SIDEBAR E TABS ---- //
+  // ---- sidebar e tabs ---- //
   const sidebarBtns = document.querySelectorAll('.perfil-sidebar__item');
   const tabs        = document.querySelectorAll('.perfil-tab');
 
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // ---- CUPONS ---- //
+  // ---- cupons ---- //
   async function carregarCupons() {
     const lista = document.getElementById('cuponsLista');
     if (!lista) return;
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (btn) btn.click();
   }
 
-  // ---- ATUALIZAR DADOS PESSOAIS ---- //
+  // ---- atualizar dados pessoais ---- //
   document.getElementById('btnEditarDados')?.addEventListener('click', () => {
     document.getElementById('dadosView').style.display = 'none';
     document.getElementById('dadosForm').style.display = 'block';
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- INATIVAR CONTA ---- //
+  // ---- inativar conta ---- //
   document.getElementById('btnInativarConta')?.addEventListener('click', async () => {
     if (!confirm('Tem certeza que deseja inativar sua conta? Esta ação não pode ser desfeita.')) return;
     try {
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- ENDEREÇOS ---- //
+  // ---- endereços ---- //
   document.getElementById('btnNovoEndereco')?.addEventListener('click', () => {
     const form = document.getElementById('enderecoForm');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- CARTÕES ---- //
+  // ---- cartões ---- //
   document.getElementById('btnNovoCartao')?.addEventListener('click', () => {
     const form = document.getElementById('cartaoForm');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- FILTRO DE PEDIDOS ---- //
+  // ---- filtro de pedidos ---- //
   const pedidoFiltros = document.querySelectorAll('.pedido-filtro-btn');
   pedidoFiltros.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // ---- ALTERAR SENHA ---- //
+  // ---- alterar senha ---- //
   ['toggleAtual', 'toggleNova', 'toggleConf'].forEach((id, i) => {
     const inputIds = ['senhaAtual', 'novaSenha', 'confirmarNovaSenha'];
     document.getElementById(id)?.addEventListener('click', function() {
@@ -518,14 +518,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- LOGOUT ---- //
+  // ---- logout ---- //
   document.getElementById('btnLogout')?.addEventListener('click', () => {
     localStorage.removeItem('garage_user_id');
     localStorage.removeItem('garage_user');
     window.location.href = 'login.html';
   });
 
-  // --- TROCA DE PRODUTO ---
+  // --- troca de produto ---
 let trocaPedidoIdAtual = null;
 
 window.abrirModalTrocaPorId = function(pedidoId) {
@@ -634,6 +634,6 @@ document.getElementById('btnEnviarTroca')?.addEventListener('click', async () =>
   }
 });
 
-  // Inicializa
+  // INICIALIZA
   carregarPerfil();
 });

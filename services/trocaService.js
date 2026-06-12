@@ -1,7 +1,3 @@
-// trocaService.js
-// Schema novo: solicitacoes_troca (id, pedido_id, produto_id, quantidade, motivo, status, data_solicitacao)
-// Removidos: trocas, itens_troca — agora 1 tabela flat com produto_id direto
-// Status: 'PENDENTE', 'AUTORIZADO', 'NEGADO', 'RECEBIDO'
 const pool = require('../db/config');
 const EstoqueService = require('./estoqueService');
 
