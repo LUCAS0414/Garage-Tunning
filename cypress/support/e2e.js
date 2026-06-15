@@ -15,3 +15,18 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+// Atraso entre os comandos para que o teste rode mais lentamente (visível para humanos)
+const COMMAND_DELAY = 1000;
+
+for (const command of ['visit', 'click', 'trigger', 'type', 'clear', 'reload', 'contains']) {
+    Cypress.Commands.overwrite(command, (originalFn, ...args) => {
+        const origVal = originalFn(...args);
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(origVal);
+            }, COMMAND_DELAY);
+        });
+    });
+}

@@ -69,7 +69,6 @@ router.get('/historico-vendas', async (req, res) => {
 });
 
 // PEDIDOS
-
 router.get('/pedidos', async (req, res) => {
   try {
     const { status, busca, pagina = 1, limite = 20 } = req.query;
@@ -209,7 +208,6 @@ router.put('/trocas/pedido/:pedidoId/recebimento', async (req, res) => {
 });
 
 // CUPONS
-
 router.get('/cupons', async (req, res) => {
   try {
     const cupons = await CupomService.listar();

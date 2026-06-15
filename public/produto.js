@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   const produtoId = params.get('id');
   if (!produtoId) { console.error('Nenhum ID de produto na URL.'); return; }
 
-  // Schema novo: sem preco_original, is_novo, imagem_url, peso_kg
   let produto = null;
   try {
     const resp = await fetch(`/api/produtos/${produtoId}`);
@@ -31,28 +30,23 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('breadCat').textContent     = produto.categoria;
   document.getElementById('specCodigo').textContent   = produto.codigo;
 
-  // Preço de (10% mais caro)
   const precoDe = (produto.preco * 1.1).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('precoOriginal').textContent = `R$ ${precoDe}`;
 
-  // Preço por (preço real)
   document.getElementById('produtoPreco').textContent = `R$ ${produto.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  // PARCELAMENTO 12X
   const preco12x = (produto.preco / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const elParcelamento = document.querySelector('.produto-parcelamento strong');
   if (elParcelamento) {
     elParcelamento.textContent = `R$ ${preco12x}`;
   }
 
-  // Preço pix (5% de desconto)
   const precoPix = (produto.preco * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const elPix = document.querySelector('.produto-pix strong');
   if (elPix) {
     elPix.textContent = `R$ ${precoPix}`;
   }
 
-  // Descrição real do banco de dados
   const elDesc = document.querySelector('.produto-descricao-texto');
   if (elDesc) {
     if (produto.descricao) {

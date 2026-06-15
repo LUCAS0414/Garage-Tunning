@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btnLogin.disabled             = estado;
   }
 
-  // Submit — sempre usa /api/login; o backend detecta admin via is_admin
+  // Submit — sempre usa /api/login
   form?.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -90,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const usuario = await res.json();
         localStorage.setItem('garage_user_id', usuario.id);
         localStorage.setItem('garage_user', JSON.stringify({ ...usuario, logado: true }));
-        // Backend retorna isadmin:true se is_admin=1 na tabela clientes
         window.location.href = usuario.isAdmin ? 'analise.html' : 'perfil.html';
       } else {
         setLoading(false);

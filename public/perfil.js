@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async function() {
 
-  // Url relativa — funciona em qualquer porta/ambiente (igual ao checkout.js)
+  // Url relativa — funciona em qualquer porta/ambiente
   const API = '';
   const userId = localStorage.getItem('garage_user_id') ||
                  JSON.parse(localStorage.getItem('garage_user') || '{}').id;
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
 
-  // ---- carregar dados iniciais ---- //
+  // CARREGAR DADOS INICIAIS
   async function carregarPerfil() {
     try {
       const response = await fetch(`${API}/api/clientes/${userId}`);
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } catch (e) { alert('Erro ao remover cartão.'); }
   };
 
-  // ---- sidebar e tabs ---- //
+  // SIDEBAR E TABS
   const sidebarBtns = document.querySelectorAll('.perfil-sidebar__item');
   const tabs        = document.querySelectorAll('.perfil-tab');
 
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // ---- cupons ---- //
+  // CUPONS
   async function carregarCupons() {
     const lista = document.getElementById('cuponsLista');
     if (!lista) return;
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (btn) btn.click();
   }
 
-  // ---- atualizar dados pessoais ---- //
+  // ATUALIZAR DADOS
   document.getElementById('btnEditarDados')?.addEventListener('click', () => {
     document.getElementById('dadosView').style.display = 'none';
     document.getElementById('dadosForm').style.display = 'block';
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- inativar conta ---- //
+  // INATIVAR CONTA
   document.getElementById('btnInativarConta')?.addEventListener('click', async () => {
     if (!confirm('Tem certeza que deseja inativar sua conta? Esta ação não pode ser desfeita.')) return;
     try {
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- endereços ---- //
+  // ENDEREÇOS
   document.getElementById('btnNovoEndereco')?.addEventListener('click', () => {
     const form = document.getElementById('enderecoForm');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- cartões ---- //
+  // CARTÕES
   document.getElementById('btnNovoCartao')?.addEventListener('click', () => {
     const form = document.getElementById('cartaoForm');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- filtro de pedidos ---- //
+  // FILTRO DE PEDIDOS
   const pedidoFiltros = document.querySelectorAll('.pedido-filtro-btn');
   pedidoFiltros.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // ---- alterar senha ---- //
+  // ALTERAR SENHA
   ['toggleAtual', 'toggleNova', 'toggleConf'].forEach((id, i) => {
     const inputIds = ['senhaAtual', 'novaSenha', 'confirmarNovaSenha'];
     document.getElementById(id)?.addEventListener('click', function() {
@@ -518,14 +518,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- logout ---- //
+  // LOGOUT
   document.getElementById('btnLogout')?.addEventListener('click', () => {
     localStorage.removeItem('garage_user_id');
     localStorage.removeItem('garage_user');
     window.location.href = 'login.html';
   });
 
-  // --- troca de produto ---
+  // TROCA DE PRODUTO
 let trocaPedidoIdAtual = null;
 
 window.abrirModalTrocaPorId = function(pedidoId) {
@@ -599,7 +599,7 @@ document.getElementById('btnEnviarTroca')?.addEventListener('click', async () =>
     return;
   }
 
-  // Agrupar checkboxes por produto_id → quantidade
+  // AGUPAR PRODUTO ID -> QUANTIDADE
   const agrupado = {};
   checks.forEach(cb => {
     const pid = cb.dataset.produtoId;
@@ -633,7 +633,5 @@ document.getElementById('btnEnviarTroca')?.addEventListener('click', async () =>
     feedback.innerHTML = '<div class="alerta alerta-erro">⚠ Erro de conexão.</div>';
   }
 });
-
-  // INICIALIZA
   carregarPerfil();
 });

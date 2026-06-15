@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const resultado = await resp.json();
 
       if (resp.ok && resultado.valido) {
-        // Resposta: resultado.cupom.{tipo, valor}
         const cupomData = resultado.cupom;
         cupomAtivo = {
           desconto: cupomData.tipo === 'percentual' ? cupomData.valor / 100 : cupomData.valor,
@@ -140,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Timer visual (sem reserva server-side — apenas ux)
+  // TIMER VISUAL
   let tempoRestante = 15 * 60;
   const timer = setInterval(() => {
     tempoRestante--;

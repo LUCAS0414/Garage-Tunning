@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     disponivel: true, ordem: 'relevancia',
   };
 
-  // Mapeia campos da api para o formato esperado pelo template
-  // Schema novo: sem preco_original, is_novo, imagem_url, peso_kg
   function mapearProduto(p) {
     return {
       id:       p.id,

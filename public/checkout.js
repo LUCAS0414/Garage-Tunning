@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   let cartoesData = [];   // Cartões salvos do cliente
   let metodoPagamento = 'cartao';
 
-  // ---- abas de método de pagamento ----
+  // ABAS DE MÉTODO DE PAGAMENTO
   document.querySelectorAll('.metodo-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.metodo-tab').forEach(b => b.classList.remove('ativo'));
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // ---- helpers de total ----
+  // HELPERS DE TOTAL
   function calcularTotal() {
     const subtotal = Carrinho.totalValor;
     const frete    = subtotal >= 500 ? 0 : 49.90;
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     return Math.max(0, subtotal + frete - desconto);
   }
 
-  // ---- gerenciamento de slots de cartão ----
+  // GERENCIAMENTO DE SLOTS DE CARTÃO
   function criarSlotHTML(index) {
     const opcoesHTML = cartoesData.map(c => `
       <label class="checkout-opcao">
@@ -121,13 +121,11 @@ document.addEventListener('DOMContentLoaded', async function() {
       bindSlot(slot0);
       bindSlot(slot1);
 
-      // Pré-selecionar no cartão 1 o cartão que estava selecionado na seção estática
       if (cartaoIdPreSelecionado && cartaoIdPreSelecionado !== 'novo') {
         const radio = slot0.querySelector(`input[type="radio"][value="${cartaoIdPreSelecionado}"]`);
         if (radio) radio.checked = true;
       }
     } else {
-      // Já tem slots: adicionar mais um
       const index = existentes;
       container.insertAdjacentHTML('beforeend', criarSlotHTML(index));
       bindSlot(container.querySelectorAll('.cartao-slot')[index]);
@@ -137,7 +135,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function bindSlot(slot) {
-    // Mostrar form novo cartão ao selecionar "novo"
     slot.querySelectorAll('input[type="radio"]').forEach(r => {
       r.addEventListener('change', () => {
         const idx  = slot.dataset.index;
@@ -154,7 +151,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       const restantes = container.querySelectorAll('.cartao-slot').length;
 
       if (restantes <= 1) {
-        // Se sobrou 0 ou 1 slot, voltar para a seção estática
         container.innerHTML = '';
         const secaoEstatica = document.getElementById('cartaoOpcoes');
         if (secaoEstatica) secaoEstatica.style.display = '';
@@ -176,7 +172,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         r.name  = `cartaoSlot${i}`;
         if (r.value.startsWith('novo')) r.value = `novo${i}`;
       });
-      // O 1º slot não tem botão remover; os outros sim
       const btnRem = slot.querySelector('.btn-remover-slot');
       if (i === 0 && btnRem) btnRem.remove();
     });
@@ -219,7 +214,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // BOTÃO ADICIONAR CARTÃO
   document.getElementById('btnAdicionarCartao')?.addEventListener('click', adicionarSlot);
 
-  // ---- carregar dados do checkout ----
+  // CARREGAR DADOS DO CHECKOUT
   async function carregarDadosCheckout() {
     try {
       const resp = await fetch(`/api/clientes/${usuario.id}`);
@@ -244,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         enderecoArea.innerHTML = `<p class="texto-muted">Nenhum endereço cadastrado. <a href="perfil.html#enderecos">Adicione um endereço</a> antes de finalizar.</p>`;
       }
 
-      // Cartões (1º slot — cartão único)
+      // Cartões
       const cartaoArea = document.getElementById('cartaoOpcoes');
       if (cartaoArea) {
         const opcoesHTML = cartoesData.map((c, i) => `
@@ -269,7 +264,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
       }
 
-      // Mostrar botão "adicionar cartão" agora que os dados estão prontos
       document.getElementById('btnAdicionarCartao').style.display = 'inline-block';
 
       // DÉBITO
@@ -298,7 +292,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   await carregarDadosCheckout();
 
-  // Mostrar form novo cartão (cartão único)
+  // Mostrar form novo cartão
   document.addEventListener('change', (e) => {
     if (e.target.name === 'cartao') {
       const form = document.getElementById('novoCartaoForm');
@@ -306,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- renderizar resumo ----
+  // RENDERIZAR RESUMO
   function renderizarResumo() {
     const itens         = Carrinho.itens;
     const checkoutItens = document.getElementById('checkoutItens');
@@ -356,7 +350,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     mascaraCartao(document.getElementById('checkoutCartaoNum'));
   }
 
-  // ---- aplicar cupom ----
+  // APLICAR CUPOM
   document.getElementById('btnAplicarCupomCheckout')?.addEventListener('click', async () => {
     const codigo     = document.getElementById('checkoutCupom')?.value.trim().toUpperCase();
     const feedbackEl = document.getElementById('checkoutCupomFeedback');
@@ -391,7 +385,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- confirmar pedido ----
+  // CONFIRMAR PEDIDO
   document.getElementById('btnConfirmarPedido')?.addEventListener('click', async () => {
     const endereco = document.querySelector('[name="endereco"]:checked');
     if (!endereco) { alert('Selecione um endereço de entrega.'); return; }
@@ -425,7 +419,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       const slots = [...document.querySelectorAll('.cartao-slot')];
 
       if (slots.length === 0) {
-        // Fluxo legado (sem slots adicionados): usa o seletor #cartaoopcoes
         const cartao1 = document.querySelector('[name="cartao"]:checked');
         if (!cartao1) { alert('Selecione um cartão.'); return; }
 
@@ -436,7 +429,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         pagamento = { metodo: 'CARTAO_CREDITO', cartaoId: parseInt(cartao1.value) };
 
       } else if (slots.length === 1) {
-        // 1 slot: cartão único
+        // 1 slot
         const radio = slots[0].querySelector('input[type="radio"]:checked');
         if (!radio) { alert('Selecione um cartão.'); return; }
         if (!temCupom && totalComDesconto < 10) {
@@ -446,7 +439,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         pagamento = { metodo: 'CARTAO_CREDITO', cartaoId: parseInt(radio.value) };
 
       } else {
-        // N slots: múltiplos cartões
+        // N slots
         const cartoesPayload = [];
         for (let i = 0; i < slots.length; i++) {
           const slot  = slots[i];
@@ -462,7 +455,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
           const cartaoId = radio.value.startsWith('novo') ? null : parseInt(radio.value);
 
-          // Verificar duplicidade de cartões salvos
           if (cartaoId !== null && cartoesPayload.some(c => c.cartaoId === cartaoId)) {
             alert(`O cartão selecionado no slot ${i + 1} já está sendo usado em outro slot.`);
             return;

@@ -68,7 +68,7 @@ router.delete('/:id/conta', async (req, res) => {
   }
 });
 
-// ---- ENDEREÇOS ----
+// ENDEREÇOS 
 router.get('/:id/enderecos', async (req, res) => {
   try {
     const enderecos = await ClienteService.listarEnderecos(req.params.id);
@@ -97,7 +97,7 @@ router.delete('/:id/enderecos/:endId', async (req, res) => {
   }
 });
 
-// ---- CARTÕES ----
+// CARTÕES 
 router.post('/:id/cartoes', async (req, res) => {
   const { numero_cartao, nome_impresso, bandeira, is_preferencial } = req.body;
   if (!numero_cartao || !nome_impresso) {

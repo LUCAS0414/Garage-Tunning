@@ -1,4 +1,3 @@
-
 (function() {
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!user.logado || !user.isAdmin) {
@@ -38,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
 let produtoEditandoId   = null;
 let produtoInativandoId = null;
 
-// Grupos a, b, c conforme seed
 const MARKUP = { A: 0.60, B: 0.40, C: 0.25 };
 
 async function carregarProdutos() {

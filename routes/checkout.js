@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   let cupomAtivo = null;
 
-  // ---- CARREGAR ENDEREÇOS E CARTÕES ----
+  // CARREGAR ENDEREÇOS E CARTÕES 
   async function carregarDadosCheckout() {
     try {
       const resp = await fetch(`${API}/api/clientes/${usuario.id}`);
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   await carregarDadosCheckout();
 
-  // ---- RENDERIZAR RESUMO ----
+  // RENDERIZAR RESUMO 
   function renderizarResumo() {
     const itens         = Carrinho.itens;
     const checkoutItens = document.getElementById('checkoutItens');
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     mascaraCartao(document.getElementById('checkoutCartaoNum'));
   }
 
-  // ---- APLICAR CUPOM ----
+  // APLICAR CUPOM 
   document.getElementById('btnAplicarCupomCheckout')?.addEventListener('click', async () => {
     const codigo     = document.getElementById('checkoutCupom')?.value.trim().toUpperCase();
     const feedbackEl = document.getElementById('checkoutCupomFeedback');
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // ---- CONFIRMAR PEDIDO ----
+  // CONFIRMAR PEDIDO 
   document.getElementById('btnConfirmarPedido')?.addEventListener('click', async () => {
     const endereco = document.querySelector('[name="endereco"]:checked');
     const cartao   = document.querySelector('[name="cartao"]:checked');

@@ -41,7 +41,7 @@ const PedidoService = {
         if (prod.estoque_atual < item.quantidade) {
           throw new Error(`Estoque insuficiente: ${prod.nome}. Disponível: ${prod.estoque_atual}.`);
         }
-        // Usa preço atual do banco (confiável) em vez do preço enviado pelo front
+        // Usa preço atual do banco
         item._preco = parseFloat(prod.preco_venda);
         subtotal += item._preco * item.quantidade;
       }
@@ -101,7 +101,7 @@ if (metodoPag === 'DOIS_CARTOES') {
         await EstoqueService.darBaixa(item.produtoId, item.quantidade, conexao);
       }
 
-      //aplicar cupom (desativar se for de uso único)
+      //aplicar cupom
       if (cupomDados) await CupomService.aplicar(cupomDados.id, conexao);
 
       await conexao.commit();

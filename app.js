@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 // Servir arquivos estáticos do frontend (coloque seus HTMLs/CSS/JS na pasta /public)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ---- ROTAS DA API ----
+// ROTAS DA API
 app.use('/api',          require('./routes/auth'));       // POST /api/login, POST /api/cadastro
 app.use('/api/produtos', require('./routes/produtos'));   // GET/POST/PUT /api/produtos
 app.use('/api/cupons',   require('./routes/cupons'));     // POST /api/cupons/validar
@@ -24,12 +24,12 @@ app.use('/api/clientes', require('./routes/clientes'));   // GET/PUT /api/client
 app.use('/api/admin',    require('./routes/admin'));      // Rotas administrativas
 app.use('/api/chat', chatRoutes);                         // Rotas do chat
 
-// ---- HEALTH CHECK ----
+// HEALTH CHECK
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ---- FALLBACK: rotas não reconhecidas servem o index.html ----
+// FALLBACK: rotas não reconhecidas servem o index.html
 app.get('*', (req, res, next) => {
   // Não redirecionar chamadas de API que não foram encontradas
   if (req.path.startsWith('/api/')) {
@@ -37,11 +37,11 @@ app.get('*', (req, res, next) => {
   }
   const indexPath = path.join(__dirname, 'public', 'index.html');
   res.sendFile(indexPath, (err) => {
-    if (err) next(); // silencia erro se index.html não existe
+    if (err) next();
   });
 });
 
-// ---- HANDLER DE ERROS GLOBAL ----
+// HANDLER DE ERROS GLOBAL
 app.use((err, req, res, _next) => {
   if (err && err.code !== 'ENOENT') {
     console.error('[ERRO]', err.message);
@@ -49,7 +49,7 @@ app.use((err, req, res, _next) => {
   res.status(500).json({ error: 'Erro interno no servidor.' });
 });
 
-// ---- INICIAR SERVIDOR ----
+// INICIAR SERVIDOR
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`[SERVER] Garage Tuning rodando em http://localhost:${PORT}`);

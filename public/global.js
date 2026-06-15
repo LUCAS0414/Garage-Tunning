@@ -45,7 +45,6 @@ function initNavbar() {
 }
 // CARRINHO
 const Carrinho = {
-  // Dados do carrinho lembrar de conectar com back
   _dados: JSON.parse(localStorage.getItem('garage_carrinho') || '[]'),
 
   adicionar(produto, quantidade = 1) {
@@ -315,7 +314,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 // UTILITARIOS
-
 function formatarPreco(valor) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',

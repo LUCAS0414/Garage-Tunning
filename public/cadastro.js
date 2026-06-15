@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   let stepAtual = 1;
 
-  // ---- helpers e máscaras ---- //
+  // HELPERS E MASCARAS
   function calcularIdade(dataString) {
     const hoje = new Date();
     const dataNasc = new Date(dataString);
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (document.getElementById('numTel'))
     mascaraTelefone(document.getElementById('numTel'));
 
-  // ---- navegação de steps ---- //
+  // NAVEGAÇÃO DE STEPS
   function irParaStep(num) {
     document
       .querySelectorAll('.form-step')
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ---- validações de etapa ---- //
+  // VALIDAÇÕES DE ETAPA
   function validarStep1() {
     let ok = true;
 
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
       marcarErro('dataNasc', 'Data obrigatória');
       ok = false;
     } else if (calcularIdade(dataNasc) < 18) {
-      // Rn0029: validação de maioridade
+      // Validação de maioridade
       marcarErro(
         'dataNasc',
         'É necessário ter 18 anos ou mais para se cadastrar.',
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .getElementById('btnVoltar3')
     ?.addEventListener('click', () => irParaStep(2));
 
-  // ---- endereço e cep ---- //
+  // ENDEREÇO E CEP
   document.getElementById('cobIgual')?.addEventListener('change', function () {
     document.getElementById('endCobrancaArea').style.display = this.checked
       ? 'none'
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-  // ---- força da senha (rnf0031) ---- //
+  // FORÇA DA SENHA
   const senhaInput = document.getElementById('cadastroSenha');
   const confSenha = document.getElementById('confirmarSenha');
   const senhaForca = document.getElementById('senhaForca');
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // ---- submit e integração  ---- //
+  // SUBMIT E INTEGRAÇÃO
   document
     .getElementById('formCadastro')
     ?.addEventListener('submit', async function (e) {
@@ -279,13 +279,11 @@ document.addEventListener('DOMContentLoaded', function () {
       btnLoad.style.display = 'flex';
       btn.disabled = true;
 
-      // Montar payload seguindo a rn0023 e rn0026
       const telLimpo = document
         .getElementById('numTel')
         .value.replace(/\D/g, '');
       const isCobIgual = document.getElementById('cobIgual')?.checked;
 
-      // Dentro do evento de submit do cadastro.js
       async function enviarParaBanco() {
         const dados = {
           nome: document.getElementById('nomeCompleto').value,
@@ -340,6 +338,5 @@ document.addEventListener('DOMContentLoaded', function () {
       await enviarParaBanco();
     });
 
-  // INICIAR
   irParaStep(1);
 });

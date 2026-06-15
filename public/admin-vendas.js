@@ -1,4 +1,3 @@
-
 (function() {
   const user = JSON.parse(localStorage.getItem('garage_user') || '{}');
   if (!user.logado || !user.isAdmin) {
@@ -168,7 +167,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (trocaArea) trocaArea.style.display = pedido.status === 'EM TROCA'         ? 'block' : 'none';
     if (recArea)   recArea.style.display   = pedido.status === 'TROCA AUTORIZADA' ? 'block' : 'none';
 
-    // Preenche motivo da troca (já buscado acima)
+    // Preenche motivo da troca
     if (ehTroca) {
       const el = document.getElementById('motivoTroca');
       if (el) el.value = trocaMotivo || '(motivo não encontrado)';
@@ -177,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     abrirModal('modalPedido');
   }
 
-  // Mudar status — persiste na api
+  // Mudar status
   document.getElementById('acoesPedido')?.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-novo-status]');
     if (!btn) return;
@@ -249,7 +248,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     Carrinho._mostrarFeedback('Recebimento confirmado! Cupom gerado para o cliente.');
   });
 
-  // CUPOM MANUAL (ADMIN)
+  // CUPOM MANUAL
   document.getElementById('btnGerarCupom')?.addEventListener('click', () => abrirModal('modalCupom'));
 
   document.getElementById('btnGerarCodigoCupom')?.addEventListener('click', () => {

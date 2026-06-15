@@ -27,7 +27,7 @@ const EstoqueService = {
     );
   },
 
-  // Verifica disponibilidade sem reservar (usado no checkout).
+  // Verifica disponibilidade sem reservar
   async verificarDisponibilidade(produtoId, quantidade) {
     const [[produto]] = await pool.execute(
       'SELECT estoque_atual FROM produtos WHERE id = ? AND status = 1', [produtoId]

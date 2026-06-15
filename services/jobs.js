@@ -9,7 +9,7 @@ function iniciarJobReservas() {
     } catch (err) {
       console.error('[JOB:Reservas] Erro:', err.message);
     }
-  }, 60 * 1000); // A cada 1 minuto
+  }, 60 * 1000);
   console.log('[JOB] Job de reservas de estoque iniciado (intervalo: 1 min).');
 }
 
@@ -53,7 +53,7 @@ function iniciarJobAbandonoCarrinho() {
     }
   }
 
-  setInterval(verificar, 60 * 60 * 1000); // A cada 1 hora
+  setInterval(verificar, 60 * 60 * 1000);
   console.log('[JOB] Job de abandono de carrinho iniciado (intervalo: 1h).');
 }
 

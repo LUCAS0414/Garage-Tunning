@@ -57,8 +57,7 @@ const ClienteService = {
     return { mensagem: 'Conta inativada com sucesso.' };
   },
 
-  // ---- ENDEREÇOS ----
-
+  // ENDEREÇOS
   async listarEnderecos(clienteId) {
     const [enderecos] = await pool.execute(
       'SELECT * FROM enderecos_cliente WHERE cliente_id = ?', [clienteId]

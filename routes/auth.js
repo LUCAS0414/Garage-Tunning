@@ -32,8 +32,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/cadastro
-// Body: { nome, email, cpf, dataNascimento, genero, senha, logradouro, numero, cep, bairro, cidade, estado, telefone_tipo, telefone_ddd, telefone_numero }
 router.post('/cadastro', async (req, res) => {
   const {
     nome, email, cpf, dataNascimento, genero, senha,

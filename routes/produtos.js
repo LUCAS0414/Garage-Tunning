@@ -2,7 +2,6 @@ const express       = require('express');
 const router        = express.Router();
 const ProdutoService = require('../services/produtosService');
 
-// GET /api/produtos?categoria=&busca=&pagina=&limite=&apenasAtivos=
 router.get('/', async (req, res) => {
   try {
     const {
@@ -27,7 +26,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/produtos/:id
 router.get('/:id', async (req, res) => {
   try {
     const produto = await ProdutoService.buscarPorId(req.params.id);
@@ -38,7 +36,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/produtos (admin)
 router.post('/', async (req, res) => {
   try {
     const result = await ProdutoService.criar(req.body);
@@ -49,7 +46,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/produtos/:id (admin)
 router.put('/:id', async (req, res) => {
   try {
     const resultado = await ProdutoService.atualizar(req.params.id, req.body);
@@ -60,7 +56,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/produtos/:id — soft delete (admin)
 router.delete('/:id', async (req, res) => {
   try {
     const resultado = await ProdutoService.remover(req.params.id);

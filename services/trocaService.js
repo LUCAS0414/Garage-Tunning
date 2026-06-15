@@ -112,7 +112,7 @@ const TrocaService = {
         "UPDATE pedidos SET status = 'TROCADO' WHERE id = ?", [troca.pedido_id]
       );
 
-      // Criação do cupom de troca — vale o valor do item devolvido (validade 3 meses)
+      // Criação do cupom de troca 
       const [[pedidoInfo]] = await conexao.execute(
         `SELECT p.usuario_id, pi.preco_unitario
          FROM solicitacoes_troca st

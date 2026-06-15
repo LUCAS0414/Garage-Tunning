@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           dataInicio   = new Date(hoje - 90 * 86400000).toISOString().split('T')[0];
           agrupamento  = 'semana';
           break;
-        default: // 12M
+        default:
           dataInicio   = new Date(hoje);
           dataInicio.setMonth(dataInicio.getMonth() - 12);
           dataInicio   = dataInicio.toISOString().split('T')[0];
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (el('kpiTicket'))  el('kpiTicket').textContent  = 'R$ ' + ticketMedio.toLocaleString('pt-BR', {minimumFractionDigits:0});
     if (el('kpiTrocas'))  el('kpiTrocas').textContent  = emTroca;
 
-    // Gráfico de vendas (linha) — dados do histórico
+    // Gráfico de vendas
     const linhas    = historico.linhas || [];
     const labels    = linhas.map(l => l.periodo ? String(l.periodo).substring(5) : '');
     const receitas  = linhas.map(l => parseFloat(l.receita || 0));
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (document.hidden) {
       clearInterval(intervaloTempReal);
     } else {
-      renderizar(periodoAtivo); // ATUALIZA AO VOLTAR
+      renderizar(periodoAtivo);
       intervaloTempReal = setInterval(() => renderizar(periodoAtivo), 30000);
     }
 });

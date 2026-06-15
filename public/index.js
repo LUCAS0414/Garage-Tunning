@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // INICIAR
   if (slides.length > 0) resetarProgresso();
 
-  // Cards sem badges (preco_original e is_novo removidos do schema)
+  // Cards sem badges
   function gerarProdutoCardHTML(produto) {
     return `
       <div class="produto-card" data-id="${produto.id}" data-categoria="${produto.categoria}">
@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
     track.innerHTML = produtos.map(gerarProdutoCardHTML).join('');
   }
 
-  // Schema novo: sem preco_original, is_novo, imagem_url
   function mapearProduto(p) {
     return {
       id:       p.id,
