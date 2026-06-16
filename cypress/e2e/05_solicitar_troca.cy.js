@@ -29,6 +29,9 @@ describe('UC-05: Cliente solicita troca ou devolução', () => {
 
     cy.get('#modalSolicitarTroca', { timeout: 8000 }).should('be.visible');
 
+    // Seleciona o primeiro item para troca
+    cy.get('.troca-item-check').first().check({ force: true });
+
     cy.get('#trocaMotivo').type('Produto chegou com defeito de fabricação.');
 
     cy.get('#btnEnviarTroca').click();

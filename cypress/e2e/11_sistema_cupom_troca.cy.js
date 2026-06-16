@@ -74,7 +74,8 @@ describe('UC-11: Sistema gera cupom de troca automaticamente', () => {
     cy.get('#btnGerarCupom', { timeout: 8000 }).click();
     cy.get('#modalCupom').should('be.visible');
 
-    cy.get('#cupomCodigo').type('TROCA-CYPRESS-01');
+    const codigoUnico = `CYP-${Date.now()}`;
+    cy.get('#cupomCodigo').type(codigoUnico);
     cy.get('#cupomTipo').select('percentual');
     cy.get('#cupomValor').type('10');
     cy.get('#cupomValidade').type('2099-12-31');
